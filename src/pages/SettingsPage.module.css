@@ -1,0 +1,299 @@
+.page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.page h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.lede {
+  margin: -0.5rem 0 0;
+  color: var(--ink-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.card {
+  background: var(--surface-1);
+  border: 1px solid var(--surface-2);
+  border-radius: 12px;
+  padding: 1.25rem 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.card h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+
+.hint {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--surface-2);
+}
+
+.row:first-of-type {
+  border-top: 0;
+  padding-top: 0.25rem;
+}
+
+.rowLabel {
+  flex: 1 1 12rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stepBtn {
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  line-height: 1;
+  border: 1px solid var(--surface-2);
+  background: var(--surface-0);
+  color: var(--ink);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.stepBtn:hover:not(:disabled) {
+  background: var(--surface-2);
+  border-color: var(--accent);
+}
+
+.stepBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.numInput {
+  width: 4.5rem;
+  text-align: center;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--surface-2);
+  background: var(--surface-0);
+  color: var(--ink);
+  border-radius: 8px;
+}
+
+.numInput:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+
+/* Hide native spinner arrows in WebKit / Firefox for a cleaner look. */
+.numInput::-webkit-outer-spin-button,
+.numInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.numInput[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.spinner {
+  animation: spin 0.9s linear infinite;
+  color: var(--ink-muted);
+}
+
+.checkmark {
+  color: var(--accent);
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: var(--error-bg, rgba(220, 38, 38, 0.08));
+  color: var(--error, #dc2626);
+  font-size: 0.875rem;
+}
+
+.aboutList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+.aboutList strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* TTS speed — segmented control, same idiom as the queue-selector
+   on the Study page. The active option is filled in --accent so
+   the user's currently-applied rate is obvious at a glance. */
+.speedGroup {
+  display: inline-flex;
+  background: var(--surface-0);
+  border: 1px solid var(--surface-2);
+  border-radius: 8px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.speedBtn {
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--ink-muted);
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.speedBtn:hover:not([aria-checked='true']) {
+  color: var(--ink);
+}
+
+.speedBtnActive {
+  background: var(--accent, #2f6f4e);
+  color: #fff;
+  cursor: default;
+}
+
+.speedBtnActive:hover {
+  color: #fff;
+}
+
+/* Account section. The username line is a quiet summary so the
+   user knows which account they're in before changing anything. */
+.accountName {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.pwForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem 0 0.5rem;
+  border-top: 1px solid var(--surface-2);
+  margin-top: 0.5rem;
+}
+
+.pwField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+}
+
+.pwField span {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.pwField input {
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--surface-2);
+  background: var(--surface-0);
+  color: var(--ink);
+  border-radius: 8px;
+}
+
+.pwField input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+
+.pwOk {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  background: rgba(34, 139, 70, 0.08);
+  color: var(--ok, #1d6f3a);
+  font-size: 0.85rem;
+}
+
+.pwErr {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  background: var(--error-bg, rgba(220, 38, 38, 0.08));
+  color: var(--error, #dc2626);
+  font-size: 0.85rem;
+}
+
+.pwForm button[type='submit'] {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+}
+
+.logoutRow {
+  margin-top: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--surface-2);
+}
+
+.logoutRow button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}

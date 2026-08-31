@@ -1,0 +1,603 @@
+.study {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 16px 32px;
+}
+
+/*
+  Single content column that holds every interactive element of the
+  study page. This keeps the back link, title, controls, card, and
+  meta row all on the same vertical axis so nothing floats off to
+  the page edge.
+*/
+.studyColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  max-width: 640px;
+}
+
+.studyHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.studyHeaderLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  align-self: flex-start;
+}
+.backLink:hover { color: var(--accent); text-decoration: none; }
+
+/*
+  Level switcher — six mutually exclusive pills (one for each
+  CEFR level plus "Все"). The user is always one tap away from
+  changing level without going home. Pills are kept short
+  ("A1"/"Все") so the row never needs to wrap; on a 390px
+  viewport six pills fit comfortably with 6px gaps.
+*/
+.levelSwitcher {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.levelPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  padding: 5px 10px;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+.levelPill:hover {
+  color: var(--text);
+  border-color: var(--text-muted);
+  text-decoration: none;
+}
+.levelPillActive,
+.levelPillActive:hover {
+  background: var(--accent);
+  color: var(--accent-fg, #fff);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+.studyTitle {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.headerRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+/*
+  Direction picker — full width of the content column. Active option
+  is filled in accent; the inactive one is bordered. Each option has
+  a short hint that explains what the direction actually does.
+*/
+
+
+/* One flat selection panel for the queue mode + phase filter.
+   Replaces the previous two-tier design (mode tabs on top, phase
+   chips on the bottom, divider in between) — that still read as
+   two stacked rows inside one card, with duplicate "Все 712" /
+   "Новые 659" labels.
+
+   The new design is a single row of seven mutually exclusive
+   chips, all on the same level:
+     Повтор · Новые · В изучении · На повторе · Освоенные · Всё · Повторить всё
+   Each chip is the same shape, the same hover state, and the
+   same accent-filled active state. The card is just a border
+   around the row so the chips read as a single widget. On
+   narrow screens the row wraps; the card stretches to fit. */
+/* Three centered pickers stacked vertically (Карточки /
+   Язык / Тема). Each row is a small caption + the actual
+   control. The controls stretch to the full column width
+   so they read as form fields, not toolbar chips. */
+.pickerStack {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.pickerRow {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  width: 100%;
+}
+
+.pickerLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  text-align: left;
+  padding-left: 4px;
+}
+
+.pickerControl {
+  width: 100%;
+}
+
+.queueChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--surface-2);
+  background: var(--surface-1);
+  color: var(--ink-muted);
+  border-radius: 999px;
+  font-size: 0.825rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.queueChip:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.queueChipActive {
+  background: var(--accent, #2f6f4e);
+  border-color: var(--accent, #2f6f4e);
+  color: #fff;
+}
+
+.queueChipActive:hover {
+  background: var(--accent, #2f6f4e);
+  color: #fff;
+}
+
+.queueChipCount {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.queueChipActive .queueChipCount {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.progressBar {
+  width: 100%;
+  height: 6px;
+  background: var(--surface-2);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: var(--radius-pill);
+  transition: width 0.4s ease;
+}
+
+.cardWrap {
+  margin: 4px 0 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.shortcut {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+  padding: 1px 6px;
+  background: rgba(255, 255, 255, 0.18);
+  font-size: 0.65rem;
+  border-radius: 4px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-sans);
+}
+
+.ratingRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.ratingBtn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 14px 8px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease, transform 0.06s ease;
+  min-height: 56px;
+}
+.ratingBtn:hover {
+  background: var(--surface-2);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.ratingBtn:active { transform: translateY(1px); }
+
+.ratingLabel {
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: -0.005em;
+}
+
+.ratingShortcut {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  font-size: 0.6rem;
+  color: var(--text-subtle);
+  font-weight: 500;
+  font-family: var(--font-sans);
+  border: 1px solid var(--border);
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--surface);
+}
+
+.metaRow {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  font-size: 0.86rem;
+  color: var(--text);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  padding-top: 4px;
+}
+
+/*
+  "N из M" counter pill. The previous version was a flat grey
+  line that the eye skipped over; the user had to count their
+  own progress. Bumping it to a subtle pill with a percentage
+  gives an honest "where am I in the session" signal that
+  tracks the progress bar above. The percent is shown in
+  muted colour so the eye lands on the raw counter first.
+*/
+.counterPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.counterPercent {
+  font-weight: 500;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+/*
+  "Верно" counter — small accent dot instead of a checkmark glyph.
+  The dot is filled with the accent color so the eye lands on the
+  counter without adding a heavy icon or background.
+*/
+.correctPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+}
+.correctDot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+/* ---------------------------- Empty / done state ---------------------------- */
+
+.doneWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 64vh;
+  padding: 24px;
+}
+
+.doneCard {
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 56px 40px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: var(--shadow-sm);
+}
+
+.doneIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.doneTitle {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 500;
+  margin: 0 0 10px;
+  letter-spacing: -0.02em;
+  color: var(--text-strong);
+  line-height: 1.2;
+}
+
+.doneSub {
+  color: var(--text-muted);
+  margin: 0 0 28px;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.doneSub strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.doneActions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+  .studyHeader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .ratingRow {
+    gap: 6px;
+    grid-template-columns: 1fr 1fr;
+  }
+  .ratingBtn {
+    padding: 14px 8px 12px;
+    min-height: 64px;
+  }
+  .ratingLabel { font-size: 0.9rem; }
+  .doneCard { padding: 40px 24px; }
+  .doneTitle { font-size: 1.5rem; }
+  .metaRow { font-size: 0.74rem; }
+  .shortcut { display: none; }
+  /* Six pills on a 390px viewport still fit comfortably at the
+     base padding; on narrower phones (≤360px) the row can
+     wrap to two lines. Keep the pills touchable (38px min). */
+  .levelPill {
+    min-width: 36px;
+    padding: 4px 8px;
+    font-size: 0.8rem;
+  }
+}
+
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+}
+
+/* Daily goal ring + leech notice. Both sit on a single compact
+   row between the progress bar and the card, so they're
+   visible without competing for attention. */
+.metaBar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px auto 12px;
+  max-width: 640px;
+  width: 100%;
+  padding: 0 16px;
+}
+
+/* The goal ring is now a labelled widget — ring on the left,
+   "Дневная цель" + count on the right — because the ring on its
+   own was too cryptic (the user kept asking what the bare
+   "0/50" meant). The wrapper keeps the two pieces aligned in
+   a single horizontal pill. */
+.goalRingWrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.goalRing {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.goalRingText {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
+.goalRingTextLabel {
+  font-size: 0.66rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.goalRingTextValue {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.goalRingSep {
+  margin: 0 1px;
+  color: var(--text-muted);
+}
+
+.leechNotice {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px 6px 12px;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 0.78rem;
+  line-height: 1.2;
+}
+
+.leechText {
+  flex: 1;
+}
+
+.leechDismiss {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0 4px;
+}
+.leechDismiss:hover { color: var(--text); }
+
+/* Undo toast. Pinned to the bottom of the study column so it
+   doesn't compete with the rating row. Rounded surface in the
+   same family as the rest of the app, with the action button
+   on the right. Fades out via opacity + translate when the
+   timer fires; the component unmounts so the layout
+   reflow doesn't kick the user. */
+.undoToast {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--surface-2, var(--surface));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md, 10px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  animation: undoToastIn 0.18s ease-out;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+@keyframes undoToastIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.undoLabel {
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.undoBtn {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--border-strong, var(--border));
+  color: var(--accent, #2f6f4e);
+  font-weight: 600;
+  font-size: 0.88rem;
+  padding: 6px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.undoBtn:hover {
+  background: var(--accent, #2f6f4e);
+  color: #fff;
+  border-color: var(--accent, #2f6f4e);
+}
+
+.undoBtn:focus-visible {
+  outline: 2px solid var(--accent, #2f6f4e);
+  outline-offset: 2px;
+}
+
+/* Single-line keyboard summary under the show-answer button
+   or the rating row. Muted colour so the eye lands on the
+   buttons themselves; right-aligned so it doesn't fight the
+   counter pill. */

@@ -1,0 +1,1090 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 8px 0 40px;
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.head h1 {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 500;
+  margin: 0 0 4px;
+  letter-spacing: -0.02em;
+}
+
+/*
+  Header action bar — sits to the right of the page title. Three
+  buttons: export / import / reset. They're separate controls
+  (rather than a single "manage data" dropdown) so the destructive
+  reset can't be tapped by accident and the export is always one
+  click away.
+*/
+.headActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.head .muted strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 500;
+  margin: 0 0 14px;
+  letter-spacing: -0.015em;
+}
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--surface);
+  padding: 18px 20px;
+  position: relative;
+}
+
+/*
+  When a KPI is wrapped in a <Link> it becomes a click target.
+  - Hover/focus lifts the surface tint so the user knows
+    the tile is actionable.
+  - The arrow icon is always visible on mobile (no hover
+    state) and fades in on hover on desktop, so the page
+    doesn't look like it's full of buttons.
+  - No new text label — the icon + cursor change is enough.
+*/
+.kpiLink {
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.12s ease;
+}
+.kpiLink:hover {
+  background: var(--surface-2);
+}
+.kpiCta {
+  position: absolute;
+  bottom: 14px;
+  right: 16px;
+  color: var(--text-muted);
+  opacity: 0;
+  transition: opacity 0.12s ease, color 0.12s ease, transform 0.12s ease;
+}
+.kpiLink:hover .kpiCta,
+.kpiLink:focus-visible .kpiCta {
+  opacity: 1;
+  color: var(--accent);
+  transform: translateX(2px);
+}
+/* On touch devices there's no hover, so always show the arrow
+   so the user can see the tile is clickable. */
+@media (hover: none) {
+  .kpiCta {
+    opacity: 0.6;
+  }
+}
+
+.kpiLabel {
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.kpiValue {
+  font-family: var(--font-display);
+  font-size: 1.85rem;
+  font-weight: 500;
+  color: var(--text-strong);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.kpiSub {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.levelList {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.configCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+}
+
+/* The SM-2 parameters live inside a <details> element. We strip the
+   default disclosure triangle (the > chevron) and replace it with
+   our own that rotates 180° when expanded. The summary is the
+   whole "Show parameters" affordance; clicking anywhere on it
+   opens / closes the panel. */
+.configCard details > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 0;
+  user-select: none;
+  border-radius: 6px;
+}
+
+.configCard details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.configSummary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.configSummaryLabel {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.configSummaryHint {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  margin-left: auto;
+  transition: transform 0.18s ease;
+}
+
+.configCard details[open] .configSummaryHint {
+  transform: rotate(180deg);
+}
+
+.configBody {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+/*
+  Day-by-day activity card. Same surface as the config card so the
+  page reads as a stack of equal-weight panels.
+*/
+.activityCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px 24px;
+}
+
+.activityHead {
+  margin-bottom: 16px;
+}
+
+.activityHead h2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 500;
+  margin: 0 0 4px;
+  color: var(--text-strong);
+  letter-spacing: -0.01em;
+}
+
+.activityHead p {
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.activityKpis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.activityKpis .kpi {
+  background: var(--bg);
+  padding: 14px 16px;
+}
+
+/*
+  30-day bar chart. The SVG is set to a fixed 16:5 aspect via CSS,
+  bars are drawn in a 100×100 viewBox so they scale crisply.
+*/
+.chartWrap {
+  position: relative;
+  padding-top: 4px;
+}
+
+.chart {
+  display: block;
+  width: 100%;
+  height: 96px;
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 6px;
+}
+
+.chartBar {
+  fill: var(--accent);
+  opacity: 0.78;
+  transition: opacity 0.12s ease;
+}
+.chartBar:hover { opacity: 1; }
+
+.chartBarToday {
+  fill: var(--accent);
+  opacity: 1;
+}
+
+.chartBarEmpty {
+  fill: var(--border-strong);
+  opacity: 0.6;
+}
+
+.chartAxis {
+  position: relative;
+  height: 16px;
+  margin-top: 6px;
+  font-size: 0.66rem;
+  color: var(--text-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+.chartTick {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+@media (max-width: 600px) {
+  .activityKpis { grid-template-columns: 1fr; }
+  .activityCard { padding: 18px 18px 20px; }
+}
+
+.configTitle {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 500;
+  margin: 0 0 4px;
+  color: var(--text-strong);
+  letter-spacing: -0.01em;
+}
+
+.configList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin: 16px 0 0;
+}
+
+.configItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--surface);
+  padding: 12px 14px;
+}
+
+.configItem dt {
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.configItem dd {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-strong);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-display);
+}
+
+.sectionHead {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.sectionHead h2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 500;
+  margin: 0;
+  letter-spacing: -0.015em;
+  color: var(--text-strong);
+}
+
+.sectionHead p {
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.leechHeadText {
+  flex: 1 1 16rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.topicSkeleton {
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  color: var(--text-muted);
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.topicGroups {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.topicLevel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.topicLevelHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  transition: background 0.12s ease;
+}
+.topicLevelHead:hover { background: var(--surface-2); }
+
+.topicLevelIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  color: var(--text-subtle);
+  flex-shrink: 0;
+}
+
+.topicLevelBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.topicLevelName {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-strong);
+  flex: 1;
+  min-width: 0;
+}
+
+.topicLevelMeta {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.topicGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border-top: 1px solid var(--border);
+}
+
+.topicCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  background: var(--surface);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.12s ease;
+}
+.topicCard:hover { background: var(--surface-2); text-decoration: none; }
+
+.topicCardTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.topicName {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-strong);
+  font-family: var(--font-sans);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topicStatus {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  padding: 1px 7px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.topicStatusDue {
+  background: var(--sun-400);
+  color: var(--ink-900);
+}
+
+.topicProgressBar {
+  width: 100%;
+  height: 3px;
+  background: var(--surface-2);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.topicProgressFill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: var(--radius-pill);
+  transition: width 0.4s ease;
+}
+
+.topicMeta {
+  font-size: 0.74rem;
+  color: var(--text-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+.levelRow {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  background: var(--surface);
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+}
+.levelRow:last-child { border-bottom: none; }
+
+.levelBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.levelBody { min-width: 0; }
+
+.levelTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.levelBody h3 {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-strong);
+  margin: 0;
+}
+
+.levelMeta {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.levelBar {
+  width: 100%;
+  height: 4px;
+  background: var(--surface-2);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.levelFill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: var(--radius-pill);
+  transition: width 0.4s ease;
+}
+
+@media (max-width: 720px) {
+  .levelRow { grid-template-columns: auto 1fr; padding: 14px 16px; gap: 14px; }
+  .levelRow .btn { grid-column: 2; justify-self: start; }
+  .levelTop { flex-wrap: wrap; }
+}
+
+/* ---------------------------------------------------------------------------
+   Import-confirm dialog & error toast.
+
+   The dialog is the last line of defence against a fat-fingered import:
+   a user could be holding a 6-month-old backup thinking it's from
+   yesterday. The dialog re-states the file's identity (username, date,
+   counts) and the consequence ("replaces local data") so the user has
+   one last moment to back out.
+   --------------------------------------------------------------------------- */
+.dialogScrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(31, 30, 27, 0.45);
+  backdrop-filter: blur(2px);
+  animation: scrim-in 140ms ease-out;
+}
+@keyframes scrim-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.dialog {
+  width: 100%;
+  max-width: 460px;
+  background: var(--surface, #faf7f2);
+  color: var(--ink, #1f1e1b);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+  animation: dialog-in 160ms ease-out;
+}
+@keyframes dialog-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.dialogTitle {
+  margin: 0 0 16px;
+  font: 600 18px/1.2 var(--font-display, "Newsreader", serif);
+  letter-spacing: -0.01em;
+}
+.dialogWarning {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  background: rgba(196, 92, 38, 0.08);
+  border: 1px solid rgba(196, 92, 38, 0.3);
+  border-radius: 8px;
+  font: 400 13px/1.45 var(--font-sans, "Inter", sans-serif);
+  color: var(--ink, #1f1e1b);
+}
+.dialogBody {
+  margin: 0 0 20px;
+  padding: 14px 16px;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 8px;
+  font: 400 13px/1.55 var(--font-mono, ui-monospace, monospace);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.dialogActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Toast — pinned to the bottom-right of the page. Used for
+   import-validation errors that don't need a full modal. */
+.toast {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px 10px 14px;
+  background: var(--surface, #faf7f2);
+  color: var(--ink, #1f1e1b);
+  border: 1px solid rgba(196, 92, 38, 0.4);
+  border-left: 3px solid #c45c26;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  max-width: 420px;
+  font: 400 13px/1.45 var(--font-sans, "Inter", sans-serif);
+  animation: toast-in 200ms ease-out;
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.toastClose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  color: inherit;
+  cursor: pointer;
+  margin-left: 4px;
+  padding: 0;
+  font: inherit;
+}
+.toastClose:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+/* Leech list — compact rows, one per sticky card. The Reset
+   button is the actionable thing; everything else is
+   informational. We keep the layout narrow to mirror the topic
+   section above so the eye can compare them at a glance. */
+.leechCard {
+  margin-top: 24px;
+  padding: 0 4px;
+}
+
+.leechList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.leechRow {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 16px;
+  align-items: center;
+  padding: 10px 4px;
+  border-top: 1px solid var(--border);
+}
+.leechRow:first-child {
+  border-top: 0;
+}
+
+.leechWord {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.leechKk {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.leechRu {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.leechMeta {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.leechActions {
+  display: flex;
+  gap: 8px;
+}
+
+@media (max-width: 600px) {
+  .leechRow {
+    grid-template-columns: 1fr auto;
+  }
+  .leechMeta {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Retention chart — line + dots over a 0..1 vertical scale.
+   Reference lines at 80% and 95% show the Anki sweet-spot
+   band. Same viewBox / aspect ratio as the activity chart
+   above so the two visuals align horizontally. */
+.retLine {
+  stroke: var(--accent);
+  stroke-width: 0.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.retDot {
+  fill: var(--accent);
+}
+
+.retRef80,
+.retRef95 {
+  stroke: var(--border);
+  stroke-width: 0.2;
+  stroke-dasharray: 1 1;
+}
+.retRef80 { stroke: var(--text-muted); opacity: 0.4; }
+.retRef95 { stroke: var(--text-muted); opacity: 0.4; }
+
+/* Activity heatmap — GitHub-style 7×N grid */
+.heatmapWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  /* Anchor for the absolutely-positioned tooltip. Without this,
+     the tooltip positions itself relative to the next
+     positioned ancestor up the tree (the section / body) and
+     ends up far off-screen. */
+  position: relative;
+}
+
+.heatmapHeader {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: 0.875rem;
+  flex-wrap: wrap;
+}
+
+.heatmapSep {
+  color: var(--text-muted);
+  margin: 0 0.25rem;
+}
+
+.heatmapGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.heatmapMonths {
+  display: grid;
+  grid-template-columns: 28px repeat(13, 1fr);
+  column-gap: 3px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  min-width: 240px;
+}
+
+.heatmapMonth {
+  white-space: nowrap;
+}
+
+.heatmapBody {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 6px;
+  align-items: start;
+}
+
+.heatmapDays {
+  display: grid;
+  grid-template-rows: repeat(7, 1fr);
+  row-gap: 3px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.heatmapDays > span {
+  height: 14px;
+  line-height: 14px;
+  /* Only Mon, Wed, Fri labels are visible — match the
+     GitHub-style 3-letter labels in the first column. */
+}
+
+.heatmapDays > span:nth-child(2),
+.heatmapDays > span:nth-child(4),
+.heatmapDays > span:nth-child(6) {
+  visibility: hidden;
+}
+
+.heatmapCells {
+  display: grid;
+  grid-template-rows: repeat(7, 14px);
+  grid-auto-flow: column;
+  row-gap: 3px;
+  column-gap: 3px;
+  min-width: 240px;
+}
+
+.heatmapCell {
+  width: 100%;
+  height: 14px;
+  border-radius: 3px;
+  background: var(--surface-2);
+  transition: background 0.12s ease;
+}
+
+.heatmapCell:hover {
+  outline: 1px solid var(--accent);
+  outline-offset: 1px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Floating tooltip rendered on cell hover. The wrapper has
+   `position: relative` so the absolutely-positioned tooltip is
+   anchored to the heatmap grid (the cursor offset we pass in
+   becomes a relative left/top). Two lines: count on top, date
+   below, both centred.
+
+   The bg/fg pair comes from `--tooltip-bg` / `--tooltip-fg`,
+   which are set to a stable dark-on-light popover palette in
+   BOTH themes. The previous implementation used
+   `var(--text-strong)` for bg, which flipped to white in dark
+   mode and made the text invisible. */
+.heatmapTooltip {
+  background: var(--tooltip-bg);
+  color: var(--tooltip-fg);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  white-space: nowrap;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.32),
+    0 1px 3px rgba(0, 0, 0, 0.22);
+  font-variant-numeric: tabular-nums;
+  border: 1px solid var(--tooltip-ring);
+  min-width: 90px;
+}
+
+.tooltipCount {
+  font-weight: 600;
+  color: var(--tooltip-fg);
+}
+
+.tooltipDate {
+  font-size: 0.7rem;
+  color: var(--tooltip-muted);
+}
+
+.tooltipMuted {
+  color: var(--tooltip-muted);
+  font-size: 0.7rem;
+}
+
+.heatmapLevel0 { background: var(--surface-2); }
+.heatmapLevel1 { background: rgba(47, 111, 78, 0.25); }
+.heatmapLevel2 { background: rgba(47, 111, 78, 0.5); }
+.heatmapLevel3 { background: rgba(47, 111, 78, 0.75); }
+.heatmapLevel4 { background: var(--accent, #2f6f4e); }
+
+.heatmapCellFuture {
+  background: transparent;
+  border: 1px dashed var(--surface-2);
+}
+
+.heatmapLegend {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.heatmapLegend .heatmapCell {
+  width: 12px;
+  height: 12px;
+}
+
+/* Tab bar — three big buttons that swap the content panel below.
+   Uses the same rounded-pill container as the mode tabs on the
+   Study page so the visual idiom matches: one bordered pill with
+   segmented buttons inside, the active one filled in. */
+.tabBar {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  width: fit-content;
+  margin: 8px 0 0;
+}
+
+.tabButton {
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 7px 18px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.tabButton:hover:not([aria-selected='true']) {
+  color: var(--text);
+}
+
+.tabButtonActive {
+  background: var(--surface-2);
+  color: var(--text-strong);
+}
+
+.tabButtonActive:hover {
+  color: var(--text-strong);
+}
+
+.tabPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+/* Empty-state card for a brand-new user. Same rounded surface
+   as the other panels, but with a centred copy + single CTA
+   pointing to Home so the user has a clear next action. */
+.emptyCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.emptyTitle {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.emptyBody {
+  margin: 0;
+  max-width: 480px;
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.emptyCta {
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  background: var(--accent, #2f6f4e);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.12s ease;
+}
+
+.emptyCta:hover {
+  background: var(--accent-strong, #245d40);
+}

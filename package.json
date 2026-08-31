@@ -1,0 +1,39 @@
+{
+  "name": "anki-qazaq",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Anki-style flashcards for learning Kazakh (Қазақ тілі) by CEFR level A1-C1. Spaced repetition, offline, runs on GitHub Pages.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build && node vite-spa-fallback.config.ts",
+    "build:quick": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "deploy": "npm run build && npx gh-pages -d dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "e2e": "playwright test",
+    "e2e:install": "playwright install chromium"
+  },
+  "dependencies": {
+    "lucide-react": "^1.31.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.1.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/ui": "^4.1.10",
+    "gh-pages": "^6.3.0",
+    "jsdom": "^30.0.1",
+    "pdfjs-dist": "^6.2.108",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.5",
+    "vitest": "^4.1.10"
+  }
+}

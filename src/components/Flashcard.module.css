@@ -1,0 +1,348 @@
+.scene {
+  perspective: 1500px;
+  width: 100%;
+  max-width: 640px;
+  height: 320px;
+  margin: 0 auto;
+  cursor: pointer;
+  user-select: none;
+}
+
+.scene:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 6px;
+  border-radius: var(--radius-lg);
+}
+
+.cardInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+  animation: cardEnter 0.32s ease;
+}
+
+.isRevealed .cardInner {
+  transform: rotateY(180deg);
+}
+
+@keyframes cardEnter {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl);
+  padding: 36px 40px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  overflow: hidden;
+}
+
+.back {
+  transform: rotateY(180deg);
+  background: var(--surface);
+}
+
+.meta {
+  position: absolute;
+  top: 18px;
+  left: 22px;
+  right: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.levelTag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-subtle);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+/* "Flip back" affordance — replaces the phase pill on the back of
+   the card once the card has been revealed at least once. The icon
+   is a small ghost button (no background, just a hover tint) so
+   the meta row stays visually quiet. Stops event propagation so
+   clicking the button doesn't bubble to the card's own onClick
+   (which would re-flip right back). */
+.flipBackBtn {
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  cursor: pointer;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: color 120ms ease, background 120ms ease, border-color 120ms ease;
+}
+.flipBackBtn:hover {
+  color: var(--accent);
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+}
+.flipBackBtn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Meta header on the card: level badge on the left, phase pill on
+ * the right. The topic indicator used to live here too but was
+ * removed — the page-level "ТЕМА" dropdown already shows the
+ * active topic, and surfacing it again on the card was visual
+ * duplication competing for attention with the actual word. */
+
+.phasePill {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+}
+
+.phase_new {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+.phase_learning {
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+.phase_relearning {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+.kazakhWord {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 6vw, 3.4rem);
+  font-weight: 500;
+  color: var(--text-strong);
+  line-height: 1.1;
+  margin-bottom: 10px;
+  word-break: break-word;
+  letter-spacing: -0.02em;
+}
+
+.kazakhWordSmall {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: var(--text-strong);
+  margin-bottom: 4px;
+  letter-spacing: -0.015em;
+}
+
+/* Word + speaker button row. The button now lives in the
+   top-right corner of the card (.speakCorner) instead of
+   inline with the word — the row is just the word now. */
+.kazakhWordRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 100%;
+  position: relative;
+}
+
+.speakCorner {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  z-index: 2;
+}
+.kazakhWordRow > .kazakhWord,
+.kazakhWordRow > .kazakhWordSmall {
+  margin-bottom: 0;
+  text-align: left;
+}
+
+/* "Pronounce" button — round, ghost, hovers to accent. Re-clicks
+   restart the audio from the beginning instead of stacking on
+   top of each other. The pulse animation (.speakBtnPlaying) is
+   tied to React state, not the audio element, so it works even
+   when the audio has already been preloaded. */
+.speakBtn {
+  appearance: none;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-muted);
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
+  transition: color 120ms ease, background 120ms ease, border-color 120ms ease, transform 80ms ease;
+}
+.speakBtn:hover:not(:disabled) {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+.speakBtn:active:not(:disabled) { transform: scale(0.96); }
+.speakBtn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.speakBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.speakBtnPlaying {
+  color: var(--accent);
+  animation: speakBtnPulse 0.9s ease-in-out infinite;
+}
+@keyframes speakBtnPulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.12); }
+}
+
+/* "Generate audio" affordance — shown for words whose WAV hasn't
+   been pre-generated yet (user-added cards, future vocabulary).
+   Visually the same round button but with a different icon
+   (Wand2) and a slightly stronger hover so the click target
+   feels actionable. */
+.speakBtnGenerate {
+  border-style: dashed;
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.speakBtnGenerate:hover:not(:disabled) {
+  background: var(--accent);
+  color: var(--accent-fg, #fff);
+}
+
+/* Spinner for the in-flight generation state. We animate the
+   icon (Loader2 from lucide) by spinning the SVG. */
+.speakBtnSpin {
+  animation: speakBtnSpin 1s linear infinite;
+}
+@keyframes speakBtnSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* The word itself (e.g. "сәлем") gets duplicated into the button
+   label for screen readers. Visually we hide it so the icon stays
+   clean. */
+.speakBtnSrOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.transliteration {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-bottom: 16px;
+  font-family: var(--font-display);
+}
+
+.hint {
+  position: absolute;
+  bottom: 18px;
+  left: 0;
+  right: 0;
+  font-size: 0.75rem;
+  color: var(--text-subtle);
+  letter-spacing: 0.02em;
+}
+
+.example {
+  margin-top: 10px;
+  /* Plain text under the word — no card, no accent stripe.
+     The Kazakh line is the headline; the Russian gloss is
+     a smaller secondary line. */
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-style: normal;
+}
+
+.exampleKk {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text, inherit);
+  font-style: normal;
+}
+
+.exampleRu {
+  font-size: 0.85rem;
+  color: var(--text-muted, #666);
+  font-style: italic;
+}
+
+.answerRule {
+  width: 48px;
+  height: 1px;
+  background: var(--border-strong);
+  margin: 4px 0 0;
+}
+
+/* Provenance line — sits under the answer on the back of the card.
+   Subtle, no border, just a small muted link. */
+.source {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 0.7rem;
+  color: var(--text-subtle);
+  flex-wrap: wrap;
+}
+.sourceLink,
+.sourceLinkStatic {
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--border-strong);
+  text-decoration-thickness: 1px;
+  transition: color 120ms ease, text-decoration-color 120ms ease;
+}
+.sourceLink:hover {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+.sourceLinkStatic {
+  cursor: default;
+}
+.sourceLicense {
+  font-size: 0.66rem;
+  color: var(--text-subtle);
+  opacity: 0.85;
+}
+
+@media (max-width: 600px) {
+  .scene { height: 300px; }
+  .face { padding: 26px 24px; }
+  .kazakhWord { font-size: 2.2rem; }
+}

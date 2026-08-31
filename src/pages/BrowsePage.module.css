@@ -1,0 +1,521 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 8px 0 32px;
+}
+
+.head h1 {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 500;
+  margin: 0 0 4px;
+  letter-spacing: -0.02em;
+}
+
+.head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.headActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.hiddenFileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.importOk,
+.importErr {
+  flex-basis: 100%;
+  margin: 0.5rem 0 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  line-height: 1.4;
+}
+
+.importOk {
+  background: rgba(34, 197, 94, 0.08);
+  color: #15803d;
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.importErr {
+  background: rgba(220, 38, 38, 0.08);
+  color: #b91c1c;
+  border: 1px solid rgba(220, 38, 38, 0.25);
+}
+
+.dismissBtn {
+  margin-left: auto;
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  padding: 0.15rem 0.3rem;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 4px;
+}
+
+.dismissBtn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.addBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+
+.searchWrap {
+  position: relative;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-subtle);
+  pointer-events: none;
+}
+
+.search {
+  padding-left: 38px;
+}
+
+.searchHint {
+  margin: 6px 0 0;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+  "Study this topic" shortcut — only rendered when filters pin
+  down a studyable subset. Visual hierarchy: bigger than the
+  filter chips (the user just narrowed something, give them a
+  next step) but smaller than the page header.
+*/
+.studyCta {
+  margin: 4px 0 0;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+.studyCtaLink {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  color: var(--text-strong);
+  text-decoration: none;
+  transition: background 0.12s ease, transform 0.12s ease;
+}
+.studyCtaLink:hover {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  text-decoration: none;
+}
+.studyCtaLink:hover svg {
+  transform: translateX(2px);
+}
+.studyCtaLink svg {
+  flex-shrink: 0;
+  color: var(--accent);
+  transition: transform 0.12s ease;
+}
+.studyCtaLabel {
+  font-weight: 600;
+  font-size: 0.92rem;
+  flex: 1;
+}
+.studyCtaHint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+@media (max-width: 540px) {
+  /* On a 390px viewport the hint line would crowd the arrow —
+     hide it on phones, keep it as tooltip-style context for
+     anyone who taps the row. */
+  .studyCtaHint { display: none; }
+}
+
+.filterLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+.clearBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: auto;
+  padding: 1px 6px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.clearBtn:hover { color: var(--text); }
+
+.levelFilters,
+.categoryFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+  font-variant-numeric: tabular-nums;
+}
+.chip:hover { color: var(--text); background: var(--surface-2); }
+
+.chipActive {
+  background: var(--surface-2);
+  color: var(--text-strong);
+  border-color: var(--border-strong);
+}
+
+.chipMeta {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-subtle);
+  font-variant-numeric: tabular-nums;
+}
+.chipActive .chipMeta { color: var(--text-muted); }
+
+.count {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.table {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1.4fr);
+  gap: 16px;
+  align-items: center;
+  background: var(--surface);
+  padding: 14px 18px;
+  transition: background 0.12s ease;
+  position: relative;
+}
+.row:hover { background: var(--surface-2); }
+
+.mineTag {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  margin-top: 4px;
+  letter-spacing: 0.02em;
+}
+
+.deleteBtn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.7rem;
+  opacity: 0;
+  transition: opacity 120ms ease, background 120ms ease, color 120ms ease;
+}
+.row:hover .deleteBtn { opacity: 1; }
+.deleteBtn:hover {
+  background: var(--surface-2);
+  color: var(--warn, #c00);
+}
+
+.editBtn {
+  position: absolute;
+  top: 8px;
+  right: 40px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.7rem;
+  opacity: 0;
+  transition: opacity 120ms ease, background 120ms ease, color 120ms ease;
+}
+.row:hover .editBtn { opacity: 1; }
+.editBtn:hover {
+  background: var(--surface-2);
+  color: var(--accent, #2f6f4e);
+}
+.deleteBtnConfirm {
+  opacity: 1;
+  background: var(--warn, #c00);
+  color: white;
+  border-color: var(--warn, #c00);
+}
+.deleteBtnConfirm:hover {
+  background: var(--warn, #c00);
+  color: white;
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.levelTag {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  padding: 2px 8px;
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.category {
+  font-size: 0.78rem;
+  color: var(--text-subtle);
+}
+
+.kazakhBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.kazakh {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 500;
+  line-height: 1.2;
+  word-break: break-word;
+  color: var(--text-strong);
+}
+
+.trans {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-style: italic;
+  font-family: var(--font-display);
+}
+
+.translation {
+  font-size: 0.95rem;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.empty {
+  background: var(--surface);
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  border-radius: 8px;
+}
+
+.emptyInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.emptyInner p {
+  margin: 0;
+}
+
+/* Paginator. The list above renders a 50-card slice of the full
+   filtered corpus; this bar sits at the bottom with prev/next,
+   page numbers (with smart ellipsis on large sets), and a
+   "Cards M–N of T" summary line. */
+.pager {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 12px 22px;
+  margin-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.pagerSummary {
+  font-size: 0.78rem;
+  color: var(--text-subtle);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+.pagerControls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pagerArrow,
+.pagerPage {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+
+.pagerArrow {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.pagerArrow:hover:not(:disabled) {
+  background: var(--surface-2);
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.pagerArrow:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagerPage {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.pagerPage:hover {
+  background: var(--surface-2);
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.pagerPageActive {
+  background: var(--accent, #2f6f4e);
+  border-color: var(--accent, #2f6f4e);
+  color: #fff;
+  cursor: default;
+}
+
+.pagerPageActive:hover {
+  background: var(--accent, #2f6f4e);
+  color: #fff;
+  border-color: var(--accent, #2f6f4e);
+}
+
+.pagerEllipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 32px;
+  color: var(--text-subtle);
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+}
+
+@media (max-width: 720px) {
+  .row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}

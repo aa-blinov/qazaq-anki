@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Avoid stampedes: cancel a previous in-flight run for the same
+# ref when a new commit lands. Saves CI minutes on rapid pushes.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Unit tests + typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Verify deck data is committed
+        # The Vite build needs `src/data/decks/{a1..c1}.json` at
+        # build time (the dynamic imports in `src/data/decks.ts`
+        # are static). These files are the source of truth for
+        # the 3,996 Kazakh cards and must be in the repo. If a
+        # future change accidentally .gitignore's them, this
+        # check catches it before the build does.
+        run: |
+          for lvl in a1 a2 b1 b2 c1; do
+            test -f "src/data/decks/${lvl}.json" || {
+              echo "::error::src/data/decks/${lvl}.json is missing"
+              exit 1
+            }
+          done
+
+      - name: Typecheck + build
+        # `tsc -b` is run as part of `npm run build`; if the
+        # TypeScript layer is broken, the build will fail with a
+        # clear diagnostic. We don't ship the dist/ artifact.
+        run: VITE_BASE=/anki-qazaq/ npm run build:quick
+
+      - name: Run unit tests
+        run: npm test
+
+  server-test:
+    name: Server smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install server deps
+        working-directory: server
+        run: npm ci
+
+      - name: Boot API and hit /api/health
+        # Spin up the server in the background, wait for it to
+        # come up, hit /api/health, and tear it down. The server
+        # uses an in-memory DB when DB_PATH is not set, so this
+        # works without a SQLite volume.
+        working-directory: server
+        env:
+          DB_PATH: /tmp/qazaq-ci.sqlite
+          PORT: '3099'
+        run: |
+          node server.js &
+          SERVER_PID=$!
+          for i in {1..20}; do
+            if curl -sf http://127.0.0.1:3099/api/health > /dev/null; then
+              echo "API is up"
+              curl -sS http://127.0.0.1:3099/api/health | head -1
+              exit 0
+            fi
+            sleep 0.5
+          done
+          echo "API did not start in time" >&2
+          kill $SERVER_PID 2>/dev/null || true
+          exit 1

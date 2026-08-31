@@ -1,0 +1,53 @@
+# Multi-stage Dockerfile for the Qazaq static frontend.
+#
+# Stage 1: install deps and build the Vite bundle into dist/.
+# Stage 2: serve dist/ through nginx. nginx also proxies /api/* to
+#          the API service so a single host can run both containers
+#          behind one port.
+#
+# The Vite BASE path defaults to '/' — override with VITE_BASE at
+# build time if you deploy under a sub-path.
+#
+# IMPORTANT: This image does NOT contain the TTS audio. The audio
+# lives in the `qazaq-audio` named volume, populated by the
+# `qazaq-tts` service (see docker-compose.yml). The web container
+# mounts the volume at /usr/share/nginx/html/audio, so the URLs
+# /audio/kk/<hash>.wav resolve directly. Running `docker compose
+# run --rm qazaq-tts` once after a fresh checkout is enough — the
+# generator is incremental, so a re-run only pays for new words.
+
+# ---- Stage 1: Vite build ----
+FROM node:22-bookworm-slim AS build
+WORKDIR /app
+
+COPY package.json package-lock.json* ./
+RUN npm ci
+
+COPY . .
+# Build with the prod base path. The reverse proxy in stage 2 serves
+# the app at '/', so the bundle's base is '/' too. If you self-host
+# under a sub-path, pass VITE_BASE=/anki-qazaq/ via --build-arg.
+ARG VITE_BASE=/
+ENV VITE_BASE=$VITE_BASE
+ARG VITE_API_URL=
+ENV VITE_API_URL=$VITE_API_URL
+RUN npm run build:quick
+
+# ---- Stage 2: nginx static + reverse proxy ----
+FROM nginx:1.27-alpine AS runtime
+COPY --from=build /app/dist /usr/share/nginx/html
+# Copy the nginx config as a *.template file so the official
+# nginx entrypoint runs envsubst on it before starting nginx —
+# this is what turns ${QAZAQ_API} into the actual service hostname.
+# (Files in /etc/nginx/conf.d/ are NOT templated; only files in
+# /etc/nginx/templates/ are processed by 20-envsubst-on-templates.sh.)
+COPY deploy/nginx.conf /etc/nginx/templates/default.conf.template
+RUN mkdir -p /etc/nginx/conf.d && \
+    envsubst '${QAZAQ_API}' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf
+
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+  CMD wget -q --spider http://127.0.0.1:8080/ || exit 1
+
+# nginx ships with CMD ["/docker-entrypoint.sh", "nginx", "-g", "..."]
+# which already execs nginx in the foreground.

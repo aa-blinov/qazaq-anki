@@ -1,0 +1,237 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 14px 28px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: saturate(180%) blur(12px);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--text-strong);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  flex-shrink: 0;
+}
+.brand:hover { text-decoration: none; }
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+}
+
+.navPlaceholder { flex: 1; }
+
+.navLink {
+  padding: 7px 12px;
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: background 0.12s ease, color 0.12s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.navLinkIcon {
+  flex-shrink: 0;
+}
+.navLink:hover {
+  background: var(--surface-2);
+  color: var(--text);
+  text-decoration: none;
+}
+.navLinkActive {
+  color: var(--text-strong);
+  background: var(--surface-2);
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.iconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+.iconBtn:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+/*
+  Font-size cycle button. The Aa icon stays at one fixed size
+  regardless of the current cycle — it would be weird for the
+  "make text bigger" button itself to grow when you click it.
+  The actual cycle state is communicated to screen readers and
+  tooltips via the translated aria-label / title (e.g. "Размер
+  шрифта: крупный"). The button inherits `font-size` from the
+  global scale, so the icon still grows with the user's overall
+  interface text preference — it just doesn't pulse on each click.
+*/
+
+.userPill {
+  /* legacy alias — kept so any old snapshots/tests don't break.
+     New UI uses .userBubble + a separate iconBtn for sign-out. */
+  display: none;
+}
+
+.langSwitch {
+  /* The EN/RU switcher was removed — the app is Russian-only. The
+     .langSwitch rule is intentionally left as an empty stub so older
+     snapshot tests don't crash on a missing selector; the markup
+     doesn't render anything. */
+  display: none;
+}
+.langBtn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  padding: 4px 8px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.langBtn:hover {
+  color: var(--text);
+}
+.langBtnActive {
+  background: var(--accent);
+  color: #FAF7F2;
+}
+.langBtnActive:hover {
+  color: #FAF7F2;
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #FAF7F2;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.userName {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/*
+  Username "bubble" — sits in the top bar as its own square chip
+  with the @handle. Same height and corner radius as the icon
+  buttons so the four controls read as a coherent set.
+*/
+.userBubble {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  height: 32px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+  cursor: default;
+}
+.userBubble:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 40px 32px;
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 10px 16px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .nav {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    flex: none;
+    border-top: 1px solid var(--border);
+    padding-top: 8px;
+  }
+  .userName { display: none; }
+  .userBubble { padding: 0 8px; }
+  .main { padding: 20px 16px 32px; }
+}
+
+@media (max-width: 768px) {
+  /* no-op — header collapses via grid */
+}
+
+@media (max-width: 540px) {
+  /* On narrow screens the topbar is already wrapped into a
+     second row with horizontal scroll. With full nav labels
+     the row still has to scroll. Drop the labels and keep
+     just the icon — standard mobile pattern. The title
+     attribute still surfaces the full name on long-press /
+     hover. */
+  .navLinkLabel {
+    display: none;
+  }
+  .navLink {
+    padding: 7px 9px;
+  }
+  /* The userBubble is just the @username chip. The username
+     is already hidden at ≤768px, so on narrow phones the
+     bubble renders as an empty box. Hide the whole bubble;
+     the user can still find their account under Settings and
+     sign out via the dedicated icon button. */
+  .userBubble {
+    display: none;
+  }
+}

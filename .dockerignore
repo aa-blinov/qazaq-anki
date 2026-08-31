@@ -1,0 +1,24 @@
+# .dockerignore — keeps the build context small.
+# We let through just the source we need; everything else (node_modules,
+# dist, .git, e2e caches, .DS_Store) is excluded by default.
+
+# Don't ship node_modules — re-install in the image.
+**/node_modules
+**/dist
+**/.git
+**/.DS_Store
+**/coverage
+**/test-results
+**/playwright-report
+**/*.log
+**/data/*.sqlite
+**/data/*.sqlite-*
+
+# Docs are useful for the build but not needed at runtime — let them
+# ride along in the builder stage; the runtime stage only copies
+# server/ + package.json + node_modules/.
+docs/
+
+# Same for SOURCES.md and other markdown.
+*.md
+!server/*.md

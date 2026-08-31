@@ -1,0 +1,111 @@
+# Dockerfile for the TTS image.
+#
+# Builds a single image that can run in two modes, controlled by
+# the `TTS_MODE` env var (default: `oneshot`):
+#
+#   TTS_MODE=oneshot   — runs `scripts/generate_tts.py` once over
+#                        every deck and exits. Used by the
+#                        `qazaq-tts` compose service (profile:
+#                        `tools`, so it never auto-starts).
+#                        This is the build-time pre-generation
+#                        pass; idempotent (skips existing WAVs)
+#                        and is what writes the manifest.
+#
+#   TTS_MODE=service   — runs `scripts/tts_service.py` as a long-
+#                        lived HTTP server on port 8000. The
+#                        `qazaq-tts-service` compose service uses
+#                        this mode; it starts automatically and
+#                        exposes POST /synthesize to the API.
+#                        Used for lazy on-demand generation of
+#                        user-added cards.
+#
+# The image is large (~600 MB: Python + piper-tts + 122 MB ONNX
+# model) but it's only built once per host, not per web rebuild.
+
+FROM python:3.12-slim
+
+# espeak-ng comes bundled in piper-tts >= 1.4; we still need
+# `curl` to fetch the model and `libsndfile1` for audio I/O.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      curl \
+      libsndfile1 \
+ && rm -rf /var/lib/apt/lists/*
+
+# Install Piper + ONNX runtime. Pin piper-tts to the version we
+# tested with; the API has been stable across 1.4–1.7.
+RUN pip install --no-cache-dir \
+      "piper-tts>=1.4,<2" \
+      onnxruntime
+
+# Pull the official Piper voice files. Pin to v1.0.0 so a
+# re-build uses the same bytes — without the pin, a HF update
+# would silently change the audio for every word. We bundle
+# BOTH the Kazakh (kk_KZ-issai-high) and Russian (ru_RU-denis-
+# medium) voices so the TTS service can synthesise either
+# language for user-added cards.
+ARG PIPER_VOICE_TAG=v1.0.0
+RUN mkdir -p /app/models/kk /app/models/ru \
+ && curl -fsSL \
+      "https://huggingface.co/rhasspy/piper-voices/resolve/${PIPER_VOICE_TAG}/kk/kk_KZ/issai/high/kk_KZ-issai-high.onnx?download=true" \
+      -o /app/models/kk/kk_KZ-issai-high.onnx \
+ && curl -fsSL \
+      "https://huggingface.co/rhasspy/piper-voices/resolve/${PIPER_VOICE_TAG}/kk/kk_KZ/issai/high/kk_KZ-issai-high.onnx.json?download=true" \
+      -o /app/models/kk/kk_KZ-issai-high.onnx.json \
+ && curl -fsSL \
+      "https://huggingface.co/rhasspy/piper-voices/resolve/${PIPER_VOICE_TAG}/ru/ru_RU/denis/medium/ru_RU-denis-medium.onnx?download=true" \
+      -o /app/models/ru/ru_RU-denis-medium.onnx \
+ && curl -fsSL \
+      "https://huggingface.co/rhasspy/piper-voices/resolve/${PIPER_VOICE_TAG}/ru/ru_RU/denis/medium/ru_RU-denis-medium.onnx.json?download=true" \
+      -o /app/models/ru/ru_RU-denis-medium.onnx.json
+
+# Copy only the files the generator needs. The audio tree itself
+# comes in via the bind mount to ./public/audio/ on the host,
+# exposed inside the container at /audio (with kk/ and ru/
+# subdirectories per language).
+WORKDIR /app
+COPY scripts/generate_tts.py /app/scripts/generate_tts.py
+COPY scripts/tts_service.py /app/scripts/tts_service.py
+COPY src/data/decks /app/src/data/decks
+
+# Note: we deliberately stay as root inside the container. The
+# bind mount is owned by root on the host, and the only write the
+# script does is into the mounted directory. piper-tts doesn't
+# need network or special syscalls — the surface is small. If
+# you want to harden this, switch to a non-root user and add a
+# chown step in an entrypoint wrapper.
+
+# TTS_MODE selects which script to run. `oneshot` is the build-
+# time pre-generation pass (default); `service` is the long-
+# running HTTP server for lazy user-card synthesis.
+ENV TTS_MODE=oneshot
+
+# Wrapper that picks the right script based on TTS_MODE. Kept
+# in-image so the same image is reusable for both flows without
+# re-tagging.
+RUN cat > /app/entrypoint.sh <<'EOF'
+#!/bin/sh
+set -e
+case "${TTS_MODE:-oneshot}" in
+  oneshot)
+    # Generate both languages. Each takes a few minutes the
+    # first time; subsequent runs are mostly no-ops because the
+    # script skips existing WAVs.
+    exec python /app/scripts/generate_tts.py \
+      --audio-root /audio
+    ;;
+  service)
+    exec python /app/scripts/tts_service.py \
+      --audio-root /audio \
+      --host 0.0.0.0 \
+      --port 8000
+    ;;
+  *)
+    echo "Unknown TTS_MODE: ${TTS_MODE}" >&2
+    echo "Expected: oneshot | service" >&2
+    exit 2
+    ;;
+esac
+EOF
+RUN chmod +x /app/entrypoint.sh
+ENTRYPOINT ["/app/entrypoint.sh"]

@@ -1,0 +1,302 @@
+/* ----------------------------------------------------------------------------
+   Design tokens — inspired by claude.ai: warm, editorial, restrained.
+   ---------------------------------------------------------------------------- */
+
+:root {
+  /* Warm neutral palette */
+  --bg:        #FAF7F2;
+  --surface:   #FFFFFF;
+  --surface-2: #F2EEE6;
+  --surface-3: #E9E3D6;
+  --surface-hover: #F2EEE6;
+
+  /* Tooltip / popover colors. Both themes use the SAME dark
+     surface so the tooltip reads as a floating dark element
+     against any page background — high contrast in light mode,
+     still distinguishable in dark mode thanks to the strong
+     shadow + 1px ring. The fg stays white in both themes. */
+  --tooltip-bg:    #1A1916;
+  --tooltip-fg:    #FAF7F2;
+  --tooltip-muted: rgba(250, 247, 242, 0.78);
+  --tooltip-ring:  rgba(0, 0, 0, 0.18);
+
+  --text:        #1F1E1B;
+  --text-strong: #0E0D0B;
+  --text-muted:  #6B6862;
+  --text-subtle: #948F86;
+
+  --border:        #E8E2D2;
+  --border-strong: #D7CFBE;
+
+  /* Warm accent — Claude-style terracotta/clay */
+  --accent:        #C96442;
+  --accent-hover:  #A8522F;
+  --accent-soft:   #F4E4D6;
+  --accent-ink:    #5B2A14;
+
+  --ok:        #5A7D3F;
+  --ok-soft:   #E6EFDB;
+  --warn:      #B68A1B;
+  --warn-soft: #F4EAC7;
+  --danger:    #B54141;
+  --danger-soft:#F5DDDD;
+
+  /* Typography */
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+  --font-display: 'Newsreader', 'Iowan Old Style', 'Apple Garamond', Georgia, 'Times New Roman', serif;
+
+  /* Geometry — subtle, not chunky */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-pill: 999px;
+
+  --shadow-xs: 0 1px 2px rgba(31, 30, 27, 0.04);
+  --shadow-sm: 0 1px 3px rgba(31, 30, 27, 0.06), 0 1px 2px rgba(31, 30, 27, 0.04);
+  --shadow-md: 0 4px 12px rgba(31, 30, 27, 0.06), 0 1px 3px rgba(31, 30, 27, 0.04);
+  --shadow-lg: 0 16px 40px rgba(31, 30, 27, 0.10), 0 2px 6px rgba(31, 30, 27, 0.05);
+
+  /* Interface text scale — driven by FontSizeProvider. The inline
+   * public/theme-init.js sets the same variable from localStorage on
+   * first paint so the user's choice survives a refresh with no
+   * flash. The default (1) means the rest of the stylesheet behaves
+   * as before. */
+  --font-scale: 1;
+
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  --bg:        #1A1916;
+  --surface:   #232220;
+  --surface-2: #2C2A27;
+  --surface-3: #36332F;
+
+  --text:        #ECE8DF;
+  --text-strong: #FAF7F2;
+
+  /* Dark theme keeps the same tooltip palette — the high
+     contrast against the page's dark surface comes from the
+     shadow + ring, not from a brighter background. */
+  --tooltip-bg:    #0E0D0B;
+  --tooltip-fg:    #FAF7F2;
+  --tooltip-muted: rgba(250, 247, 242, 0.72);
+  --tooltip-ring:  rgba(255, 255, 255, 0.08);
+  --text-muted:  #A8A29A;
+  --text-subtle: #7A766E;
+
+  --border:        #36332F;
+  --border-strong: #4A463F;
+
+  --accent:        #E08662;
+  --accent-hover:  #EFA079;
+  --accent-soft:   #3A2A20;
+  --accent-ink:    #F4D3BD;
+
+  --ok:        #9CC074;
+  --ok-soft:   #2C3525;
+  --warn:      #D9B25B;
+  --warn-soft: #3A3220;
+  --danger:    #DA7474;
+  --danger-soft:#3A2424;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.3);
+
+  color-scheme: dark;
+}
+
+/* ----------------------------------------------------------------------------
+   Reset
+   ---------------------------------------------------------------------------- */
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+
+/*
+  Lucide icons are rendered with hardcoded `width`/`height`
+  attributes (e.g. `<svg width="16" height="16" ...>`). CSS
+  `em` would naturally pick up the container's font-size, so
+  by overriding those attributes to `1em` we make every icon
+  in the app scale with the user's chosen text size — buttons,
+  topbar, modals, the lot. We keep the original SVG `viewBox`
+  so the icon shape stays crisp at any size.
+
+  We scope to `svg.lucide` (the class lucide-react emits) so
+  hand-drawn SVGs (e.g. the activity chart) keep their explicit
+  pixel dimensions and don't get squished.
+*/
+svg.lucide {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}
+
+/*
+  The font scale lives on the ROOT element (html), not on body.
+  This is what makes `1rem` everywhere in the stylesheet follow
+  the user's chosen size — `rem` is defined as "relative to the
+  root element's font-size", so a `body { font-size: 15px }`
+  rule wouldn't scale any of the `0.85rem` / `1.2rem` /
+  `clamp(2.4rem, ...)` declarations scattered across the app.
+
+  Base = 15px so that the rest of the design (which was tuned
+  around 15px body text) keeps its proportions at scale 1.
+  The scale is `sm: 0.875` / `md: 1` / `lg: 1.125` / `xl: 1.25`,
+  applied via `--font-scale` set by theme-init.js and by
+  FontSizeProvider on first paint.
+*/
+html {
+  font-size: calc(15px * var(--font-scale));
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.55;
+  font-feature-settings: 'cv11', 'ss01', 'ss03';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+
+button { font-family: inherit; cursor: pointer; }
+input, button, textarea { font-family: inherit; font-size: inherit; color: inherit; }
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  color: var(--text-strong);
+}
+
+p { margin: 0 0 0.75rem; }
+p:last-child { margin-bottom: 0; }
+
+::selection { background: var(--accent-soft); color: var(--accent-ink); }
+
+/* ----------------------------------------------------------------------------
+   Reusable components — flat, quiet, no big rounded gradients
+   ---------------------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  /* `line-height: 1` is critical: <button> elements default to
+   * `line-height: normal` (browser-specific, ~1.2) while <a>
+   * elements inherit 1.55 from body. Without an explicit value,
+   * the same `.btn btn--lg` class renders at 50px on <a> but
+   * 45px on <button> — a 5px mismatch. Setting 1 here makes
+   * the height depend purely on padding + min-height, which is
+   * identical across element types. */
+  line-height: 1;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: var(--accent);
+  color: white;
+  font-weight: 500;
+  font-size: 0.92rem;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease, transform 0.06s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--accent-hover); text-decoration: none; }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.btn--ghost {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+.btn--ghost:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.btn--quiet {
+  background: var(--surface-2);
+  color: var(--text);
+  border-color: transparent;
+}
+.btn--quiet:hover { background: var(--surface-3); }
+
+.btn--danger { background: var(--danger); }
+.btn--danger:hover { background: #963434; }
+
+.btn--lg {
+  /* Primary CTA: 48px tall. Used in hero, form submits, modals,
+   * onboarding, dashboard "start" — all of these should read as
+   * the same hierarchy of action. */
+  min-height: 48px;
+  padding: 0 22px;
+  font-size: 0.98rem;
+  border-radius: var(--radius-md);
+}
+
+.btn--sm {
+  /* Topbar: 32px to match the icon buttons. Used for the
+   * "Войти" link in the topbar when the user is signed out. */
+  min-height: 32px;
+  padding: 0 12px;
+  font-size: 0.85rem;
+}
+
+.input {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  letter-spacing: 0.01em;
+}
+
+.muted { color: var(--text-muted); }
+.subtle { color: var(--text-subtle); }
+
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+.kazakh { font-family: var(--font-display); font-feature-settings: 'kern' 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

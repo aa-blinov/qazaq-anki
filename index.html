@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Карточки для изучения казахского языка по уровням CEFR A1–C1. 3 996 отобранных слов, интервальное повторение, бесплатно, работает в браузере." />
+    <meta name="theme-color" content="#FAF7F2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1F1E1B" media="(prefers-color-scheme: dark)" />
+    <!--
+      Content Security Policy — defense in depth against XSS. Everything is
+      self-hosted except the Google Fonts CSS. We allow inline styles for the
+      React-generated styles and Vite's dev-mode HMR; `unsafe-inline` for
+      script-src is allowed only because Vite injects inline <script>
+      blocks in dev. The build output doesn't use inline scripts.
+      Note: `frame-ancestors` is silently ignored when delivered via a
+      <meta> tag (browsers only honour it from real HTTP headers), so we
+      rely on the GitHub Pages X-Frame-Options / equivalent header in
+      production. Kept here as a no-op hint to the CSP scanner.
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self' ws: wss:; base-uri 'self'; form-action 'self';"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&display=swap"
+      rel="stylesheet"
+    />
+    <!--
+      Set the data-theme attribute on <html> before the first paint.
+      Without this, the page briefly renders in the default light
+      theme (CSS variables in :root are light) and then flickers to
+      dark once React mounts. The script is a self-hosted JS file
+      (so prod's `script-src 'self'` CSP still works without
+      'unsafe-inline'), and it's NOT type="module" / deferred /
+      async, so the browser blocks HTML parsing and runs it inline
+      with the rest of <head>. See public/theme-init.js for the
+      matching logic and src/contexts/ThemeContext.tsx for the
+      React-side counterpart.
+    -->
+    <script src="/theme-init.js"></script>
+    <title>Qazaq — учите казахский с интервальным повторением</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

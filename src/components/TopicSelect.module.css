@@ -1,0 +1,143 @@
+.wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+/* Full-width variant — the trigger fills the parent (used on
+ * the Study page, where the topic picker is a top-level control).
+ * The compact default stays in place for the Flashcard, where
+ * the trigger lives next to other meta and shouldn't dominate. */
+.wrapFull {
+  display: flex;
+  width: 100%;
+}
+.wrapFull .trigger {
+  width: 100%;
+  max-width: none;
+  justify-content: space-between;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+}
+
+/* Trigger — sits where the old `(Тема)` text was. Compact, opens
+ * on click. No "border" pill: the dropdown menu itself is the
+ * affordance. */
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  max-width: 180px;
+  padding: 2px 6px 2px 4px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+.trigger:hover {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--text);
+}
+.trigger[aria-expanded='true'] {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.triggerLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chev {
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition: transform 0.12s ease;
+}
+.trigger[aria-expanded='true'] .chev {
+  transform: rotate(180deg);
+}
+
+/* Menu — pops down from the trigger, scrolls if there are many
+ * topics (A1 has 10+), stays in the same horizontal column as the
+ * right side of the trigger. */
+.menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  left: 0;
+  min-width: 200px;
+  max-width: 280px;
+  max-height: 260px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 20;
+}
+.wrapFull .menu {
+  /* Stretch the menu to match the (full-width) trigger below it. */
+  max-width: none;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 10px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.1s ease, color 0.1s ease;
+}
+.item:hover {
+  background: var(--surface-2);
+}
+.itemActive {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+.itemActive:hover {
+  background: var(--accent-soft);
+}
+
+.itemLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itemDot {
+  font-size: 0.7rem;
+  color: var(--accent);
+  line-height: 1;
+}
+
+/* Optional per-topic count, shown after the label. Matches the
+ * muted badge style of the chip row it replaced so the user gets
+ * the same information density in a fraction of the vertical
+ * space. */
+.itemCount {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+  margin-left: auto;
+}

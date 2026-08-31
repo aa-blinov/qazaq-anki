@@ -1,0 +1,475 @@
+/* Shared */
+.kicker {
+  display: inline-block;
+  padding: 3px 10px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 500;
+  border-radius: var(--radius-pill);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+/* ------------------------------ Landing ------------------------------ */
+
+.landing {
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+  padding: 24px 0 48px;
+}
+
+.hero {
+  text-align: left;
+  max-width: 720px;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.6vw, 3rem);
+  font-weight: 500;
+  letter-spacing: -0.022em;
+  line-height: 1.08;
+  margin: 0 0 18px;
+  color: var(--text-strong);
+}
+
+.lede {
+  font-size: 1.08rem;
+  color: var(--text-muted);
+  max-width: 600px;
+  line-height: 1.6;
+  margin: 0 0 28px;
+}
+
+.heroCta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.feature {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--surface);
+  padding: 22px 22px 24px;
+}
+
+.featureIcon {
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.feature h3 {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--text-strong);
+}
+
+.feature p {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.previewHead h2 {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 500;
+  margin: 0 0 4px;
+}
+
+.levelList {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.previewRow {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 20px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.previewRow:last-child { border-bottom: none; }
+
+.previewBody h3 {
+  font-family: var(--font-sans);
+  font-size: 0.98rem;
+  font-weight: 600;
+  margin: 0 0 2px;
+  color: var(--text-strong);
+}
+
+.previewBody p {
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.previewCount {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.levelBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+/* ----------------------------- Dashboard ----------------------------- */
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 8px 0 32px;
+}
+
+.welcomeCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+}
+
+.welcomeKicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.welcomeTitle {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 500;
+  margin: 0 0 8px;
+  letter-spacing: -0.02em;
+  color: var(--text-strong);
+}
+
+.welcomeSub {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin: 0;
+  max-width: 520px;
+}
+
+/* Primary CTA on the welcome card. Sits below the subtitle as
+   a single next-action button — only rendered when there's
+   something the user can review right now (so we don't nag
+   them after they finish their daily set). */
+.welcomeCta {
+  align-self: flex-start;
+  margin-top: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  background: var(--accent, #2f6f4e);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.12s ease, transform 0.08s ease;
+}
+
+.welcomeCta:hover {
+  background: var(--accent-strong, #245d40);
+}
+
+.welcomeCta:active {
+  transform: scale(0.98);
+}
+
+.sectionHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.sectionHead h2 {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.headLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+.headLink:hover { color: var(--accent); text-decoration: none; }
+
+.levelsList {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/*
+  "All due" panel — sits between the levels list and the
+  heatmap. Visually a card with a thin border accent so it
+  reads as the "now do this" panel without competing with
+  the welcome card above. The per-level breakdown rows
+  are clickable for users who'd rather drill one level
+  than take the whole backlog at once.
+*/
+.dueOverview {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px 24px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+.dueOverviewHead {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.dueOverviewTitle {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 500;
+  margin: 0;
+  letter-spacing: -0.015em;
+  color: var(--text-strong);
+}
+.dueBreakdown {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--bg);
+}
+.dueRow {
+  border-bottom: 1px solid var(--border);
+}
+.dueRow:last-child { border-bottom: 0; }
+.dueRowLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.12s ease;
+}
+.dueRowLink:hover {
+  background: var(--surface-2);
+  text-decoration: none;
+}
+.dueRowLevel {
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+.dueRowCount {
+  color: var(--text-muted);
+  font-size: 0.86rem;
+  font-variant-numeric: tabular-nums;
+}
+.dueOverviewCta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 18px;
+  background: var(--accent);
+  color: var(--accent-fg, #fff);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  align-self: flex-start;
+  transition: background 0.12s ease, transform 0.12s ease;
+}
+.dueOverviewCta:hover {
+  background: var(--accent-ink, var(--accent));
+  color: var(--accent-fg, #fff);
+  text-decoration: none;
+}
+.dueOverviewCta:hover svg {
+  transform: translateX(2px);
+}
+.dueOverviewCta svg {
+  transition: transform 0.12s ease;
+}
+
+.levelRow {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 20px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.12s ease;
+}
+.levelRow:last-child { border-bottom: none; }
+.levelRow:hover { background: var(--surface-2); text-decoration: none; }
+
+.levelBody { min-width: 0; }
+
+.levelTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 2px;
+}
+
+.levelTop h3 {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-strong);
+  margin: 0;
+}
+
+.dueTag {
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.levelBody > p {
+  font-size: 0.85rem;
+  margin: 0 0 10px;
+}
+
+.progressRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.progressBar {
+  flex: 1;
+  height: 4px;
+  background: var(--surface-2);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  min-width: 0;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: var(--radius-pill);
+  transition: width 0.4s ease;
+}
+
+.progressMeta {
+  font-size: 0.74rem;
+  color: var(--text-subtle);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.chevron {
+  color: var(--text-subtle);
+  flex-shrink: 0;
+}
+
+.levelRow:hover .chevron { color: var(--accent); }
+
+@media (max-width: 720px) {
+  .previewRow,
+  .levelRow {
+    grid-template-columns: auto 1fr;
+    gap: 14px;
+    padding: 14px 16px;
+  }
+  .previewCount,
+  .chevron { display: none; }
+  .levelTop { flex-wrap: wrap; }
+}
+
+/* Mini-heatmap section. Sits below the level grid and gives
+   the user an at-a-glance "have I been showing up?" signal
+   without having to click through to Stats. The "Open in
+   Stats" link is muted and right-aligned so it doesn't
+   compete with the heatmap. */
+.heatmapSection {
+  margin-top: 32px;
+}
+
+.heatmapLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.12s ease;
+}
+
+.heatmapLink:hover {
+  color: var(--accent);
+}
