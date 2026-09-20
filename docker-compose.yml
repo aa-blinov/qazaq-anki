@@ -1,0 +1,183 @@
+# Qazaq — Kazakh learning app, full stack.
+#
+# Layout:
+#   qazaq-api          Node 22 + Express + sql.js (port 3001)
+#   qazaq-web          nginx serving Vite bundle, reverse-proxies /api/* (port 8080)
+#   qazaq-tts-service  Piper-based TTS HTTP wrapper (port 8000)
+#   qazaq-backup       Hourly SQLite snapshot via cron + cronie (no published port)
+#   qazaq-caddy        Optional: TLS termination with Let's Encrypt (ports 80, 443)
+#
+# Volumes:
+#   qazaq-data         SQLite database + WAL (named volume, NOT a bind mount)
+#   qazaq-backups      /backups directory inside the backup container
+#                      (bind mount to ./backups on the host by default —
+#                      mount your favourite off-site sync tool here)
+#   ./public/audio     Bind-mounted into web (RO) and tts (RW)
+#
+# Run modes:
+#   docker compose up                — dev: api + web + tts, plain HTTP on :8080
+#   docker compose --profile prod up  — adds caddy + backup, requires .env.production
+#
+# Secrets:
+#   ADMIN_TOKEN is the shared secret between api and backup containers.
+#   In dev (no ADMIN_TOKEN), backup/admin endpoints are disabled (404).
+#   In prod, set ADMIN_TOKEN in .env.production and pass it to both services.
+
+name: anki-qazaq
+
+services:
+  qazaq-api:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    image: qazaq-api:latest
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      HOST: 0.0.0.0
+      DB_PATH: /data/qazaq.sqlite
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
+    volumes:
+      - qazaq-data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3001/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - qazaq
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  qazaq-web:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    image: qazaq-web:latest
+    restart: unless-stopped
+    depends_on:
+      qazaq-api:
+        condition: service_healthy
+    environment:
+      QAZAQ_API: qazaq-api:3001
+    volumes:
+      # nginx serves the prebuilt Vite bundle from this dir.
+      # The host directory must contain the build output:
+      #   VITE_BASE=/anki-qazaq/ npm run build
+      # Then `docker compose build qazaq-web` to bake it in.
+      # For runtime iteration use `docker compose -f docker-compose.dev.yml up`.
+      - ./public/audio:/usr/share/nginx/html/audio:ro
+    ports:
+      # Exposed only when running without the prod profile.
+      # Caddy (prod) terminates TLS and proxies to this
+      # internal port, so we don't need to publish it.
+      - target: 8080
+        published: "8080"
+        protocol: tcp
+        mode: host
+    networks:
+      - qazaq
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+
+  qazaq-tts-service:
+    build:
+      context: ./tts
+      dockerfile: Dockerfile
+    image: qazaq-tts:latest
+    restart: unless-stopped
+    environment:
+      TTS_MODE: service
+    volumes:
+      # TTS service writes generated WAVs here; nginx serves
+      # them read-only.
+      - ./public/audio:/audio:rw
+    networks:
+      - qazaq
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  qazaq-backup:
+    build:
+      context: ./backup
+      dockerfile: Dockerfile
+    image: qazaq-backup:latest
+    restart: unless-stopped
+    environment:
+      API_URL: http://qazaq-api:3001
+      BACKUP_DIR: /backups
+      KEEP_LOCAL: "24"
+      # Default: hourly at minute 0. Set to "off" to run once
+      # (useful for manual `docker compose run --rm backup`).
+      CRON_SCHEDULE: ${BACKUP_CRON:-0 * * * *}
+    volumes:
+      # The SQLite file lives here. We mount read-only so a
+      # bug in the backup script can't corrupt the live DB.
+      - qazaq-data:/data:ro
+      # Where to put snapshots. By default this is a bind mount
+      # to ./backups/ on the host — point rclone / restic /
+      # whatever at that directory.
+      - ./backups:/backups:rw
+    secrets:
+      - admin_token
+    networks:
+      - qazaq
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+
+  qazaq-caddy:
+    build:
+      context: ./caddy
+      dockerfile: Dockerfile
+    image: qazaq-caddy:latest
+    restart: unless-stopped
+    profiles: ["prod"]
+    depends_on:
+      qazaq-web:
+        condition: service_healthy
+    environment:
+      CADDY_DOMAIN: ${CADDY_DOMAIN:-}
+      CADDY_EMAIL: ${CADDY_EMAIL:-}
+      WEB_UPSTREAM: qazaq-web:8080
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # Caddy persists ACME certs + OCSP staples here. Don't
+      # lose this on a restart or you'll pay for another
+      # rate-limit window.
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      - qazaq
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+networks:
+  qazaq:
+    driver: bridge
+
+volumes:
+  qazaq-data:
+    driver: local
+  caddy-data:
+    driver: local
+  caddy-config:
+    driver: local
+
+secrets:
+  admin_token:
+    file: ${ADMIN_TOKEN_FILE:-./secrets/admin_token.txt}

@@ -1,0 +1,14 @@
+# Web image only needs the prebuilt bundle + nginx config.
+# Anything else is dev cruft.
+node_modules
+src
+.git
+.github
+.gitignore
+.dockerignore
+Dockerfile
+*.log
+backups/
+data/
+test/
+tests/

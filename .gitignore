@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build output (we COPY dist/ into the nginx image at build time)
+dist/
+build/
+*.tsbuildinfo
+
+# Local data — never commit
+public/audio/
+backups/
+secrets/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test artifacts
+coverage/
+
+# Local env / secrets — never commit
+.env
+.env.*
+!.env.production.example
