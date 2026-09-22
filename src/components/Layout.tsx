@@ -41,6 +41,15 @@ export function Layout() {
 
   return (
     <div className={styles.shell}>
+      {/* Skip-link — invisible until it receives keyboard focus,
+          then snaps into the top-left so a keyboard / screen-reader
+          user can jump past the topbar straight into <main>. The
+          href matches the `id` on the <main> element below so the
+          browser scrolls focus to it. */}
+      <a href="#main-content" className="skip">
+        {t('nav.skipToContent')}
+      </a>
+
       <header className={styles.header}>
         <Link to="/" className={styles.brand} aria-label={t('nav.homeAria')}>
           <Logo />
@@ -163,7 +172,7 @@ export function Layout() {
         </div>
       </header>
 
-      <main className={styles.main}>
+      <main className={styles.main} id="main-content" tabIndex={-1}>
         <Outlet />
       </main>
 

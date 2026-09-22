@@ -30,6 +30,7 @@ export const en: Translations = {
   'nav.fontSize.xl': 'extra large',
   'nav.primary': 'Primary',
   'nav.homeAria': 'Qazaq — home',
+  'nav.skipToContent': 'Skip to content',
   'study.tablistAria': 'Card mode',
   'study.picker.cards': 'Cards',
   'study.picker.language': 'Language',

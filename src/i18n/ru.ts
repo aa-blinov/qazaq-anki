@@ -29,6 +29,7 @@ export const ru: Translations = {
   'nav.fontSize.xl': 'очень крупный',
   'nav.primary': 'Главная навигация',
   'nav.homeAria': 'Qazaq — на главную',
+  'nav.skipToContent': 'Перейти к содержимому',
 
   // Aria
   'study.tablistAria': 'Режим карточек',
