@@ -21,6 +21,8 @@ import {
 } from '../lib/progress';
 import { SCHEDULER_DEFAULTS } from '../lib/scheduler-config';
 import { api } from '../lib/api';
+import { ConfirmDialog } from '../components/ConfirmDialog';
+import { pluralRu } from '../lib/plural-ru';
 import {
   BackupError,
   backupFilename,
@@ -103,6 +105,12 @@ export function StatsPage() {
   const { t, tTopic } = useLang();
   const [confirmReset, setConfirmReset] = useState(false);
   const [loaded, setLoaded] = useState<LoadedLevels>({});
+  // Confirmation modal for "Сбросить прогресс". Replaces the
+  // two-tap gesture (which only changed the button label and
+  // gave the user no idea of the scope). The modal shows the
+  // exact count of cards that will be wiped plus the review
+  // total, so the user can decide from real numbers.
+  const [resetModalOpen, setResetModalOpen] = useState(false);
   // The Stats page used to be a single 3,600-px scroll: top KPIs,
   // forecast KPIs, 30-day bar, 90-day heatmap, retention chart,
   // leech list, ~60 topic cards, and the SM-2 parameters dump
@@ -264,13 +272,17 @@ export function StatsPage() {
   }, [reviewLog]);
 
   const handleReset = () => {
-    if (!confirmReset) {
-      setConfirmReset(true);
-      setTimeout(() => setConfirmReset(false), 4000);
-      return;
-    }
-    reset();
-    setConfirmReset(false);
+    // Open the confirmation modal. The two-tap shortcut is gone —
+    // it only changed the button label and the user had no idea
+    // what they were about to delete. The modal shows the exact
+    // count of cards + reviews that will be wiped, so the user
+    // can decide from real numbers.
+    setResetModalOpen(true);
+  };
+
+  const confirmResetNow = async () => {
+    setResetModalOpen(false);
+    await reset();
   };
 
   // Localised human error message for a `BackupError` thrown by
@@ -474,10 +486,10 @@ export function StatsPage() {
           </button>
           <button
             type="button"
-            className={`btn ${confirmReset ? 'btn--danger' : 'btn--ghost'}`}
+            className="btn btn--ghost"
             onClick={handleReset}
           >
-            {confirmReset ? t('stats.resetConfirm') : t('stats.reset')}
+            {t('stats.reset')}
           </button>
         </div>
       </header>
@@ -982,6 +994,43 @@ export function StatsPage() {
           </button>
         </div>
       ) : null}
+
+      {/*
+        Reset-progress confirmation modal. Shows the exact
+        count of cards that will be wiped plus the review total,
+        so the user can decide from real numbers — not just
+        "это удалит ваш прогресс" with no scope.
+      */}
+      <ConfirmDialog
+        open={resetModalOpen}
+        title={t('stats.resetDialog.title')}
+        description={t('stats.resetDialog.body')}
+        consequences={[
+          {
+            label: t('stats.resetDialog.cardsLabel'),
+            value: pluralRu(
+              overall.seenCount,
+              t('stats.resetDialog.cardOne'),
+              t('stats.resetDialog.cardFew'),
+              t('stats.resetDialog.cardMany'),
+            ),
+          },
+          {
+            label: t('stats.resetDialog.reviewsLabel'),
+            value: pluralRu(
+              totalReviews,
+              t('stats.resetDialog.reviewOne'),
+              t('stats.resetDialog.reviewFew'),
+              t('stats.resetDialog.reviewMany'),
+            ),
+          },
+        ]}
+        confirmLabel={t('stats.resetDialog.confirm')}
+        cancelLabel={t('stats.resetDialog.cancel')}
+        variant="danger"
+        onConfirm={confirmResetNow}
+        onCancel={() => setResetModalOpen(false)}
+      />
     </div>
   );
 }
