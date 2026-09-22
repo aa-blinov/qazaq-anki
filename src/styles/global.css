@@ -31,6 +31,7 @@
   /* Warm accent — Claude-style terracotta/clay */
   --accent:        #C96442;
   --accent-hover:  #A8522F;
+  --accent-strong: #A8522F;
   --accent-soft:   #F4E4D6;
   --accent-ink:    #5B2A14;
 
@@ -91,6 +92,7 @@
 
   --accent:        #E08662;
   --accent-hover:  #EFA079;
+  --accent-strong: #EFA079;
   --accent-soft:   #3A2A20;
   --accent-ink:    #F4D3BD;
 

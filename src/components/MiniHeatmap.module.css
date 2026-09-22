@@ -64,10 +64,16 @@
 }
 
 .level0 { background: var(--surface-2); }
-.level1 { background: rgba(47, 111, 78, 0.25); }
-.level2 { background: rgba(47, 111, 78, 0.5); }
-.level3 { background: rgba(47, 111, 78, 0.75); }
-.level4 { background: var(--accent, #2f6f4e); }
+/* Activity scale uses the brand accent with rising opacity so
+ * the busiest cell lands on solid accent (matches the rings,
+ * ease histogram, and activity bars on the Stats page). Earlier
+ * drafts used green (#2f6f4e) for a "GitHub contribution graph"
+ * feel — that visually clashed with the orange system used
+ * everywhere else. */
+.level1 { background: rgba(201, 100, 66, 0.25); }
+.level2 { background: rgba(201, 100, 66, 0.5); }
+.level3 { background: rgba(201, 100, 66, 0.75); }
+.level4 { background: var(--accent); }
 
 .heatmapCellFuture {
   background: transparent;
