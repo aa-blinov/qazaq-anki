@@ -6,15 +6,15 @@ on:
   pull_request:
     branches: [main]
 
-# Avoid stampedes: cancel a previous in-flight run for the same
-# ref when a new commit lands. Saves CI minutes on rapid pushes.
+# Cancel a previous in-flight run for the same ref when a new
+# commit lands. Saves CI minutes on rapid pushes.
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  test:
-    name: Unit tests + typecheck
+  frontend:
+    name: Frontend typecheck + build
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -33,10 +33,9 @@ jobs:
       - name: Verify deck data is committed
         # The Vite build needs `src/data/decks/{a1..c1}.json` at
         # build time (the dynamic imports in `src/data/decks.ts`
-        # are static). These files are the source of truth for
-        # the 3,996 Kazakh cards and must be in the repo. If a
-        # future change accidentally .gitignore's them, this
-        # check catches it before the build does.
+        # resolve against these). If a future change accidentally
+        # .gitignore's them, this check catches it before the
+        # build does.
         run: |
           for lvl in a1 a2 b1 b2 c1; do
             test -f "src/data/decks/${lvl}.json" || {
@@ -46,16 +45,63 @@ jobs:
           done
 
       - name: Typecheck + build
-        # `tsc -b` is run as part of `npm run build`; if the
-        # TypeScript layer is broken, the build will fail with a
-        # clear diagnostic. We don't ship the dist/ artifact.
+        # `tsc -b` runs as part of `npm run build`. If the
+        # TypeScript layer is broken, the build fails with a
+        # clear diagnostic. We don't ship the dist/ artifact —
+        # this is a CI gate, not a release step.
         run: VITE_BASE=/anki-qazaq/ npm run build:quick
 
       - name: Run unit tests
         run: npm test
 
-  server-test:
-    name: Server smoke test
+  e2e:
+    name: Playwright e2e (UX batch)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Build the frontend
+        # Playwright tests hit the Vite preview server, which
+        # needs a prebuilt dist/.
+        run: VITE_BASE=/anki-qazaq/ npm run build:quick
+
+      - name: Run Playwright tests
+        # The suite boots its own qazaq-api + Vite via playwright.config.ts
+        # so we don't need to wire up the dev server manually.
+        run: npx playwright test e2e/ux-improvements.spec.ts
+
+      - name: Upload screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-screenshots
+          path: /tmp/screens/
+          if-no-files-found: ignore
+
+      - name: Upload trace on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-trace
+          path: test-results/
+          if-no-files-found: ignore
+
+  api-smoke:
+    name: API smoke (boot + health)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -66,18 +112,15 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
-          cache-dependency-path: server/package-lock.json
+          cache-dependency-path: package-lock.json
 
-      - name: Install server deps
-        working-directory: server
+      - name: Install deps
         run: npm ci
 
       - name: Boot API and hit /api/health
-        # Spin up the server in the background, wait for it to
-        # come up, hit /api/health, and tear it down. The server
-        # uses an in-memory DB when DB_PATH is not set, so this
-        # works without a SQLite volume.
-        working-directory: server
+        # Server.js lives at the repo root after the prod-readiness
+        # merge. We start it in the background, wait for the
+        # health endpoint to come up, and tear it down.
         env:
           DB_PATH: /tmp/qazaq-ci.sqlite
           PORT: '3099'
@@ -95,3 +138,37 @@ jobs:
           echo "API did not start in time" >&2
           kill $SERVER_PID 2>/dev/null || true
           exit 1
+
+  docker-build:
+    name: Docker build (api + web)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build qazaq-api
+        # Multi-stage Dockerfile — first build is cold (~80 MB final).
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: server/Dockerfile
+          tags: qazaq-api:ci-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          load: true
+
+      - name: Build qazaq-web
+        # Vite build happens inside the image. No host pre-build
+        # needed.
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: web/Dockerfile
+          build-args: VITE_BASE=/anki-qazaq/
+          tags: qazaq-web:ci-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          load: true
