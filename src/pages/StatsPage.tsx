@@ -20,7 +20,7 @@ import {
   masteredCardCount,
 } from '../lib/progress';
 import { SCHEDULER_DEFAULTS } from '../lib/scheduler-config';
-import { api } from '../lib/api';
+import { api, type ServerStats } from '../lib/api';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { pluralRu } from '../lib/plural-ru';
 import {
@@ -33,6 +33,8 @@ import {
   type BackupSummary,
 } from '../lib/backup';
 import styles from './StatsPage.module.css';
+import { LevelMasteryRings } from '../components/LevelMasteryRings';
+import { EaseHistogram } from '../components/EaseHistogram';
 
 type LoadedLevels = Record<string, Card[]>;
 
@@ -64,11 +66,7 @@ export function StatsPage() {
   // Server-side aggregates: forecast (due in 7/30 days) and leech
   // count come from /api/stats. We don't recompute them client-
   // side because the SQL is faster and the response is small.
-  const [serverStats, setServerStats] = useState<{
-    due7: number;
-    due30: number;
-    leeches: number;
-  } | null>(null);
+  const [serverStats, setServerStats] = useState<ServerStats | null>(null);
   // Retention chart data: per-day accuracy over the last 30 days.
   // We pull from /api/retention because the SQL is much faster
   // than walking the in-memory reviewLog on every render.
@@ -82,7 +80,7 @@ export function StatsPage() {
       .stats()
       .then((s) => {
         if (cancelled) return;
-        setServerStats({ due7: s.due7, due30: s.due30, leeches: s.leeches });
+        setServerStats(s);
       })
       .catch((err) => {
         // eslint-disable-next-line no-console
@@ -554,6 +552,20 @@ export function StatsPage() {
             to={serverStats.leeches > 0 ? '/stats?tab=activity' : undefined}
           />
         </section>
+      ) : null}
+
+      {/* New metrics — per-level rings (with ETA from velocity) and
+          ease-factor histogram. Both render on the Сводка tab so the
+          user sees "where am I?" at a glance, alongside the headline
+          KPIs and the day-by-day activity. The components short-
+          circuit to null when there's nothing meaningful to show
+          (e.g. brand-new account with no reviews yet), so the
+          Stats page never shows a "5 empty rings" placeholder. */}
+      {serverStats ? (
+        <div className={styles.tabPanel} role="tabpanel">
+          <LevelMasteryRings stats={serverStats} />
+          <EaseHistogram stats={serverStats} />
+        </div>
       ) : null}
 
       {/* Tab bar — splits the rest of the page (activity + SM-2
@@ -1326,7 +1338,7 @@ function ActivityHeatmap({
         <span className="muted">
           {t('stats.heatmap.totalReviews', { count: total })}
         </span>
-        <span className={styles.heatmapSep}>·</span>
+        <span className={styles.heatmapSep} aria-hidden="true" />
         <strong>{active.toLocaleString()}</strong>{' '}
         <span className="muted">
           {t('stats.heatmap.activeDays', { count: active })}
