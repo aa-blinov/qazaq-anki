@@ -63,8 +63,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 38px;
-  padding: 5px 10px;
+  /* Touch target: ≥44px height so a thumb can hit it without
+     precision (Apple HIG / WCAG 2.5.5). The horizontal `min-width`
+     stays small so the six pills + "Все" still fit on a 390px
+     viewport without wrapping. */
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 14px;
   font-size: 0.84rem;
   font-weight: 500;
   color: var(--text-muted);
@@ -431,13 +436,14 @@
   .doneTitle { font-size: 1.5rem; }
   .metaRow { font-size: 0.74rem; }
   .shortcut { display: none; }
-  /* Six pills on a 390px viewport still fit comfortably at the
-     base padding; on narrower phones (≤360px) the row can
-     wrap to two lines. Keep the pills touchable (38px min). */
+  /* Touch target ≥44px stays in effect on narrow screens — the
+     previous 36px min-width broke WCAG 2.5.5. Horizontal padding
+     shrinks so the six pills + "Все" still fit on a 360px viewport. */
   .levelPill {
-    min-width: 36px;
-    padding: 4px 8px;
-    font-size: 0.8rem;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 10px;
+    font-size: 0.82rem;
   }
 }
 
