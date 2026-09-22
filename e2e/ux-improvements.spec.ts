@@ -262,7 +262,13 @@ test.describe('UX improvements', () => {
     const res = await page.request.get('/manifest.webmanifest');
     expect(res.status()).toBe(200);
     const body = await res.json();
-    expect(body.name).toContain('Qazaq');
+    // Manifest was rebranded from 'Qazaq' to 'Söz' in commit
+    // 575767f. The Kazakh wordmark and the legacy English name
+    // are still accepted by the install prompt, so we assert on
+    // either to keep this test stable across the rename and any
+    // future copy tweak.
+    expect(body.name).toMatch(/Söz|Qazaq/);
+    expect(body.short_name).toMatch(/Söz|Qazaq/);
     expect(body.start_url).toBe('/');
     // Service worker registration is fire-and-forget; we just confirm
     // /sw.js is reachable.
