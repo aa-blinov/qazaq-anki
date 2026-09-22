@@ -45,6 +45,10 @@ playwright/.cache/
 # Throwaway screenshot scripts used during dev
 _shot-*.mjs
 _shot-*.png
+verify-*.mjs
+verify-*.js
+deck-meta.test.js
+src/deck-meta.test.js
 
 # Local TTS model cache used by `scripts/generate-tts.py` and the
 # Docker build. Downloaded on demand from HF, not part of the repo.
