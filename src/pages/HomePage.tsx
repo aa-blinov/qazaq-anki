@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Clock,
   BookMarked,
-  HeartHandshake,
   NotebookPen,
   ArrowRight,
   Sparkles,
@@ -14,12 +13,13 @@ import { useProgress } from '../contexts/ProgressContext';
 import { useLang } from '../contexts/LanguageContext';
 import { MiniHeatmap } from '../components/MiniHeatmap';
 import { Skeleton } from '../components/Skeleton';
+import { SiteFooter } from '../components/SiteFooter';
+import { DemoCard } from '../components/DemoCard';
 import { api } from '../lib/api';
 import {
   LEVELS,
   getCardsByLevel,
   getCardCount,
-  getTotalCards,
   loadLevel,
   preloadAllLevels,
   type Card,
@@ -59,15 +59,9 @@ type T = (key: string, vars?: Record<string, string | number>) => string;
 /* ------------------------------ Landing ------------------------------ */
 
 function LandingPage({ t }: { t: T }) {
-  // The hero counts come from the actual level JSONs. The first
-  // render shows the build-time hints in `decks.json` (via
-  // `getCardCount` / `getTotalCards` fall-through), and re-renders
-  // with the live counts once `preloadAllLevels` populates the
-  // cache. Normally the two numbers match — the hint IS the live
-  // count, just frozen at build time — so the re-render is a
-  // safety net for the rare case where the on-disk JSON and the
-  // hint have drifted apart (e.g. someone hand-edited a JSON
-  // without re-running `unify-topics`).
+  // Hero counts come from the actual level JSONs. First render
+  // shows the build-time hint in `decks.json`, re-renders with
+  // the live count once `preloadAllLevels` populates the cache.
   const [, force] = useState(0);
   useEffect(() => {
     let cancelled = false;
@@ -80,73 +74,120 @@ function LandingPage({ t }: { t: T }) {
       cancelled = true;
     };
   }, []);
-  const total = getTotalCards();
   return (
     <div className={styles.landing}>
+      {/* ===== HERO ===== */}
+      {/* Restructured to modern landing-page best practice (2025):
+           single primary CTA, short sub-headline (<= 25 words),
+           trust bar right under it, and a live product preview
+           beside the copy on desktop so the visitor sees what
+           they're signing up for. */}
       <section className={styles.hero}>
-        <h1 className={styles.title}>{t('landing.title')}</h1>
-        <p className={styles.lede}>
-          {t('landing.lede', { count: total })}
-        </p>
-        <div className={styles.heroCta}>
-          <Link to="/register" className="btn btn--lg">
-            {t('landing.ctaPrimary')}
-            <ArrowRight size={16} />
-          </Link>
-          <Link to="/login" className="btn btn--ghost btn--lg">
-            {t('landing.ctaSecondary')}
-          </Link>
+        <div className={styles.heroCopy}>
+          <h1 className={styles.title}>{t('landing.title')}</h1>
+          <p className={styles.lede}>{t('landing.lede')}</p>
+          <div className={styles.heroCta}>
+            <Link to="/register" className="btn btn--lg">
+              {t('landing.ctaPrimary')}
+              <ArrowRight size={16} />
+            </Link>
+            {/* Secondary action is a text link now, not a ghost button —
+                reduces visual competition with the primary CTA above
+                the fold, per the "one clear ask" rule. */}
+            <Link to="/login" className={styles.heroSecondaryLink}>
+              {t('landing.ctaSecondary')}
+            </Link>
+          </div>
+        </div>
+        {/* Live flashcard preview — same component the Study page
+            uses, but pinned to the front (no flip) with a static
+            "answer" preview so visitors see the actual UX without
+            having to register. */}
+        <aside className={styles.heroDemo} aria-hidden="true">
+          <DemoCard
+            kazakh="Сәлем"
+            transliteration="sálem"
+            russian="Привет"
+            topic="Приветствия"
+            level="A1"
+          />
+          <p className={styles.heroDemoHint}>{t('landing.demoHint')}</p>
+        </aside>
+      </section>
+
+      {/* ===== HOW IT WORKS — 3 benefit blocks ===== */}
+      {/* Three sections, not four. Each is benefit-led (the change
+          the user gets, not the feature that produces it) and
+          stands on its own — reading top-to-bottom walks the
+          visitor through the value arc. */}
+      <section className={styles.benefits}>
+        <header className={styles.sectionHead}>
+          <h2>{t('landing.benefits.title')}</h2>
+        </header>
+        <div className={styles.benefitsGrid}>
+          <Benefit
+            icon={Clock}
+            title={t('landing.benefit.pace.title')}
+            body={t('landing.benefit.pace.body')}
+          />
+          <Benefit
+            icon={BookMarked}
+            title={t('landing.benefit.curated.title')}
+            body={t('landing.benefit.curated.body')}
+          />
+          <Benefit
+            icon={NotebookPen}
+            title={t('landing.benefit.own.title')}
+            body={t('landing.benefit.own.body')}
+          />
         </div>
       </section>
 
-      <section className={styles.features}>
-        <Feature
-          icon={Clock}
-          title={t('landing.feature.pace.title')}
-          body={t('landing.feature.pace.body')}
-        />
-        <Feature
-          icon={BookMarked}
-          title={t('landing.feature.curated.title')}
-          body={t('landing.feature.curated.body')}
-        />
-        <Feature
-          icon={HeartHandshake}
-          title={t('landing.feature.nopressure.title')}
-          body={t('landing.feature.nopressure.body')}
-        />
-        <Feature
-          icon={NotebookPen}
-          title={t('landing.feature.own.title')}
-          body={t('landing.feature.own.body')}
-        />
-      </section>
-
+      {/* ===== LEVELS — compact preview ===== */}
+      {/* Slimmed down: badges + name + count only. No per-level
+          description copy. The detailed can-do statements are
+          one click away inside the Study page where they're
+          actually useful. */}
       <section className={styles.preview}>
         <header className={styles.previewHead}>
           <h2>{t('landing.preview.title')}</h2>
           <p className="muted">{t('landing.preview.subtitle')}</p>
         </header>
-        <div className={styles.levelList}>
+        <div className={styles.previewChips}>
           {LEVELS.map((lvl) => (
-            <article key={lvl.id} className={styles.previewRow}>
-              <span className={styles.levelBadge}>{lvl.name}</span>
-              <div className={styles.previewBody}>
-                <h3>{levelTitle(lvl, t)}</h3>
-                <p className="muted">{levelDescription(lvl, t)}</p>
-              </div>
-              <span className={styles.previewCount}>
+            <span key={lvl.id} className={styles.previewChip}>
+              <span className={styles.previewChipLevel}>{lvl.name}</span>
+              <span className={styles.previewChipTitle}>{levelTitle(lvl, t)}</span>
+              <span className={styles.previewChipCount}>
                 {t('home.previewCount', { count: getCardCount(lvl.id) })}
               </span>
-            </article>
+            </span>
           ))}
         </div>
       </section>
+
+      {/* ===== FINAL CTA ===== */}
+      {/* One more primary CTA at the bottom of the page — most
+          visitors don't act on the first one, the bottom-of-page
+          CTA catches them after they've read everything. */}
+      <section className={styles.finalCta}>
+        <h2>{t('landing.finalCta.title')}</h2>
+        <p className="muted">{t('landing.finalCta.body')}</p>
+        <Link to="/register" className="btn btn--lg">
+          {t('landing.ctaPrimary')}
+          <ArrowRight size={16} />
+        </Link>
+      </section>
+
+      {/* Site footer — only on the public landing. Signed-in pages
+          already have the topbar with sign-out, so the footer would be
+          visual noise there. */}
+      <SiteFooter />
     </div>
   );
 }
 
-function Feature({
+function Benefit({
   icon: Icon,
   title,
   body,
@@ -156,8 +197,8 @@ function Feature({
   body: string;
 }) {
   return (
-    <article className={styles.feature}>
-      <Icon size={18} strokeWidth={1.6} className={styles.featureIcon} />
+    <article className={styles.benefit}>
+      <Icon size={18} strokeWidth={1.6} className={styles.benefitIcon} />
       <h3>{title}</h3>
       <p className="muted">{body}</p>
     </article>
@@ -304,9 +345,15 @@ function Dashboard({
             to={totalDue > 0 ? '/study' : '/study/level/a1'}
             className={styles.welcomeCta}
           >
-            {reviewedAny
-              ? t('dashboard.cta.resume')
-              : t('dashboard.cta.start')}
+            {/* Name the destination so the user knows where the
+                button sends them. Two branches share the same target
+                // (A1), so the wording only diverges for the
+                // cross-level due-queue case. */}
+            {totalDue > 0
+              ? reviewedAny
+                ? t('dashboard.cta.resume')
+                : t('dashboard.cta.start')
+              : t('dashboard.cta.startA1')}
             <ArrowRight size={16} />
           </Link>
         ) : null}

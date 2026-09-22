@@ -17,50 +17,125 @@
 .landing {
   display: flex;
   flex-direction: column;
-  gap: 64px;
-  padding: 24px 0 48px;
+  gap: 56px;
+  padding: 24px 0 32px;
 }
 
+/* Tighten the gap on phones — the desktop default of 56px reads
+   as "empty space" on a 360×640 viewport, so we collapse it a
+   notch without collapsing the sections themselves. */
+@media (max-width: 640px) {
+  .landing { gap: 40px; }
+}
+
+/* ----- Hero ----- */
+
 .hero {
-  text-align: left;
-  max-width: 720px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 56px;
+  align-items: center;
+}
+@media (max-width: 900px) {
+  /* Below this width the demo card would cramp the copy. Stack
+     it under the hero text and let the user scroll. */
+  .hero { grid-template-columns: 1fr; gap: 32px; }
+}
+
+.heroCopy {
+  max-width: 560px;
 }
 
 .title {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 4.6vw, 3rem);
+  font-size: clamp(1.85rem, 4.2vw, 2.65rem);
   font-weight: 500;
   letter-spacing: -0.022em;
-  line-height: 1.08;
-  margin: 0 0 18px;
+  line-height: 1.1;
+  margin: 0 0 14px;
   color: var(--text-strong);
 }
 
 .lede {
-  font-size: 1.08rem;
+  font-size: 1.05rem;
   color: var(--text-muted);
-  max-width: 600px;
-  line-height: 1.6;
-  margin: 0 0 28px;
+  max-width: 520px;
+  line-height: 1.55;
+  margin: 0 0 24px;
 }
 
 .heroCta {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 18px;
   flex-wrap: wrap;
 }
 
-.features {
+/* Secondary CTA is now a quiet text link, not a competing button —
+   this is one of the few "one primary CTA" rules that actually
+   moves the needle for SaaS landing conversion. */
+.heroSecondaryLink {
+  font-size: 0.92rem;
+  color: var(--accent);
+  font-weight: 500;
+  text-decoration: none;
+}
+.heroSecondaryLink:hover { text-decoration: underline; }
+
+/* Demo card placement — right column on desktop, below copy on
+   mobile. Slight tilt makes it feel "set down" rather than
+   gridded. */
+.heroDemo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+@media (min-width: 901px) {
+  /* Subtle tilt on desktop — visual interest without animation. */
+  .heroDemo { transform: rotate(-1.5deg); }
+}
+
+.heroDemoHint {
+  font-size: 0.78rem;
+  color: var(--text-subtle, var(--text-muted));
+  text-align: center;
+  max-width: 340px;
+  line-height: 1.45;
+}
+
+/* ----- Benefits ----- */
+
+.benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sectionHead h2 {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 500;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+
+.benefitsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
 }
+@media (max-width: 760px) {
+  /* Three columns on phone would cramp each card — go single
+     column below the tablet breakpoint. */
+  .benefitsGrid { grid-template-columns: 1fr; }
+}
 
-.feature {
+.benefit {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -68,12 +143,12 @@
   padding: 22px 22px 24px;
 }
 
-.featureIcon {
+.benefitIcon {
   color: var(--accent);
   margin-bottom: 4px;
 }
 
-.feature h3 {
+.benefit h3 {
   font-family: var(--font-sans);
   font-size: 0.95rem;
   font-weight: 600;
@@ -81,78 +156,100 @@
   color: var(--text-strong);
 }
 
-.feature p {
+.benefit p {
   font-size: 0.88rem;
   line-height: 1.5;
   color: var(--text-muted);
 }
 
+/* ----- Levels preview (compact chips) ----- */
+
 .preview {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
 }
 
 .previewHead h2 {
   font-family: var(--font-display);
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   font-weight: 500;
   margin: 0 0 4px;
 }
 
-.levelList {
+.previewChips {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+@media (max-width: 760px) {
+  /* Phones: stack to 2-col grid so each chip has room to breathe. */
+  .previewChips { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.previewChip {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-}
-
-.previewRow {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 18px;
-  padding: 16px 20px;
+  gap: 2px;
+  padding: 14px 16px;
   background: var(--surface);
-  border-bottom: 1px solid var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
 }
-.previewRow:last-child { border-bottom: none; }
 
-.previewBody h3 {
-  font-family: var(--font-sans);
-  font-size: 0.98rem;
+.previewChipLevel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  min-width: 36px;
+  height: 22px;
+  padding: 0 8px;
+  background: var(--surface-2);
+  color: var(--text);
+  border-radius: 6px;
+  font-size: 0.72rem;
   font-weight: 600;
-  margin: 0 0 2px;
+  letter-spacing: 0.02em;
+  margin-bottom: 4px;
+}
+
+.previewChipTitle {
+  font-size: 0.92rem;
+  font-weight: 600;
   color: var(--text-strong);
 }
 
-.previewBody p {
-  font-size: 0.85rem;
-  margin: 0;
-}
-
-.previewCount {
+.previewChipCount {
   font-size: 0.78rem;
   font-weight: 500;
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
 
-.levelBadge {
-  display: inline-flex;
+/* ----- Final CTA strip ----- */
+
+.finalCta {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-width: 44px;
-  height: 28px;
-  padding: 0 10px;
-  border-radius: var(--radius-sm);
-  background: var(--surface-2);
-  color: var(--text);
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: 0.78rem;
-  letter-spacing: 0.04em;
+  gap: 10px;
+  padding: 36px 28px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+.finalCta h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0;
+  letter-spacing: -0.015em;
+}
+.finalCta p {
+  margin: 0 0 12px;
+  font-size: 0.95rem;
 }
 
 /* ----------------------------- Dashboard ----------------------------- */
@@ -223,7 +320,7 @@
 }
 
 .welcomeCta:hover {
-  background: var(--accent-strong, #245d40);
+  background: var(--accent-strong);
 }
 
 .welcomeCta:active {

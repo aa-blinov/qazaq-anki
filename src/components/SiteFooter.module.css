@@ -1,0 +1,42 @@
+/* SiteFooter — only rendered on the public landing. Kept
+   understated: muted ink, tiny gap, sits below everything else so it
+   doesn't fight for attention. */
+.footer {
+  margin-top: 32px;
+  padding: 24px 0 8px;
+  border-top: 1px solid var(--border, rgba(0, 0, 0, 0.06));
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.link:hover {
+  color: var(--accent, #c96442);
+  text-decoration: none;
+}
+
+.tagline {
+  flex: 1 1 auto;
+  color: var(--text-subtle, var(--text-muted));
+}
+
+.copy {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-subtle, var(--text-muted));
+  font-size: 0.78rem;
+}
