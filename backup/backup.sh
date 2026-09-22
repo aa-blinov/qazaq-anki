@@ -44,6 +44,7 @@ run_backup() {
   #    this step we'd risk copying the main file mid-write and
   #    ending up with a half-flushed snapshot.
   if ! curl -fsS --max-time 30 \
+        -X POST \
         -H "Authorization: Bearer ${ADMIN_TOKEN}" \
         "${API_URL}/api/admin/checkpoint" >/dev/null; then
     echo "[backup] FATAL: checkpoint endpoint failed — skipping snapshot." >&2
