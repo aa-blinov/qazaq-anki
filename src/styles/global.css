@@ -384,7 +384,105 @@ p:last-child { margin-bottom: 0; }
 
 .kazakh { font-family: var(--font-display); font-feature-settings: 'kern' 1; }
 
-@media (prefers-reduced-motion: reduce) {
+/*
+  Print stylesheet. The user might want to print a study list
+  (e.g. A1 nouns for an offline notebook) or a stats summary.
+  Strip the chrome — no topbar, no nav, no buttons — and keep
+  only the actual content.
+
+  Skeletons / toasts / loading dots disappear (they have no
+  paper analogue). Focus rings disappear (they print as black
+  boxes otherwise). Links keep their URL in parentheses so the
+  printout is still useful offline.
+*/
+@media print {
+  :root {
+    /* Force light theme tokens — dark mode would waste ink and
+       most printed pages are scanned/photocopied later. */
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-2: #f5f5f5;
+    --surface-3: #eaeaea;
+    --text: #000000;
+    --text-strong: #000000;
+    --text-muted: #444444;
+    --text-subtle: #777777;
+    --border: #cccccc;
+    --border-strong: #999999;
+    --accent: #000000;
+    --accent-soft: #f0f0f0;
+    --accent-ink: #000000;
+    --shadow-xs: none;
+    --shadow-sm: none;
+    --shadow-md: none;
+    --shadow-lg: none;
+  }
+  body {
+    background: #fff;
+    color: #000;
+    font-size: 11pt;
+    line-height: 1.4;
+  }
+  /* Chrome to strip */
+  .skip,
+  header,
+  nav,
+  .iconBtn,
+  .ratingRow,
+  .undoToast,
+  .toast,
+  button,
+  .btn,
+  .skeletonGrid,
+  .progressBar,
+  [role="alertdialog"],
+  [class*="modal"],
+  [class*="Dialog"] {
+    display: none !important;
+  }
+  /* Focus rings print as black boxes — drop them. */
+  *:focus,
+  *:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  /* Show link URLs in parentheses so the printout is useful. */
+  a[href]:not([href^="#"])::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.85em;
+    color: #555;
+    word-break: break-all;
+  }
+  /* Skip the URL suffix for inline links (e.g. nav links that
+     shouldn't print as a wall of URLs) — but keep it for
+     sourceUrl / external links. */
+  a[href^="/"]:not([href^="/api"])::after,
+  a[href^="#"]::after {
+    content: '';
+  }
+  /* Card flip is irrelevant on paper — show the back (translation)
+     as well so the user can study both sides. */
+  [class*="cardInner"] {
+    transform: none !important;
+    transform-style: flat !important;
+  }
+  [class*="face"] {
+    page-break-inside: avoid;
+  }
+  /* Avoid breaking pages in the middle of a card or KPI row. */
+  article,
+  section,
+  [class*="cardWrap"],
+  [class*="doneCard"] {
+    page-break-inside: avoid;
+  }
+  /* Page margins */
+  @page {
+    margin: 16mm 14mm;
+  }
+}
+
+
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
