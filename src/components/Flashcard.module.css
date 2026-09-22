@@ -1,5 +1,22 @@
 .scene {
-  perspective: 1500px;
+  /* Earlier this used a CSS 3D `rotateY(180deg)` flip. That
+   * breaks in a way that's hard to debug: the cascade rules
+   * can win on `transform` but lose on `transform-style`, leaving
+   * `.cardInner` in a flat rendering context — at which point
+   * the back face's own `rotateY(180deg)` is rendered as a 2D
+   * mirror and the card content shows up mirrored after a flip.
+   * The CSS spec actually mandates that `preserve-3d` be ignored
+   * unless an ancestor in the 3D chain establishes `perspective`,
+   * so the workaround ended up being more fragile than the
+   * feature it was enabling.
+   *
+   * Switched to a plain opacity crossfade. Both faces are stacked
+   * in the same plane; whichever has `opacity: 1` is visible. A
+   * 200ms transition on opacity is short enough to read as
+   * "deliberate reveal" without making the card feel laggy. The
+   * user still gets clear visual feedback that the back is the
+   * back (no perspective tricks needed). */
+  position: relative;
   width: 100%;
   max-width: 640px;
   height: 320px;
@@ -18,17 +35,7 @@
   position: relative;
   width: 100%;
   height: 100%;
-  /* Flip duration: 380ms. Long enough to read as a deliberate
-     flip (not a glitch), short enough that two Space-presses
-     back-to-back don't queue up. The global prefers-reduced-motion
-     rule at the bottom of global.css collapses this to ~0ms. */
-  transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
-  transform-style: preserve-3d;
   animation: cardEnter 0.32s ease;
-}
-
-.isRevealed .cardInner {
-  transform: rotateY(180deg);
 }
 
 @keyframes cardEnter {
@@ -49,14 +56,36 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
   overflow: hidden;
+  /* Opacity-only crossfade. Back face sits at opacity:0 until
+   * `.isRevealed` is applied; front face goes the other way.
+   * The transition lives on `.face` so both directions animate
+   * the same way. */
+  transition: opacity 0.2s ease;
 }
 
-.back {
-  transform: rotateY(180deg);
-  background: var(--surface);
+.scene:not(.isRevealed) .front {
+  opacity: 1;
+}
+.scene:not(.isRevealed) .back {
+  opacity: 0;
+}
+.scene.isRevealed .front {
+  opacity: 0;
+}
+.scene.isRevealed .back {
+  opacity: 1;
+}
+
+/* The back face needs to be click-transparent when it's not
+ * showing, otherwise the front's click handler doesn't fire —
+ * the back would catch the click first. `pointer-events: none`
+ * on the inactive face avoids that. */
+.scene:not(.isRevealed) .back {
+  pointer-events: none;
+}
+.scene.isRevealed .front {
+  pointer-events: none;
 }
 
 .meta {
