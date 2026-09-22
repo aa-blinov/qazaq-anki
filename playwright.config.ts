@@ -37,13 +37,17 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         // The `chromium-headless-shell` revision that ships with
         // playwright 1.62.1 (r1234) wasn't fully installed in this
-        // environment — point at the chrome-headless-shell binary
-        // from the newer r1243 build that's already on disk.
-        launchOptions: {
-          executablePath:
-            process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH ||
-            '/Users/justcomex/Library/Caches/ms-playwright/chromium_headless_shell-1243/chrome-headless-shell-mac-arm64/chrome-headless-shell',
-        },
+        // contributor's environment — point at the chrome-headless-
+        // shell binary from the newer r1243 build that's already on
+        // disk. Override via PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
+        // when running elsewhere (CI, another dev machine).
+        //
+        // On CI the env var is unset and Playwright uses the
+        // version it just installed via
+        // `npx playwright install --with-deps chromium`.
+        launchOptions: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
+          ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH }
+          : {},
       },
     },
   ],
