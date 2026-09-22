@@ -82,6 +82,12 @@ jobs:
       - name: Run Playwright tests
         # The suite boots its own qazaq-api + Vite via playwright.config.ts
         # so we don't need to wire up the dev server manually.
+        # RATE_LIMIT_REGISTER=1000 raises the auth limiter for the
+        # CI run only — production deploys keep the default of 5
+        # per 10 min (the rate limiter reads from env at boot).
+        env:
+          RATE_LIMIT_REGISTER: '1000'
+          RATE_LIMIT_LOGIN: '1000'
         run: npx playwright test e2e/ux-improvements.spec.ts
 
       - name: Upload screenshots on failure

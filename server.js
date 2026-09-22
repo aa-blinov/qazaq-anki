@@ -75,8 +75,17 @@ app.use((_req, res, next) => {
 // get tighter limits. Reset is a 10-minute window for register
 // (UX is forgiving) and 5 minutes for login (stops credential
 // stuffing without locking out a real user on a typo).
-const registerLimiter = createRateLimiter({ max: 5, windowMs: 10 * 60 * 1000 });
-const loginLimiter = createRateLimiter({ max: 10, windowMs: 5 * 60 * 1000 });
+// Auth rate limits. Defaults match the prod values
+// (5 register / 10 min, 10 login / 5 min) — production deploys
+// inherit these unchanged. CI smoke + Playwright suites
+// override via env (`RATE_LIMIT_REGISTER`, `RATE_LIMIT_LOGIN`)
+// because the test runner hits these endpoints in a tight loop
+// from a single IP and would otherwise trip the limit before
+// half the suite has run.
+const REGISTER_MAX = Number(process.env.RATE_LIMIT_REGISTER ?? 5);
+const LOGIN_MAX = Number(process.env.RATE_LIMIT_LOGIN ?? 10);
+const registerLimiter = createRateLimiter({ max: REGISTER_MAX, windowMs: 10 * 60 * 1000 });
+const loginLimiter = createRateLimiter({ max: LOGIN_MAX, windowMs: 5 * 60 * 1000 });
 // Recovery is split into two endpoints (start + verify) so a
 // code-then-password flow has 2× the budget of a single-shot
 // login attempt. Both endpoints together are still much stricter
