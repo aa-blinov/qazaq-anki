@@ -40,11 +40,11 @@ export default defineConfig({
     {
       // Test API on a separate port so the dev API (:3001) keeps
       // running and the developer's active session is untouched.
-      command: 'cd server && node server.js',
+      command: 'node server.js',
       port: 3011,
       env: {
         PORT: '3011',
-        DB_PATH: '../server/data/test.sqlite',
+        DB_PATH: 'server/data/test.sqlite',
         // Keep the dev API free of CORS drama by mirroring the
         // dev config. The test Vite (below) and the test API are
         // both on localhost, so same-origin via the proxy.

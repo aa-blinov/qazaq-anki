@@ -1,9 +1,9 @@
 // Playwright globalTeardown — runs once after the entire e2e suite.
 //
 // Removes the test SQLite file so the next run starts clean. We do
-// not delete the parent `data/` directory because the dev server
-// keeps its own `qazaq.sqlite` file there and we want to leave that
-// alone.
+// not delete the parent `server/data/` directory because the dev
+// server keeps its own `qazaq.sqlite` file there and we want to
+// leave that alone.
 
 import { existsSync, unlinkSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
