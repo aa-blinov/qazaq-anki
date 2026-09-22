@@ -456,6 +456,8 @@ export const ru: Translations = {
   'card.source.label': 'источник',
   'card.example.aria': 'Пример использования',
   'card.audio.play': 'Произнести',
+  'card.audio.play.kk': 'Озвучить по-казахски',
+  'card.audio.play.ru': 'Озвучить перевод по-русски',
   'card.audio.missing': 'Аудио ещё не готово',
   'card.audio.generate': 'Сгенерировать аудио',
   'card.audio.generating': 'Генерация…',

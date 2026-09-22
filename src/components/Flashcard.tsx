@@ -429,8 +429,22 @@ const TtsButton = forwardRef<TtsButtonHandle, {
         type="button"
         className={styles.speakBtn}
         onClick={play}
-        aria-label={t('card.audio.play')}
-        title={t('card.audio.play')}
+        // Language-aware label so a screen-reader user hears
+        // *what* is about to be spoken — important on the back
+        // of the card, where the button speaks the OPPOSITE
+        // language (e.g. in kk-ru mode, the back button speaks
+        // Russian, i.e. the translation). Without this the
+        // button would announce as a generic "Произнести".
+        aria-label={
+          lang === 'kk'
+            ? t('card.audio.play.kk')
+            : t('card.audio.play.ru')
+        }
+        title={
+          lang === 'kk'
+            ? t('card.audio.play.kk')
+            : t('card.audio.play.ru')
+        }
       >
         <Volume2
           size={18}
@@ -453,13 +467,23 @@ const TtsButton = forwardRef<TtsButtonHandle, {
       className={`${styles.speakBtn} ${styles.speakBtnGenerate}`}
       onClick={generate}
       disabled={generating}
-      aria-label={failed ? t('card.audio.retry') : t('card.audio.generate')}
+      aria-label={
+        generating
+          ? t('card.audio.generating')
+          : failed
+            ? t('card.audio.retry')
+            : lang === 'kk'
+              ? t('card.audio.play.kk')
+              : t('card.audio.play.ru')
+      }
       title={
         generating
           ? t('card.audio.generating')
           : failed
             ? t('card.audio.retry')
-            : t('card.audio.generate')
+            : lang === 'kk'
+              ? t('card.audio.play.kk')
+              : t('card.audio.play.ru')
       }
     >
       {generating ? (
