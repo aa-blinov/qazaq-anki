@@ -103,7 +103,6 @@ export function StatsPage() {
     };
   }, [user, totalLapses, reset]);
   const { t, tTopic } = useLang();
-  const [confirmReset, setConfirmReset] = useState(false);
   const [loaded, setLoaded] = useState<LoadedLevels>({});
   // Confirmation modal for "Сбросить прогресс". Replaces the
   // two-tap gesture (which only changed the button label and
