@@ -387,6 +387,17 @@ p:last-child { margin-bottom: 0; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  /*
+    Card flip is a 3D rotateY. Even at 0ms duration the 3D
+    transform still applies, which can disorient vestibular-
+    sensitive users. Flatten the perspective so reduced-motion
+    users see an instant cross-fade instead of a 180° flip.
+  */
+  [class*="cardInner"] {
+    transform-style: flat !important;
   }
 }

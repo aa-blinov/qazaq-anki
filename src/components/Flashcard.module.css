@@ -18,7 +18,11 @@
   position: relative;
   width: 100%;
   height: 100%;
-  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Flip duration: 380ms. Long enough to read as a deliberate
+     flip (not a glitch), short enough that two Space-presses
+     back-to-back don't queue up. The global prefers-reduced-motion
+     rule at the bottom of global.css collapses this to ~0ms. */
+  transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
   transform-style: preserve-3d;
   animation: cardEnter 0.32s ease;
 }
