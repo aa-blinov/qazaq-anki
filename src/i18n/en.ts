@@ -497,6 +497,10 @@ export const en: Translations = {
   'error.loading': 'Loading deck…',
   'error.noCards': 'No cards in this level.',
   'error.back': 'Back',
+  'error.boundary.title': 'Something broke',
+  'error.boundary.body': 'The page could not render. Try reloading or going back to the home page — if the error repeats, open the browser console (F12) and send the stack trace.',
+  'error.boundary.retry': 'Try again',
+  'error.boundary.home': 'Back to home',
 
   // 404
   'notFound.title': 'Page not found',

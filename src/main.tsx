@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { preloadAllLevels } from './data/decks';
 import './styles/global.css';
 
@@ -49,8 +50,14 @@ preloadAllLevels().catch((err) => {
 
 createRoot(rootEl).render(
   <StrictMode>
-    <BrowserRouter basename={basename}>
-      <App />
-    </BrowserRouter>
+    {/* ErrorBoundary lives OUTSIDE the BrowserRouter so a router
+        crash (e.g. malformed URL parsing) is still caught. The
+        "Back to home" recovery link is just a plain <a href="/">,
+        which the router has no say in. */}
+    <ErrorBoundary>
+      <BrowserRouter basename={basename}>
+        <App />
+      </BrowserRouter>
+    </ErrorBoundary>
   </StrictMode>,
 );

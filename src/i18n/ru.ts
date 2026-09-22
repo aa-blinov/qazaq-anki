@@ -514,6 +514,10 @@ export const ru: Translations = {
   'error.loading': 'Загружаем колоду…',
   'error.noCards': 'В этом уровне пока нет карточек.',
   'error.back': 'Назад',
+  'error.boundary.title': 'Что-то сломалось',
+  'error.boundary.body': 'Страница не смогла отрисоваться. Попробуйте обновить её или вернуться на главную — если ошибка повторится, откройте консоль браузера (F12) и пришлите стек.',
+  'error.boundary.retry': 'Попробовать снова',
+  'error.boundary.home': 'На главную',
 
   // 404
   'notFound.title': 'Страница не найдена',
