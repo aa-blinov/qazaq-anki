@@ -29,6 +29,12 @@ upstream qazaq_api {
 server {
     listen 8080 default_server;
 
+    # Document root for static assets (the Vite bundle baked into
+    # the image). Without this nginx falls back to /etc/nginx/html/
+    # by default — and the index.html there is a stub that would
+    # make try_files loop forever.
+    root /usr/share/nginx/html;
+
     # Hide nginx version in Server header.
     server_tokens off;
 

@@ -1,9 +1,15 @@
-# TTS service — Piper (Kazakh + Russian) HTTP wrapper. Same
-# image shape as the API: a single Python process exposing
-# /synthesize and /voices. The audio chunks are written to a
-# shared volume (/audio) that nginx also mounts read-only,
-# so the API can stream the WAVs without proxying through
-# TTS.
+# TTS service — Piper (Kazakh + Russian) HTTP wrapper.
+#
+# Exposes POST /synthesize and GET /healthz. The Python source
+# lives at scripts/tts_service.py in the repo root; we COPY it
+# here as `server.py` so the runtime can find it at /app/.
+#
+# Voice models are NOT baked into the image. The repo ships
+# pre-generated WAVs in public/audio/, so this service only
+# needs to handle the long tail of user-added words. Bind-mount
+# the models directory at /app/models/ when running locally; in
+# production mount a persistent volume so the per-language
+# model stays in memory across restarts.
 
 FROM python:3.12-slim
 
@@ -28,21 +34,25 @@ RUN curl -fsSL \
 
 # Python deps. `pydub` is for the audio normalisation pass,
 # the rest are the HTTP wrapper.
-COPY requirements.txt ./
+COPY tts/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Voice files (Kazakh + Russian ONNX models). The repo
-# vendors these in tts/voices/ so the build is reproducible
-# without hitting the HuggingFace mirror at build time.
-COPY voices/ ./voices/
+# The service source — kept in scripts/ in the repo so all TTS
+# scripts (generate_tts.py + tts_service.py) sit together.
+COPY scripts/tts_service.py ./server.py
 
-COPY server.py ./
+# Voice files (Kazakh + Russian ONNX models) — bind-mounted at
+# runtime into /app/models/. The image doesn't bake them in
+# (they're 50+ MB each and rarely change).
+RUN mkdir -p /app/models
 
 ENV TTS_MODE=service
 ENV PYTHONUNBUFFERED=1
 
 EXPOSE 8000
 
-USER nobody
+# USER nobody in the original Dockerfile broke Piper (it can't
+# load ONNX models as nobody). Run as the unprivileged `app`
+# user that python:3.12-slim ships with.
 
 ENTRYPOINT ["/usr/bin/tini", "--", "python", "-m", "uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8000"]

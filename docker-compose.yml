@@ -42,11 +42,15 @@ services:
     volumes:
       - qazaq-data:/data
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3001/api/health"]
+      # node:22-bookworm-slim doesn't ship `wget` — use the
+      # built-in fetch (Node 18+). Same probe as the Dockerfile,
+      # but kept here so `docker compose ps` reads it without
+      # needing to inspect the image.
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 30s
       timeout: 5s
       retries: 3
-      start_period: 10s
+      start_period: 5s
     networks:
       - qazaq
     deploy:
@@ -89,8 +93,8 @@ services:
 
   qazaq-tts-service:
     build:
-      context: ./tts
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: tts/Dockerfile
     image: qazaq-tts:latest
     restart: unless-stopped
     environment:
