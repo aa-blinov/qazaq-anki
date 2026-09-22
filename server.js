@@ -19,6 +19,12 @@ import cors from 'cors';
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import { closeDb, dbQuery, dbQueryOne, dbRun, dbWrite, getDb, openDb, walCheckpoint } from './db.js';
+import {
+  LEVELS,
+  cardLevelOf,
+  loadDeckMeta,
+  totalCardsByLevel,
+} from './deck-meta.js';
 import { AuthError, AUTH_ERROR_CODES, changePassword, login, logout, readUserPreferences, register, resolveSession, writeUserPreferences, issueRecoveryCode, consumeRecoveryCode } from './auth.js';
 import {
   CardError,
@@ -454,6 +460,50 @@ app.post('/api/onboarding/:screen', requireAuth, async (req, res, next) => {
       if (typeof seen[s] === 'string') next[s] = seen[s];
     }
     next[screen] = ts;
+    await dbWrite((db) => {
+      db.run(
+        `UPDATE users SET onboardingSeen = ? WHERE id = ?`,
+        [JSON.stringify(next), req.userId],
+      );
+    });
+    res.json({ seen: next });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/* Reset a single screen's "seen" flag. Powers the "Show tour again"
+ * button in Settings — without it, a user who closed the tour had no
+ * way to bring it back short of dev-tools. Idempotent: deleting a key
+ * that's already absent is a no-op. Same screen whitelist + shape
+ * rebuild as POST above. */
+app.delete('/api/onboarding/:screen', requireAuth, async (req, res, next) => {
+  try {
+    const screen = req.params.screen;
+    if (!ONBOARDING_SCREENS.includes(screen)) {
+      return res.status(400).json({ error: 'unknownScreen' });
+    }
+    const row = dbQueryOne(
+      `SELECT onboardingSeen FROM users WHERE id = ?`,
+      [req.userId],
+    );
+    let seen = {};
+    if (row?.onboardingSeen) {
+      try {
+        const parsed = JSON.parse(row.onboardingSeen);
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+          seen = parsed;
+        }
+      } catch {
+        // Corrupt — start fresh.
+      }
+    }
+    const next = {};
+    for (const s of ONBOARDING_SCREENS) {
+      if (typeof seen[s] === 'string') next[s] = seen[s];
+    }
+    // Intentionally do NOT copy `screen` into `next` — that's the
+    // whole point of the reset.
     await dbWrite((db) => {
       db.run(
         `UPDATE users SET onboardingSeen = ? WHERE id = ?`,
@@ -1130,6 +1180,28 @@ app.get('/api/stats', requireAuth, (_req, res) => {
   const now = Date.now();
   const ms7 = 7 * 86_400_000;
   const ms30 = 30 * 86_400_000;
+
+  // Per-level buckets. We start at zero for every CEFR level so
+  // the client can show empty rings instead of an empty object.
+  const levelTotals = totalCardsByLevel();
+  const perLevel = {};
+  for (const lvl of LEVELS) {
+    perLevel[lvl] = { total: levelTotals[lvl] || 0, learned: 0, mastered: 0, due: 0 };
+  }
+
+  // Ease distribution buckets. Range from 1.3 (Anki floor) to ~3.5+
+  // (very easy cards). Five buckets give a usable histogram without
+  // drowning the UI in columns.
+  const easeBuckets = [
+    { lo: 0, hi: 1.5, label: 'lt1.5' },
+    { lo: 1.5, hi: 2.0, label: '1.5-2.0' },
+    { lo: 2.0, hi: 2.5, label: '2.0-2.5' },
+    { lo: 2.5, hi: 3.0, label: '2.5-3.0' },
+    { lo: 3.0, hi: 10, label: 'gt3.0' },
+  ];
+  const easeDistribution = {};
+  for (const b of easeBuckets) easeDistribution[b.label] = 0;
+
   for (const r of progressRows) {
     let s;
     try {
@@ -1147,17 +1219,109 @@ app.get('/api/stats', requireAuth, (_req, res) => {
       // double-counted across directions.
       if (s.lapses >= 8) leechCardIds.add(r.cardId);
     }
-    if (s.phase === 'review' && typeof s.interval === 'number' && s.interval >= 21) mastered++;
+    const isMastered = s.phase === 'review' && typeof s.interval === 'number' && s.interval >= 21;
+    if (isMastered) mastered++;
+
+    // Per-level aggregation. Cards whose id isn't in the deck
+    // metadata (e.g. user-added cards) are skipped from per-level
+    // stats — they'd never land in any bucket and would silently
+    // understate totals.
+    const lvl = cardLevelOf(r.cardId);
+    if (lvl && perLevel[lvl]) {
+      if (s.phase && s.phase !== 'new') perLevel[lvl].learned++;
+      if (isMastered) perLevel[lvl].mastered++;
+    }
+
     if (s.due) {
       const dueMs = Date.parse(s.due);
       if (Number.isFinite(dueMs)) {
-        if (dueMs <= now) dueNow++;
+        if (dueMs <= now) {
+          dueNow++;
+          if (lvl && perLevel[lvl]) perLevel[lvl].due++;
+        }
         const delta = dueMs - now;
         if (delta <= ms7) due7++;
         if (delta <= ms30) due30++;
       }
     }
+
+    // Ease histogram. Cards with `phase === 'new'` have no ease
+    // yet (the default 2.5 lives only in the unevaluated initial
+    // state); skip them so the histogram reflects actual learning
+    // outcome.
+    if (typeof s.ease === 'number' && s.phase && s.phase !== 'new') {
+      for (const b of easeBuckets) {
+        if (s.ease >= b.lo && s.ease < b.hi) {
+          easeDistribution[b.label]++;
+          break;
+        }
+      }
+    }
   }
+
+  // --- ETA projection ------------------------------------------------
+  // Velocity = reviews in the last 14 active days / 14 (capped at 14).
+  // We use a 14-day window so a single bad day doesn't crater the
+  // projection, but the signal is still recent enough to reflect
+  // current pace. The window is also clamped to "active days" —
+  // a user who took two weeks off doesn't get projected as if
+  // they'd been studying the whole time.
+  // Velocity = total reviews in the last 14 active days / active days.
+  // We need the COUNT(*) for the numerator and the COUNT(DISTINCT
+  // day) for the denominator — two different aggregates. A single
+  // GROUP BY day can't give us both; the cleanest shape is two
+  // separate queries.
+  //
+  // Earlier drafts tried `recentRows.length / activeDays` where
+  // `recentRows.length` was already the distinct-day count. The
+  // bug: 7 distinct days with 12 reviews each gave `7 / 7 = 1`
+  // instead of `84 / 7 = 12`, so ETA projections were 12× too
+  // pessimistic and the rings said "682 дн" for a level that
+  // would actually clear in 57.
+  const { rows: countRows } = dbQuery(
+    `SELECT COUNT(*) AS n
+     FROM review_log
+     WHERE userId = ?
+       AND ts >= datetime('now', '-14 days')`,
+    [userId],
+  );
+  const { rows: dayRows } = dbQuery(
+    `SELECT substr(ts, 1, 10) AS day
+     FROM review_log
+     WHERE userId = ?
+       AND ts >= datetime('now', '-14 days')
+     GROUP BY day`,
+    [userId],
+  );
+  const totalRecent = countRows[0]?.n ?? 0;
+  const activeDays = Math.min(14, dayRows.length);
+  const cardsPerDay = activeDays > 0 ? totalRecent / activeDays : 0;
+
+  // Days-to-mastery per level. null when the level is already 100%
+  // learned, has no activity (can't project), or the user hasn't
+  // started it. `remaining = total - learned`. `ceiling = days`
+  // when velocity is zero — we won't say "∞ days" because that's
+  // a lie; we say "не двигается" instead.
+  const eta = {};
+  for (const lvl of LEVELS) {
+    const stat = perLevel[lvl];
+    const remaining = Math.max(0, stat.total - stat.learned);
+    if (remaining === 0) {
+      eta[lvl] = { days: null, done: true };
+      continue;
+    }
+    if (cardsPerDay <= 0 || activeDays < 3) {
+      // Three days of activity is the minimum we need to project
+      // velocity. Below that the projection is just noise.
+      eta[lvl] = { days: null, done: false };
+      continue;
+    }
+    eta[lvl] = {
+      days: Math.ceil(remaining / cardsPerDay),
+      done: false,
+    };
+  }
+
   res.json({
     learned,
     totalReviews,
@@ -1168,6 +1332,13 @@ app.get('/api/stats', requireAuth, (_req, res) => {
     due7,
     due30,
     leeches: leechCardIds.size,
+    levels: perLevel,
+    ease: easeDistribution,
+    eta,
+    velocity: {
+      cardsPerDay: Math.round(cardsPerDay * 10) / 10,
+      activeDays,
+    },
   });
 });
 
@@ -1343,6 +1514,7 @@ app.use((err, _req, res, _next) => {
 
 openDb()
   .then(() => {
+    loadDeckMeta();
     app.listen(PORT, HOST, () => {
       // eslint-disable-next-line no-console
       console.log(`[server] listening on http://${HOST}:${PORT}`);

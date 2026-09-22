@@ -226,6 +226,42 @@ export interface ServerStats {
   /** Cards with `lapses >= 8` in either direction, deduplicated
    *  to one per card. Surface a "leech" notice when this is > 0. */
   leeches: number;
+  /** Per-CEFR-level breakdown. Powers the level-rings chart and the
+   *  ETA projection. `total` is the deck-wide count from the static
+   *  deck metadata; `learned` is cards the user has touched at
+   *  least once; `mastered` is cards in review with interval ≥ 21d;
+   *  `due` is cards currently due. */
+  levels: Record<LevelName, {
+    total: number;
+    learned: number;
+    mastered: number;
+    due: number;
+  }>;
+  /** Ease-factor histogram (5 ranges). The count of cards whose
+   *  current SM-2 ease factor falls into each bucket. Cards that
+   *  have never been reviewed are excluded. */
+  ease: {
+    'lt1.5': number;
+    '1.5-2.0': number;
+    '2.0-2.5': number;
+    '2.5-3.0': number;
+    'gt3.0': number;
+  };
+  /** Days-to-mastery projection per CEFR level, derived from a
+   *  rolling 14-day velocity. `days` is null when the level is
+   *  already done (0 remaining), the user hasn't started it, or
+   *  we have < 3 active days to project from. */
+  eta: Record<LevelName, {
+    days: number | null;
+    done: boolean;
+  }>;
+  /** Velocity that drives the ETA. `cardsPerDay` is rounded to 1
+   *  decimal place; `activeDays` is the count of distinct days in
+   *  the 14-day window that had at least one review. */
+  velocity: {
+    cardsPerDay: number;
+    activeDays: number;
+  };
 }
 
 /** Per-day counter — what the daily new-card cap and the goal
@@ -444,6 +480,14 @@ export const api = {
     markSeen: (screen: 'study' | 'browse' | 'stats') =>
       request<{ seen: Record<string, string> }>(`/onboarding/${screen}`, {
         method: 'POST',
+        auth: true,
+      }),
+    /** Clear one screen's "seen" flag — powers the Settings
+    // "Show tour again" button. Idempotent: deleting an already-absent
+    // screen is a no-op. */
+    reset: (screen: 'study' | 'browse' | 'stats') =>
+      request<{ seen: Record<string, string> }>(`/onboarding/${screen}`, {
+        method: 'DELETE',
         auth: true,
       }),
   },

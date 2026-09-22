@@ -53,6 +53,11 @@ COPY --from=build --chown=node:node /app/auth.js ./auth.js
 COPY --from=build --chown=node:node /app/cards.js ./cards.js
 COPY --from=build --chown=node:node /app/apkg.js ./apkg.js
 COPY --from=build --chown=node:node /app/ratelimit.js ./ratelimit.js
+COPY --from=build --chown=node:node /app/deck-meta.js ./deck-meta.js
+# Deck JSONs — deck-meta.js reads them at boot to build the
+# cardId→level map. Without these the per-level stats endpoint
+# would throw on startup.
+COPY --from=build --chown=node:node /app/src/data/decks ./src/data/decks
 COPY --from=build --chown=node:node /app/package.json ./package.json
 
 ENV DB_PATH=/data/qazaq.sqlite
