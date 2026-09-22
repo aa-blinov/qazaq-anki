@@ -82,14 +82,37 @@ describe('review() — new/learning phase', () => {
     expect(dueIn).toBe(1 * 60_000);
   });
 
-  it('Hard on a new card repeats the current step', () => {
+  it('Hard on the first learning step averages the first two steps (1m + 10m → 6m)', () => {
+    // Anki Manual, Deck Options → Learning Steps:
+    //   "When you're on the first step, the Hard button shows a delay
+    //    of 6m. The 6m delay is the average of first two steps: 1m
+    //    and 10m."
+    // Anki forum summary:
+    //   "Hard repeats the current step after the first step, and is
+    //    the average of Again and Good on the first step."
     const s0 = createInitial(NOW);
     const s1 = review(s0, 'hard', 'card-1', NOW);
     expect(s1.phase).toBe('learning');
     expect(s1.learningStep).toBe(0);
-    // Due in 1 minute
+    // (1 + 10) / 2 = 5.5 → rounds to 6
     const dueIn = new Date(s1.due).getTime() - NOW.getTime();
-    expect(dueIn).toBe(1 * 60_000);
+    expect(dueIn).toBe(6 * 60_000);
+  });
+
+  it('Hard on the second learning step repeats that step (not the average)', () => {
+    // Anki Manual: "When you're on any other step, the Hard button
+    // repeats that step."
+    const s0 = createInitial(NOW);
+    // Advance past the first step with Good to land on step index 1.
+    const t1 = advance(NOW, 1 * 60_000);
+    const s1 = review(s0, 'good', 'card-1', t1); // step 1, due in 10m
+    const t2 = advance(t1, 10 * 60_000);
+    const s2 = review(s1, 'hard', 'card-1', t2); // Hard on step 1
+    expect(s2.phase).toBe('learning');
+    expect(s2.learningStep).toBe(1);
+    // Repeats the current step (10m), not the average of step 1 and 2.
+    const dueIn = new Date(s2.due).getTime() - t2.getTime();
+    expect(dueIn).toBe(10 * 60_000);
   });
 });
 
@@ -120,13 +143,41 @@ describe('review() — review phase', () => {
   });
 
   it('Hard multiplies interval by hardIntervalMultiplier and penalizes ease', () => {
-    const { cardId, state, t } = inReview();
-    const beforeEase = state.ease;
-    const s2 = review(state, 'hard', cardId, t);
-    const expected = Math.round(state.interval * SCHEDULE_CONFIG.hardIntervalMultiplier);
-    expect(s2.interval).toBe(expected);
-    // Ease went down by hardEaseDelta
+    // Bring a card into review with interval ≥ 5d so that the
+    // anti-stagnation rule (`prev + 1`) doesn't dominate the
+    // arithmetic; we want to assert the multiplier path on its own.
+    const cardId = 'card-1';
+    let s = createInitial(NOW);
+    s = review(s, 'good', cardId, NOW);
+    s = review(s, 'good', cardId, advance(NOW, 10 * 60_000)); // graduate: 1d
+    // 1 → 3 (×2.5) → 8 (×2.5) → interval is now 8d
+    s = review(s, 'good', cardId, advance(NOW, 11 * 60_000)); // 1×2.5 ≈ 3d
+    s = review(s, 'good', cardId, advance(NOW, 4 * 86_400_000)); // 3×2.5 ≈ 8d
+    const beforeEase = s.ease;
+    const t = advance(NOW, 9 * 86_400_000);
+    const s2 = review(s, 'hard', cardId, t);
+    // Anki Manual, "Hard" on a review card:
+    //   "The card's ease is decreased by 15 percentage points and
+    //    the current interval is multiplied by the value of hard
+    //    interval (1.2 by default)."
+    // With 8 × 1.2 = 9.6 → 10. And prev+1 = 9 < 10, so the
+    // multiplier wins. We also check fuzz: it sits in [0.95, 1.05],
+    // so the resulting interval is in [9, 11].
+    expect(s2.interval).toBeGreaterThanOrEqual(9);
+    expect(s2.interval).toBeLessThanOrEqual(11);
     expect(s2.ease).toBeCloseTo(beforeEase + SCHEDULE_CONFIG.hardEaseDelta, 10);
+  });
+
+  it('Hard on a 1-day card respects the anti-stagnation floor (prev+1)', () => {
+    // Anki guarantees the next interval after Hard/Good/Easy is at
+    // least 1 day longer than the previous one. For a freshly
+    // graduated card with interval=1d, 1 × 1.2 = 1.2 → 1, which
+    // would otherwise leave the card "stuck". The scheduler bumps
+    // this to prev+1 = 2.
+    const { cardId, state, t } = inReview(); // interval = 1d
+    expect(state.interval).toBe(1);
+    const s2 = review(state, 'hard', cardId, t);
+    expect(s2.interval).toBeGreaterThanOrEqual(2);
   });
 
   it('Easy adds the easy bonus on top of ease', () => {
@@ -181,6 +232,32 @@ describe('review() — relearning phase', () => {
     expect(s2.lapses).toBe(1);
   });
 
+  it('Hard on relearning repeats the current relearning step (not graduate)', () => {
+    // Symmetric with learning: Hard in relearning must NOT graduate
+    // the card out of relearning. An older build had this bug —
+    // a "partial recall" effectively skipped the rest of the
+    // relearning queue. The fix mirrors the learning path:
+    // Hard → repeat current step / avg on first step / 1.5× on
+    // single-step decks.
+    //
+    // Our relearning config has a single step (`[10]`), so Hard
+    // applies the Anki "single step → 1.5×" rule: 10 × 1.5 = 15m.
+    const cardId = 'card-1';
+    let s = createInitial(NOW);
+    s = review(s, 'good', cardId, NOW);
+    s = review(s, 'good', cardId, advance(NOW, 10 * 60_000));
+    s = review(s, 'again', cardId, advance(NOW, 11 * 60_000));
+    expect(s.phase).toBe('relearning');
+    const t = advance(NOW, 21 * 60_000); // due after first relearning step
+    const s2 = review(s, 'hard', cardId, t);
+    // Still in relearning (no premature graduation).
+    expect(s2.phase).toBe('relearning');
+    expect(s2.learningStep).toBe(0);
+    // Due in 15m — single-step relearning: 1.5× the only step.
+    const dueIn = new Date(s2.due).getTime() - t.getTime();
+    expect(dueIn).toBe(15 * 60_000);
+  });
+
   it('Again on relearning restarts the relearning steps', () => {
     const cardId = 'card-1';
     let s = createInitial(NOW);
@@ -224,7 +301,11 @@ describe('nextIntervalLabel()', () => {
   it('shows minutes for learning steps', () => {
     const s = createInitial(NOW);
     expect(nextIntervalLabel(s, 'good', NOW)).toBe('10m');
-    expect(nextIntervalLabel(s, 'hard', NOW)).toBe('1m');
+    // Hard on the first learning step averages the first two steps
+    // — see "Hard on the first learning step averages..." above.
+    // (1 + 10) / 2 = 5.5 → 6m. This used to assert '1m' before
+    // we fixed the scheduler to honour the Anki docs.
+    expect(nextIntervalLabel(s, 'hard', NOW)).toBe('6m');
     expect(nextIntervalLabel(s, 'again', NOW)).toBe('1m');
     // The preview uses a neutral fuzz of exactly 1.0 (no
     // card-id-based jitter) so the displayed number is stable

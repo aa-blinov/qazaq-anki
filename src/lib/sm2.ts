@@ -161,9 +161,24 @@ function reviewWithFuzz(
       next.learningStep = 0;
       next.due = addMinutes(now, SCHEDULE_CONFIG.learningStepsMin[0]).toISOString();
     } else if (grade === 'hard') {
-      // Repeat the current step
+      // Anki's Hard button has two distinct behaviours in learning:
+      //   • first step → average of the first TWO steps (e.g. [1m, 10m] → 6m)
+      //   • any other step → repeat the current step
+      //   • single-step decks → 1.5× the only step
+      // The previous implementation always repeated the current step,
+      // which silently shortened the first-step Hard delay from 6m to
+      // 1m and made the button feel indistinguishable from Again.
       next.phase = 'learning';
-      const stepMin = SCHEDULE_CONFIG.learningStepsMin[state.learningStep];
+      const steps = SCHEDULE_CONFIG.learningStepsMin;
+      let stepMin: number;
+      if (state.learningStep === 0 && steps.length >= 2) {
+        stepMin = Math.round((steps[0] + steps[1]) / 2);
+      } else if (steps.length >= 2) {
+        stepMin = steps[state.learningStep];
+      } else {
+        // Single-step deck — Anki uses 1.5× the only step.
+        stepMin = Math.round(steps[0] * 1.5);
+      }
       next.due = addMinutes(now, stepMin).toISOString();
     } else if (grade === 'good') {
       const nextStep = state.learningStep + 1;
@@ -186,24 +201,60 @@ function reviewWithFuzz(
 
   /* ------------------------------- RELEARNING ------------------------------- */
   else if (state.phase === 'relearning') {
+    // Relearning mirrors learning for the step-level buttons (Again,
+    // Hard, Good, Easy). Only the graduate-from-relearning step
+    // differs: it uses lapseNewIntervalMultiplier to compute the new
+    // review interval. Hard was previously lumped into the graduate
+    // branch — that was a bug: it skipped the relearning steps on a
+    // partial recall, which is what `min` / `partial` semantics are
+    // meant to prevent.
     if (grade === 'again') {
       next.learningStep = 0;
       next.due = addMinutes(now, SCHEDULE_CONFIG.relearningStepsMin[0]).toISOString();
+    } else if (grade === 'hard') {
+      next.phase = 'relearning';
+      // Widened from `readonly [10]` to `readonly number[]` so we
+      // can branch on length and index without TS complaining that
+      // step[1] doesn't exist for the single-step tuple. The
+      // non-null assertions below are sound because the `length >= 2`
+      // branches are gated on the same check.
+      const steps: readonly number[] = SCHEDULE_CONFIG.relearningStepsMin;
+      let stepMin: number;
+      if (state.learningStep === 0 && steps.length >= 2) {
+        stepMin = Math.round((steps[0]! + steps[1]!) / 2);
+      } else if (steps.length >= 2) {
+        stepMin = steps[state.learningStep]!;
+      } else {
+        stepMin = Math.round(steps[0]! * 1.5);
+      }
+      next.due = addMinutes(now, stepMin).toISOString();
+    } else if (grade === 'good') {
+      const nextStep = state.learningStep + 1;
+      if (nextStep < SCHEDULE_CONFIG.relearningStepsMin.length) {
+        next.phase = 'relearning';
+        next.learningStep = nextStep;
+        next.due = addMinutes(now, SCHEDULE_CONFIG.relearningStepsMin[nextStep]).toISOString();
+      } else {
+        // Graduate from relearning back to review.
+        // Note: lapses was already incremented when this card entered
+        // relearning (see review-phase "Again" branch above), so we don't
+        // bump it again here. Ease, however, is decremented once on lapse
+        // (Anki's behavior) — also done on entry, so we keep it stable here.
+        const baseDays = Math.max(
+          SCHEDULE_CONFIG.minIntervalDays,
+          state.interval * SCHEDULE_CONFIG.lapseNewIntervalMultiplier,
+        );
+        graduate(next, clampDays(baseDays * fuzz), now);
+        next.correct = state.correct + 1;
+      }
     } else {
-      // Graduate from relearning back to review.
-      // Note: lapses was already incremented when this card entered
-      // relearning (see review-phase "Again" branch above), so we don't
-      // bump it again here. Ease, however, is decremented once on lapse
-      // (Anki's behavior) — also done on entry, so we keep it stable here.
+      // Easy: graduate immediately (with the same new-interval rule as Good)
       const baseDays = Math.max(
         SCHEDULE_CONFIG.minIntervalDays,
         state.interval * SCHEDULE_CONFIG.lapseNewIntervalMultiplier,
       );
       graduate(next, clampDays(baseDays * fuzz), now);
-      // No ease change here — the lapse penalty was already applied on entry.
-      if (grade === 'good' || grade === 'easy') {
-        next.correct = state.correct + 1;
-      }
+      next.correct = state.correct + 1;
     }
   }
 
@@ -228,7 +279,13 @@ function reviewWithFuzz(
         mult = state.ease * SCHEDULE_CONFIG.easyBonus;
         easeDelta = SCHEDULE_CONFIG.easyEaseDelta;
       }
+      // Anki guarantees "every new interval (except Again) is at
+      // least one day longer than the previous one" — this is what
+      // stops a card from getting "stuck" at the same interval forever
+      // when the multipliers conspire. We honour that here, on top
+      // of the global minIntervalDays floor.
       const baseDays = Math.max(
+        state.interval + 1,
         SCHEDULE_CONFIG.minIntervalDays,
         Math.round(state.interval * mult),
       );
