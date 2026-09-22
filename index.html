@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Карточки для изучения казахского языка по уровням CEFR A1–C1. 3 996 отобранных слов, интервальное повторение, бесплатно, работает в браузере." />
     <meta name="theme-color" content="#FAF7F2" media="(prefers-color-scheme: light)" />
@@ -42,6 +43,24 @@
     -->
     <script src="/theme-init.js"></script>
     <title>Qazaq — учите казахский с интервальным повторением</title>
+    <!--
+      Register the service worker for offline app-shell + level JSON
+      caching. The script is in /sw.js (served from public/ at root).
+      We register AFTER the page is interactive so the SW install
+      doesn't compete with the first paint. If the SW fails (Safari
+      private mode, an overzealous extension, etc.) the app still
+      works — just without the offline shell.
+    -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch((err) => {
+            // eslint-disable-next-line no-console
+            console.warn('[sw] registration failed:', err);
+          });
+        });
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
