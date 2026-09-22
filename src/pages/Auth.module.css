@@ -76,6 +76,28 @@
 }
 
 /*
+  Inline field error. Sits directly under the offending input,
+  uses a left accent stripe + the danger colour so the eye
+  links it to the red-bordered input above. The message is also
+  read aloud via aria-describedby on the input itself, so the
+  screen-reader experience doesn't depend on the visual
+  proximity.
+*/
+.fieldError {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 6px 0 0;
+  padding: 6px 10px 6px 8px;
+  background: var(--danger-soft);
+  border-left: 2px solid var(--danger);
+  border-radius: 4px;
+  color: var(--danger);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+/*
   Notice shown next to the submit button. Subtle, muted — we
   don't want to scare the user, but we DO want them to know
   that the account is browser-bound before they sign up.

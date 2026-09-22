@@ -355,6 +355,18 @@ p:last-child { margin-bottom: 0; }
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
+/*
+  Invalid input — used by the auth forms (and any future
+  form) when a field-level error needs to be visible.
+  Sets the danger border + soft glow so the input matches
+  the inline `.fieldError` message under it. Pairs with
+  aria-invalid="true" on the input for screen readers.
+*/
+.input--error,
+.input--error:focus {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px var(--danger-soft);
+}
 
 .label {
   display: block;

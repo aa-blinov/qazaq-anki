@@ -22,3 +22,45 @@ function authKeyFor(code: AuthErrorCode): string {
   // codes are e.g. "noSuchUser" → "auth.errors.noSuchUser"
   return `auth.errors.${code}`;
 }
+
+/**
+ * Which form field an AuthError belongs to. Used to highlight the
+ * offending input with a red border and show an inline message
+ * directly under it. Returns null for errors that don't map to a
+ * single field (network, server) — those stay as a top-of-form
+ * banner instead.
+ *
+ * Mapping is intentional — `noSuchUser` points at the username
+ * field because that's where the user typed the wrong handle;
+ * `wrongPassword` points at the password field because we don't
+ * know whether the username was right.
+ */
+export function getAuthErrorField(code: AuthErrorCode): 'username' | 'password' | null {
+  switch (code) {
+    case 'usernameRequired':
+    case 'usernameTooShort':
+    case 'usernameTooLong':
+    case 'usernameInvalid':
+    case 'usernameTaken':
+    case 'noSuchUser':
+      return 'username';
+    case 'passwordRequired':
+    case 'passwordTooShort':
+    case 'passwordTooLong':
+    case 'wrongPassword':
+      return 'password';
+    // Generic / global — no specific field:
+    case 'tooManyAccounts':
+    case 'invalidUserRecord':
+    case 'networkError':
+    case 'serverError':
+    case 'generic':
+      return null;
+  }
+}
+
+/** Extract the AuthErrorCode if `err` is an AuthError, else null. */
+export function getAuthErrorCode(err: unknown): AuthErrorCode | null {
+  if (err instanceof AuthError) return err.code;
+  return null;
+}

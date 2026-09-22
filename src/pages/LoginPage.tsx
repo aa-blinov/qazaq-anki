@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
-import { translateAuthError } from '../lib/authError';
+import { getAuthErrorCode, getAuthErrorField, translateAuthError } from '../lib/authError';
 import { api } from '../lib/api';
 import { Logo } from '../components/Logo';
 import styles from './Auth.module.css';
@@ -16,7 +16,15 @@ export function LoginPage() {
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  // `error` is the top-of-form banner (network / global errors).
+  // `fieldErrors` holds per-field messages — keyed by field name
+  // so the input can be red-bordered and the inline message can
+  // be wired to aria-describedby.
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{
+    username?: string;
+    password?: string;
+  }>({});
   const [busy, setBusy] = useState(false);
   // Recovery flow is a sub-view inside the login panel — when
   // the user clicks "Forgot password" we hide the password field
@@ -28,12 +36,25 @@ export function LoginPage() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
+    setFieldErrors({});
     setBusy(true);
     try {
       await login(username, password);
       navigate(from, { replace: true });
     } catch (err) {
-      setError(translateAuthError(err, t));
+      const code = getAuthErrorCode(err);
+      const field = code ? getAuthErrorField(code) : null;
+      const message = translateAuthError(err, t);
+      if (field) {
+        // Per-field error: highlight the input, render the message
+        // under it. Keep the top banner empty — repeating the same
+        // message twice would be visual noise.
+        setFieldErrors({ [field]: message });
+      } else {
+        // Global error (network, tooManyAccounts, serverError) —
+        // show the banner, no specific field to blame.
+        setError(message);
+      }
     } finally {
       setBusy(false);
     }
@@ -52,37 +73,68 @@ export function LoginPage() {
 
         {mode === 'login' ? (
           <>
-            <form onSubmit={handleSubmit} className={styles.form}>
+            <form onSubmit={handleSubmit} className={styles.form} noValidate>
               <div>
                 <label className="label" htmlFor="username">{t('auth.username')}</label>
                 <input
                   id="username"
-                  className="input"
+                  className={`input ${fieldErrors.username ? 'input--error' : ''}`}
                   type="text"
                   autoComplete="username"
                   autoFocus
                   required
                   value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={(e) => {
+                    setUsername(e.target.value);
+                    // Clear the field error as soon as the user
+                    // starts typing — the same error staying
+                    // after a correction feels punishing.
+                    if (fieldErrors.username) {
+                      setFieldErrors((f) => ({ ...f, username: undefined }));
+                    }
+                  }}
                   placeholder={t('auth.placeholder.name')}
+                  aria-invalid={fieldErrors.username ? true : undefined}
+                  aria-describedby={fieldErrors.username ? 'username-err' : undefined}
                 />
+                {fieldErrors.username ? (
+                  <p className={styles.fieldError} id="username-err" role="alert">
+                    {fieldErrors.username}
+                  </p>
+                ) : null}
               </div>
 
               <div>
                 <label className="label" htmlFor="password">{t('auth.password')}</label>
                 <input
                   id="password"
-                  className="input"
+                  className={`input ${fieldErrors.password ? 'input--error' : ''}`}
                   type="password"
                   autoComplete="current-password"
                   required
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (fieldErrors.password) {
+                      setFieldErrors((f) => ({ ...f, password: undefined }));
+                    }
+                  }}
                   placeholder={t('auth.placeholder.password')}
+                  aria-invalid={fieldErrors.password ? true : undefined}
+                  aria-describedby={fieldErrors.password ? 'password-err' : undefined}
                 />
+                {fieldErrors.password ? (
+                  <p className={styles.fieldError} id="password-err" role="alert">
+                    {fieldErrors.password}
+                  </p>
+                ) : null}
               </div>
 
-              {error ? <div className={styles.error}>{error}</div> : null}
+              {error ? (
+                <div className={styles.error} role="alert">
+                  {error}
+                </div>
+              ) : null}
 
               <button type="submit" className="btn btn--lg" disabled={busy}>
                 {busy ? '…' : t('auth.signIn')}
@@ -95,6 +147,7 @@ export function LoginPage() {
                 className={styles.linkBtn}
                 onClick={() => {
                   setError(null);
+                  setFieldErrors({});
                   setMode('recover-start');
                 }}
               >
@@ -110,6 +163,7 @@ export function LoginPage() {
             initialUsername={username}
             onCancel={() => {
               setError(null);
+              setFieldErrors({});
               setMode('login');
             }}
             onSent={() => setMode('recover-verify')}
@@ -120,12 +174,14 @@ export function LoginPage() {
             initialUsername={username}
             onCancel={() => {
               setError(null);
+              setFieldErrors({});
               setMode('login');
             }}
             onDone={() => {
               // After a successful reset, jump back to the login
               // form and let the user type the new password.
               setError(null);
+              setFieldErrors({});
               setPassword('');
               setMode('login');
             }}
