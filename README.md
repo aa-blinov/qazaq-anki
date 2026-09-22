@@ -6,7 +6,7 @@ A free, offline-first, GitHub-Pages-ready web app for learning **Қазақ ті
 
 ---
 
-## ✨ Features
+## Features
 
 - **500 real words** organized by CEFR level (A1 → C1) and thematic category — sourced from the public [Wordmastery 1000-most-common-Kazakh-words](https://wordmastery.org/kazakh/) list.
 - **SM-2 spaced repetition** (the algorithm Anki uses), with 4 familiar rating buttons: *Again / Hard / Good / Easy*, plus keyboard shortcuts (1/2/3/4 and Space).
@@ -19,7 +19,21 @@ A free, offline-first, GitHub-Pages-ready web app for learning **Қазақ ті
 
 ---
 
-## 🚀 Quick start
+## Screenshots
+
+![Landing](docs/screenshots/desktop/01-landing.png)
+
+![Study — front](docs/screenshots/desktop/07-study-front.png)
+![Study — back](docs/screenshots/desktop/08-study-back.png)
+
+![Stats](docs/screenshots/desktop/10-stats-overview.png)
+
+The full UI gallery (mobile, dark mode, every route) lives in
+[`docs/screenshots/`](docs/screenshots/README.md).
+
+---
+
+## Quick start
 
 ```bash
 npm install
@@ -36,7 +50,7 @@ npm run deploy     # build + push dist/ to gh-pages branch
 
 ---
 
-## 📦 Deploying to GitHub Pages
+## Deploying to GitHub Pages
 
 The repo is already wired for a project-page deploy at `https://<user>.github.io/anki-qazaq/`.
 
@@ -88,7 +102,7 @@ If you serve from a custom domain (apex or subdomain), set `base: '/'` in `vite.
 
 ---
 
-## 🧠 How learning works
+## How learning works
 
 When you start a study session, the app builds a queue of cards that are *due* (intervals expired or new) from the chosen CEFR level. For each card:
 
@@ -101,7 +115,7 @@ Tap **All** in the study tabs to drill every card in the level regardless of due
 
 ---
 
-## 🔐 A note on the "light auth"
+## A note on the "light auth"
 
 There is no backend. Accounts and progress are stored in your browser's `localStorage`, keyed by username. Passwords are bcrypt-hashed (8 rounds) on the client before being stored. This is **convenience authentication, not security** — anyone with access to your browser profile can read the data. It's the right tradeoff for a single-user, local-first learning app deployed on static hosting. Don't put anything sensitive here.
 
@@ -109,7 +123,7 @@ You can reset your progress at any time from the **Stats** page.
 
 ---
 
-## 🗂 Project structure
+## Project structure
 
 ```
 src/
@@ -154,7 +168,7 @@ Or just edit `decks.json` directly.
 
 ---
 
-## ⌨️ Keyboard shortcuts (in study mode)
+## Keyboard shortcuts (in study mode)
 
 | Key             | Action                |
 |-----------------|-----------------------|
@@ -166,7 +180,7 @@ Or just edit `decks.json` directly.
 
 ---
 
-## 📄 Credits
+## Credits
 
 - Vocabulary: [Wordmastery.org — 1000 most common Kazakh words (CEFR A1–C1)](https://wordmastery.org/kazakh/), used as a CC-style educational source.
 - Spaced repetition: SM-2 algorithm (Wozniak, 1990).
@@ -174,6 +188,6 @@ Or just edit `decks.json` directly.
 
 ---
 
-## 📝 License
+## License
 
 MIT — do whatever you want, just don't claim you made it.
