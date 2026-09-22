@@ -14,7 +14,10 @@
   position: sticky;
   top: 0;
   z-index: 10;
-  backdrop-filter: saturate(180%) blur(12px);
+  /* No backdrop-filter on purpose. Frosted-glass topbars were the
+   * tell-tale 2020-2023 SaaS cliché; a solid background reads as
+   * the same product family as a print magazine, not as a Notion
+   * clone. Sticky position still works (content slides under). */
 }
 
 .brand {
@@ -213,25 +216,83 @@
   /* no-op — header collapses via grid */
 }
 
+/*
+  Burger toggle — only visible at narrow widths where the inline
+  horizontal nav becomes hard to read. Replaces the inline row at
+  that breakpoint; the inline nav stays for tablet and above.
+*/
+.burger {
+  display: none;
+}
+
+/* The mobile drawer is a separate copy of the nav rendered into
+   the document flow below the topbar. Hidden by default and on
+   larger screens; `mobileNavOpen` reveals it. The CSS animation
+   is short (90ms) so taps feel snappy. */
+.mobileNav {
+  display: none;
+}
+
 @media (max-width: 540px) {
-  /* On narrow screens the topbar is already wrapped into a
-     second row with horizontal scroll. With full nav labels
-     the row still has to scroll. Drop the labels and keep
-     just the icon — standard mobile pattern. The title
-     attribute still surfaces the full name on long-press /
-     hover. */
-  .navLinkLabel {
+  /* At narrow widths the inline nav and the @userBubble no longer
+     fit cleanly — we swap to a single burger button that toggles
+     a slide-down panel below the topbar. The previous inline row
+     is hidden; the same nav links live inside the drawer. */
+  .nav { display: none; }
+  .navPlaceholder { display: none; }
+  .userBubble { display: none; }
+  .burger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-strong);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    margin-left: 4px;
+  }
+  .burger:hover { background: var(--surface-2); color: var(--text); }
+  .mobileNav {
     display: none;
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    top: calc(100% + 6px);
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    z-index: 12;
   }
-  .navLink {
-    padding: 7px 9px;
+  .mobileNavOpen { display: flex; }
+  .mobileNavLink {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
+    color: var(--text-muted);
+    font-weight: 500;
+    text-decoration: none;
+    min-height: 44px;
   }
-  /* The userBubble is just the @username chip. The username
-     is already hidden at ≤768px, so on narrow phones the
-     bubble renders as an empty box. Hide the whole bubble;
-     the user can still find their account under Settings and
-     sign out via the dedicated icon button. */
-  .userBubble {
-    display: none;
+  .mobileNavLink:hover {
+    background: var(--surface-2);
+    color: var(--text);
+    text-decoration: none;
   }
+  .mobileNavLinkActive {
+    color: var(--text-strong);
+    background: var(--surface-2);
+  }
+  /* The header is `position: sticky` so the drawer anchors to
+    the bottom of the topbar; position the header as a relative
+    anchor for the drawer. */
+  .header { position: sticky; }
 }

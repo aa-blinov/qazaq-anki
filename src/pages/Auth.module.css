@@ -119,6 +119,23 @@
   color: var(--text-muted);
 }
 
+/*
+  Small contextual hint shown above the "Forgot password? / Register" row
+  on the login screen. Tells the user that this server has no email so the
+  recovery code will land in the operator's logs — without it, clicking
+  "Forgot password?" feels like a dead end. Sized down so it reads as a
+  footnote, not a warning.
+*/
+.recoverHint {
+  margin: 14px 0 0;
+  padding: 8px 12px;
+  background: var(--surface-2);
+  border-radius: var(--radius-md);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
 .footer a {
   color: var(--accent);
   font-weight: 500;

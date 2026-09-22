@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Check, Loader2, LogOut, KeyRound } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { api } from '../lib/api';
 import { useLang } from '../contexts/LanguageContext';
@@ -11,6 +11,8 @@ import {
   TTS_SPEED_OPTIONS,
   type TtsSpeed,
 } from '../lib/tts-prefs';
+import { tourScreenFromPath } from '../components/OnboardingModal';
+import { useOnboarding } from '../contexts/OnboardingContext';
 import styles from './SettingsPage.module.css';
 
 /**
@@ -31,7 +33,20 @@ import styles from './SettingsPage.module.css';
 export function SettingsPage() {
   const { user, refresh, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useLang();
+  // Tour re-trigger — the (i) icon in the topbar is hidden once a
+  // user has seen a screen's tour, so we expose a Settings-level
+  // button that clears the "seen" bit for the page the user is
+  // currently on. Lets them re-watch the tour without dev tools.
+  const { reset: resetOnboarding } = useOnboarding();
+  const tourScreen = tourScreenFromPath(location.pathname);
+  const [restartTourPending, setRestartTourPending] = useState(false);
+  function handleRestartTour() {
+    if (!tourScreen) return;
+    resetOnboarding(tourScreen);
+    setRestartTourPending(true);
+  }
   const initial = user?.preferences ?? {};
   const [newPerDay, setNewPerDay] = useState<number>(
     typeof initial.newCardsPerDay === 'number'
@@ -168,7 +183,7 @@ export function SettingsPage() {
         <NumberStepper
           id="newPerDay"
           label={t('settings.daily.newLabel')}
-          min={0}
+          min={1}
           max={200}
           value={newPerDay}
           onChange={setNewPerDay}
@@ -177,6 +192,7 @@ export function SettingsPage() {
           saved={saved === 'new'}
           testId="settings-new-per-day"
         />
+        <p className={styles.zeroNote}>{t('settings.daily.newPerDay.zeroNote')}</p>
 
         <NumberStepper
           id="goalReviews"
@@ -197,20 +213,66 @@ export function SettingsPage() {
         <p className={styles.hint}>{t('settings.audio.hint')}</p>
         <div className={styles.row} data-testid="settings-tts-speed">
           <label className={styles.rowLabel}>{t('settings.audio.speedLabel')}</label>
-          <div className={styles.speedGroup} role="radiogroup" aria-label={t('settings.audio.speedLabel')}>
-            {TTS_SPEED_OPTIONS.map((opt) => (
-              <button
-                key={opt.value}
-                type="button"
-                role="radio"
-                aria-checked={ttsSpeed === opt.value}
-                className={`${styles.speedBtn} ${ttsSpeed === opt.value ? styles.speedBtnActive : ''}`}
-                onClick={() => onSpeedChange(opt.value)}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
+          <div
+          className={styles.speedGroup}
+          role="radiogroup"
+          aria-label={t('settings.audio.speedLabel')}
+          // WAI-ARIA radio-group keyboard pattern: ←/→ and ↑/↓
+          // move the selection between options. Home/End jump
+          // to first/last. Space/Enter are handled by the
+          // native button activation. Without this, the speed
+          // control was a click-only dead zone for keyboard
+          // users — the rest of the form is fully keyboardable
+          // so this was a real accessibility gap.
+          onKeyDown={(e) => {
+            const opts = TTS_SPEED_OPTIONS;
+            const idx = opts.findIndex((o) => o.value === ttsSpeed);
+            if (idx < 0) return;
+            let nextIdx = idx;
+            switch (e.key) {
+              case 'ArrowRight':
+              case 'ArrowDown':
+                nextIdx = (idx + 1) % opts.length;
+                break;
+              case 'ArrowLeft':
+              case 'ArrowUp':
+                nextIdx = (idx - 1 + opts.length) % opts.length;
+                break;
+              case 'Home':
+                nextIdx = 0;
+                break;
+              case 'End':
+                nextIdx = opts.length - 1;
+                break;
+              default:
+                return;
+            }
+            e.preventDefault();
+            const next = opts[nextIdx];
+            onSpeedChange(next.value);
+            // Move focus to the newly-selected button so the
+            // user can keep tabbing without losing their place.
+            const root = e.currentTarget as HTMLDivElement;
+            const target = root.querySelector<HTMLButtonElement>(
+              `button[aria-checked="true"]`,
+            );
+            target?.focus();
+          }}
+        >
+          {TTS_SPEED_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              role="radio"
+              aria-checked={ttsSpeed === opt.value}
+              tabIndex={ttsSpeed === opt.value ? 0 : -1}
+              className={`${styles.speedBtn} ${ttsSpeed === opt.value ? styles.speedBtnActive : ''}`}
+              onClick={() => onSpeedChange(opt.value)}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
         </div>
       </section>
 
@@ -229,6 +291,7 @@ export function SettingsPage() {
             <input
               type="password"
               autoComplete="current-password"
+              placeholder={t('settings.account.passwordOld.placeholder')}
               value={oldPw}
               onChange={(e) => setOldPw(e.target.value)}
               required
@@ -239,6 +302,7 @@ export function SettingsPage() {
             <input
               type="password"
               autoComplete="new-password"
+              placeholder={t('settings.account.passwordNew.placeholder')}
               value={newPw}
               onChange={(e) => setNewPw(e.target.value)}
               required
@@ -250,6 +314,7 @@ export function SettingsPage() {
             <input
               type="password"
               autoComplete="new-password"
+              placeholder={t('settings.account.passwordConfirm.placeholder')}
               value={confirmPw}
               onChange={(e) => setConfirmPw(e.target.value)}
               required
@@ -311,6 +376,21 @@ export function SettingsPage() {
           </li>
         </ul>
       </section>
+
+      {tourScreen ? (
+        <section className={styles.card}>
+          <h2>{t('settings.tour.title')}</h2>
+          <p className={styles.hint}>{t('settings.tour.restartHint')}</p>
+          <button
+            type="button"
+            className="btn"
+            onClick={handleRestartTour}
+            disabled={restartTourPending}
+          >
+            {t('settings.tour.restart')}
+          </button>
+        </section>
+      ) : null}
 
       {error ? (
         <p className={styles.error} role="alert">

@@ -383,7 +383,7 @@ const TtsButton = forwardRef<TtsButtonHandle, {
     // press bubbles up to the Study page's window keydown
     // handler and flips the card. Without this, the focused
     // button would re-trigger itself on every Space.
-    e.currentTarget.blur();
+    (e.currentTarget as HTMLButtonElement).blur();
   };
 
   const generate = async (e: React.MouseEvent) => {

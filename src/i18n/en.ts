@@ -11,7 +11,9 @@ import type { Translations } from './types';
  */
 export const en: Translations = {
   // Brand
-  'brand.name': 'Qazaq',
+  'brand.name': 'Söz',
+  'footer.aria': 'Site footer',
+  'footer.github': 'GitHub',
 
   // Nav
   'nav.home': 'Home',
@@ -29,8 +31,10 @@ export const en: Translations = {
   'nav.fontSize.lg': 'large',
   'nav.fontSize.xl': 'extra large',
   'nav.primary': 'Primary',
-  'nav.homeAria': 'Qazaq — home',
+  'nav.homeAria': 'Söz, home',
   'nav.skipToContent': 'Skip to content',
+  'nav.openMenu': 'Open menu',
+  'nav.closeMenu': 'Close menu',
   'study.tablistAria': 'Card mode',
   'study.picker.cards': 'Cards',
   'study.picker.language': 'Language',
@@ -52,13 +56,15 @@ export const en: Translations = {
   'auth.register.title': 'Create an account',
   'auth.register.subtitle': 'Your account and progress live on our server. No email required.',
   'auth.localNotice':
-    'Your account and progress are tied to your username and live on our server. You can sign in from any browser. Use a unique password — we can’t recover it for you.',
+    'Your account and progress are tied to your username and live on our server. You can sign in from any browser. Use a unique password: we can’t recover it for you.',
   'auth.username': 'Username',
-  'auth.usernameHint': '3–32 chars · a–z, 0–9, dot, dash, underscore',
+  'auth.usernameHint': '3–32 chars: a–z, 0–9, dot, dash, underscore',
   'auth.displayName': 'Display name (optional)',
   'auth.password': 'Password',
   'auth.passwordHint': 'At least 4 characters',
   'auth.recover.link': 'Forgot password?',
+  'auth.recover.context':
+    'This server has no email, so the recovery code lands in the logs \u2014 ask the operator to read it back and pass it on.',
   'auth.recover.startHint': 'Enter your username. A 6-digit one-time code will be generated on the server. Since we don\u2019t have email, the code is printed to the server logs \u2014 ask the operator to read it back to you.',
   'auth.recover.sendCode': 'Generate code',
   'auth.recover.verifyHint': 'Enter the code from the server logs and your new password. The code is good for 15 minutes and expires after first use.',
@@ -92,22 +98,30 @@ export const en: Translations = {
   'auth.firstRun.body': 'Create an account to start tracking your study progress. Everything stays on this device.',
 
   // Landing
-  'landing.title': 'Learn Kazakh, the way you learned your first language.',
-  'landing.lede': 'Learn Kazakh from A1 to C1. {count} hand-picked words, spaced repetition, no schedule, no streaks.',
+  'landing.title': 'Learn Kazakh the way you learned your first language.',
+  'landing.lede':
+    'Spaced-repetition flashcards. A1 to C1, from «Hello» to «irrespective of the circumstances».',
   'landing.ctaPrimary': 'Create free account',
   'landing.ctaSecondary': 'I already have one',
-  'landing.feature.pace.title': 'Learn on your schedule',
-  'landing.feature.pace.body': 'Open it for a minute, forget it for a month. No schedule, no reminders.',
-  'landing.feature.curated.title': 'Only the words you need',
-  'landing.feature.curated.body': '3,996 entries from the official lexical minimum. No outdated slang, no filler.',
-  'landing.feature.nopressure.title': 'No streaks, no guilt',
-  'landing.feature.nopressure.body': 'Hard words tomorrow, easy ones in a month. No badges, no “you missed 3 days”.',
-  'landing.feature.own.title': 'Add your own words',
-  'landing.feature.own.body': "Add your own card in seconds. It joins your regular review under «Mine».",
-  'landing.feature.free.title': 'Open source, no ads',
-  'landing.feature.free.body': 'Source on GitHub, no banners, no analytics. Want your own copy? Self-host.',
-  'landing.preview.title': 'Pick a level to start with',
-  'landing.preview.subtitle': 'No prerequisites. Jump in wherever feels right.',
+  'landing.demoHint': 'Tap to flip, rate 1–4 to remember for longer',
+  'landing.benefits.title': 'Three things to know',
+  'landing.benefit.pace.title': 'Pause doesn’t break progress',
+  'landing.benefit.pace.body':
+    'Open it for a minute or forget it for a month. When you come back, everything is where you left it.',
+  'landing.benefit.curated.title': 'Words from the official school lexicon',
+  'landing.benefit.curated.body':
+    '3,996 entries compiled by Kazakh-language textbook authors. No outdated slang.',
+  'landing.benefit.own.title': 'Your own cards join the same queue',
+  'landing.benefit.own.body':
+    'Add a card under «Mine» and it goes into the regular review flow.',
+  'landing.finalCta.title': 'Open the flashcards',
+  'landing.finalCta.body':
+    'A local app. Open it, try it, close it. No newsletters, no push notifications.',
+  'landing.preview.title': 'Levels',
+  'landing.preview.subtitle': 'A1 to C1. Pick your level and go.',
+  'landing.feature.free.title': 'Source code is open',
+  'landing.feature.free.body':
+    'Repository on GitHub. Want your own copy? Run it locally or on your own server.',
 
   // Dashboard
   'dashboard.welcome': 'Welcome back',
@@ -121,6 +135,7 @@ export const en: Translations = {
   'dashboard.subtitleCaughtUp': 'You’re all caught up. Try a new level, or revisit something you skipped.',
   'dashboard.subtitleEmpty': 'Pick a level below to start learning your first words.',
   'dashboard.cta.start': 'Start learning',
+  'dashboard.cta.startA1': 'Start with A1',
   'dashboard.cta.resume': 'Resume',
   'dashboard.activity.title': 'Last 7 weeks',
   'dashboard.activity.openStats': 'Open in Stats',
@@ -136,7 +151,7 @@ export const en: Translations = {
   'dashboard.dueOverview.title.many':
     '{count} due across all levels',
   'dashboard.dueOverview.subtitle':
-    'Cards are split across levels — pick one or take them all.',
+    'Cards are split across levels. Pick one or take them all.',
   'dashboard.dueOverview.dueCount.one': '1 card',
   'dashboard.dueOverview.dueCount.few': '{count} cards',
   'dashboard.dueOverview.dueCount.many': '{count} cards',
@@ -210,18 +225,18 @@ export const en: Translations = {
   'study.empty.titleDone': 'Session complete.',
   'study.empty.titleDoneGreat': 'Nicely done.',
   'study.empty.suggestNew.one':
-    'Try the {tab} tab — 1 unlearned card waiting.',
+    'Try the {tab} tab: 1 unlearned card waiting.',
   'study.empty.suggestNew.few':
-    'Try the {tab} tab — {count} unlearned cards waiting.',
+    'Try the {tab} tab: {count} unlearned cards waiting.',
   'study.empty.suggestNew.many':
-    'Try the {tab} tab — {count} unlearned cards waiting.',
+    'Try the {tab} tab: {count} unlearned cards waiting.',
   'study.empty.comeBack': 'Come back later when cards are due.',
   'study.empty.summary.one': 'You reviewed 1 card with {accuracy}% accuracy.',
   'study.empty.summary.few': 'You reviewed {count} cards with {accuracy}% accuracy.',
   'study.empty.summary.many': 'You reviewed {count} cards with {accuracy}% accuracy.',
   'study.empty.back': 'Back to levels',
   'study.empty.allDue': 'All due',
-  'study.empty.nextLevel': 'Next level · {level} ({count})',
+  'study.empty.nextLevel': 'Next level ({level}, {count})',
   'study.empty.switchNew': 'Switch to New',
   'study.empty.studyAgain': 'Study again',
   'study.direction.label': 'Direction',
@@ -253,8 +268,8 @@ export const en: Translations = {
   'onboarding.browse.subtitle': 'A quick tour.',
   'onboarding.browse.step1.title': 'Search and filter',
   'onboarding.browse.step1.body': 'Use the search box for Kazakh, transliteration, or the translation. The level chips and topic chips narrow the list further.',
-  'onboarding.browse.step2.title': 'Loads as you scroll',
-  'onboarding.browse.step2.body': 'We show the first 50 cards right away. Tap "Show more" at the bottom of the list to load another batch.',
+  'onboarding.browse.step2.title': 'Pagination at the bottom',
+  'onboarding.browse.step2.body': 'Pages of 50. Click a number or the arrows. The current page is mirrored in the address bar so you can copy a deep link.',
 
   // Stats screen
   'onboarding.stats.title': 'Your progress',
@@ -273,7 +288,7 @@ export const en: Translations = {
   'browse.subtitle': '{count} Kazakh words with transliteration and meaning.',
   'browse.search.placeholder': 'Search…',
   'browse.search.hint':
-    'Facets: level:b1 · topic:family. Or just a word.',
+    'Facets: level:b1, topic:family. Or just a word.',
   'browse.filter.level': 'Level',
   'browse.filter.levelAria': 'Filter by level',
   'browse.filter.topic': 'Topic',
@@ -301,7 +316,7 @@ export const en: Translations = {
   'browse.importApkg.dismiss': 'Dismiss',
   'browse.delete': 'Delete',
   'browse.edit': 'Edit',
-  'browse.studyTopic.title': 'Study this topic · {count}',
+  'browse.studyTopic.title': 'Study this topic ({count})',
   'browse.studyTopic.hint': 'Opens the selected cards in review mode',
   'browse.empty.mine': 'You have no personal cards yet. Click "Add card" to create one.',
   'browse.empty.filtered': 'Nothing matches your filters. Reset them to see every card.',
@@ -346,16 +361,16 @@ export const en: Translations = {
   'stats.tab.overview': 'Overview',
   'stats.tab.activity': 'Activity',
   'stats.tab.topics': 'Topics',
-  'stats.tab.overviewAria': 'Overview — headline numbers and forecast',
-  'stats.tab.activityAria': 'Activity — heatmap, retention, leeches',
-  'stats.tab.topicsAria': 'Topics — per-topic progress',
+  'stats.tab.overviewAria': 'Overview. Headline numbers and forecast',
+  'stats.tab.activityAria': 'Activity. Heatmap, retention, leeches',
+  'stats.tab.topicsAria': 'Topics. Per-topic progress',
   'stats.empty.title': 'Nothing here yet',
   'stats.empty.body':
-    'Do a few reviews and this page will fill up — heatmap, accuracy, forecasts, and per-topic progress.',
+    'Do a few reviews and this page will fill up with heatmap, accuracy, forecasts, and per-topic progress.',
   'stats.empty.cta': 'Go to cards →',
   'stats.data.export': 'Download backup',
   'stats.data.export.tooltip':
-    'Saves your progress and review history as a JSON file. The password is not included — you still need your login to sign in.',
+    'Saves your progress and review history as a JSON file. The password is not included: you still need your login to sign in.',
   'stats.data.import': 'Import backup',
   'stats.data.import.tooltip':
     'Replaces your local progress with the backup contents. Existing progress will be overwritten.',
@@ -365,14 +380,14 @@ export const en: Translations = {
   // Backup-format specific errors. The `{code}` is for power users;
   // regular users just see the friendly message.
   'stats.data.importWrongFormat':
-    'This file does not look like a Qazaq backup. Open it in a text editor — it should start with "format": "aq-export/v1".',
+    'This file does not look like a Qazaq backup. Open it in a text editor: it should start with "format": "aq-export/v1".',
   'stats.data.importUnsupportedVersion':
     'This backup is from a newer version of the app (schema v{version}). Please update and try again.',
   'stats.data.importMalformed':
     'Could not parse the file. It may be corrupt or not saved as JSON.',
   'stats.data.importConfirmTitle': 'Import this backup?',
   'stats.data.importConfirmBody':
-    'User: {name} · created {date}\nCards: {cards} · events: {events}\n\nYour current progress and history will be replaced with the contents of this file.',
+    'User: {name}, created {date}\nCards: {cards}, events: {events}\n\nYour current progress and history will be replaced with the contents of this file.',
   'stats.data.importConfirmDifferentUser':
     'Warning: this backup belongs to @{backupUser}, but you are signed in as @{currentUser}. Import anyway?',
   'stats.data.importConfirmButton': 'Import and replace',
@@ -397,6 +412,23 @@ export const en: Translations = {
   'stats.retention.subtitle':
     'Share of correct answers over the last 30 days. 80–95% is the healthy range.',
   'stats.retention.legend': 'Dashed lines are 80% and 95% reference marks.',
+  'stats.levels.title': 'Mastery rings',
+  'stats.levels.subtitle':
+    'Outer ring: words from this level you have opened at least once. Inner ring: words you have anchored in long-term memory (interval ≥ 21 days).',
+  'stats.levels.legendSeen': 'Opened at least once',
+  'stats.levels.legendMastered': 'In long-term memory',
+  'stats.levels.done': 'done',
+  'stats.levels.etaDays': '{days} d',
+  'stats.levels.ariaRing':
+    'Level {level}: {learned} of {total} opened, {mastered} in long-term memory',
+  'stats.ease.title': 'Card difficulty distribution',
+  'stats.ease.subtitle':
+    'Anki tracks an ease factor per card (1.3 to ~3.5). Most cards cluster in the middle; the tails are your hardest and easiest cards.',
+  'stats.ease.bucketLt1_5': 'Tricky',
+  'stats.ease.bucket15_20': 'Hard',
+  'stats.ease.bucket20_25': 'Average',
+  'stats.ease.bucket25_30': 'Solid',
+  'stats.ease.bucketGt3': 'Easy',
   'stats.leech.title': 'Leech cards',
   'stats.leech.subtitle':
     '{count} cards keep slipping from memory. Reset them to start fresh.',
@@ -407,7 +439,7 @@ export const en: Translations = {
   'stats.leech.confirmResetAll': 'Reset all {count} leeches?',
   'stats.leech.noTranslation': '(no translation)',
   'stats.config.title': 'Scheduler parameters',
-  'stats.config.subtitle': 'Internal SM-2 algorithm parameters, matching Anki. Read-only — the deck currently ships with default values; user-customisable knobs will come later.',
+  'stats.config.subtitle': 'Internal SM-2 algorithm parameters, matching Anki. Read-only. The deck currently ships with default values; user-customisable knobs will come later.',
   'stats.config.toggle': 'Show SM-2 parameters',
   'stats.config.learningSteps': 'Learning steps',
   'stats.config.graduatingInterval': 'Graduating interval',
@@ -441,7 +473,7 @@ export const en: Translations = {
   'card.audio.missing': 'Audio not ready yet',
   'card.audio.generate': 'Generate audio',
   'card.audio.generating': 'Generating…',
-  'card.audio.retry': 'Failed — try again',
+  'card.audio.retry': 'Failed. Try again.',
 
   // Home page (dashboard + landing)
   'home.aria.study': 'Study {level}',
@@ -450,8 +482,8 @@ export const en: Translations = {
   'home.previewCount.many': '{count} cards',
 
   // Stats page
-  'stats.levelMeta': '{topics} topics · {learned} / {total} learned',
-  'stats.levelMeta.due': ' · {count} due',
+  'stats.levelMeta': '{topics} topics, {learned} / {total} learned',
+  'stats.levelMeta.due': ', {count} due',
   'stats.words.learned.one': '{learned} / {total} word',
   'stats.words.learned.few': '{learned} / {total} words',
   'stats.words.learned.many': '{learned} / {total} words',
@@ -460,7 +492,7 @@ export const en: Translations = {
 
   // Day-by-day activity
   'stats.activity.title': 'Daily activity',
-  'stats.activity.subtitle': 'Last {days} days — see if you’re keeping the rhythm',
+  'stats.activity.subtitle': 'Last {days} days. See if you’re keeping the rhythm.',
   'stats.activity.streak': 'Streak',
   'stats.activity.streakValue.one': '{count} day',
   'stats.activity.streakValue.few': '{count} days',
@@ -490,7 +522,7 @@ export const en: Translations = {
   'stats.heatmap.day.fri': 'Fri',
   'stats.heatmap.less': 'less',
   'stats.heatmap.more': 'more',
-  'stats.heatmap.cell': '{n} · {date}',
+  'stats.heatmap.cell': '{n} reviews, {date}',
   'stats.heatmap.cellCount.one': '{count} review',
   'stats.heatmap.cellCount.few': '{count} reviews',
   'stats.heatmap.cellCount.many': '{count} reviews',
@@ -514,7 +546,7 @@ export const en: Translations = {
   'error.noCards': 'No cards in this level.',
   'error.back': 'Back',
   'error.boundary.title': 'Something broke',
-  'error.boundary.body': 'The page could not render. Try reloading or going back to the home page — if the error repeats, open the browser console (F12) and send the stack trace.',
+  'error.boundary.body': 'The page could not render. Try reloading or going back to the home page. If the error repeats, open the browser console (F12) and send the stack trace.',
   'error.boundary.retry': 'Try again',
   'error.boundary.home': 'Back to home',
 
@@ -522,6 +554,10 @@ export const en: Translations = {
   'notFound.title': 'Page not found',
   'notFound.body': 'The page you’re looking for doesn’t exist.',
   'notFound.back': 'Back to home',
+  'notFound.suggestionsLabel': 'Where to next',
+  'notFound.suggestStudy': 'Start A1',
+  'notFound.suggestBrowse': 'Browse cards',
+  'notFound.suggestStats': 'Stats',
 
   // AddCardModal
   'cards.form.title': 'New card',
@@ -579,12 +615,19 @@ export const en: Translations = {
   'settings.account.username': 'Username',
   'settings.account.hint': 'All data is stored locally on this device. Changing the password does not sign you out.',
   'settings.account.passwordOld': 'Current password',
+  'settings.account.passwordOld.placeholder': 'enter your current password',
   'settings.account.passwordNew': 'New password',
+  'settings.account.passwordNew.placeholder': 'at least 8 characters',
   'settings.account.passwordConfirm': 'Repeat new password',
+  'settings.account.passwordConfirm.placeholder': 'repeat the new password',
   'settings.account.changePassword': 'Change password',
   'settings.account.passwordChanged': 'Password changed',
   'settings.account.passwordMismatch': 'Passwords do not match',
   'settings.account.passwordTooShort': 'At least 8 characters',
+  'settings.daily.newPerDay.zeroNote': '0 is a pause. No new cards today.',
+  'settings.tour.title': 'Page help',
+  'settings.tour.restart': 'Show tour again',
+  'settings.tour.restartHint': 'Opens the onboarding for the current page',
   'settings.account.logout': 'Sign out',
   'settings.account.logoutConfirm': 'Sign out for sure?',
   'settings.account.signedInAs': 'Signed in as {name}',

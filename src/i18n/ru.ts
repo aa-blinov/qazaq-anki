@@ -10,7 +10,9 @@ import type { Translations } from './types';
  */
 export const ru: Translations = {
   // Brand
-  'brand.name': 'Qazaq',
+  'brand.name': 'Söz',
+  'footer.aria': 'Подвал',
+  'footer.github': 'GitHub',
 
   // Nav
   'nav.home': 'Главная',
@@ -28,8 +30,10 @@ export const ru: Translations = {
   'nav.fontSize.lg': 'крупный',
   'nav.fontSize.xl': 'очень крупный',
   'nav.primary': 'Главная навигация',
-  'nav.homeAria': 'Qazaq — на главную',
+  'nav.homeAria': 'Söz, на главную',
   'nav.skipToContent': 'Перейти к содержимому',
+  'nav.openMenu': 'Открыть меню',
+  'nav.closeMenu': 'Закрыть меню',
 
   // Aria
   'study.tablistAria': 'Режим карточек',
@@ -50,14 +54,16 @@ export const ru: Translations = {
   'auth.register.title': 'Создать аккаунт',
   'auth.register.subtitle': 'Аккаунт и прогресс хранятся на нашем сервере. Почта не нужна.',
   'auth.localNotice':
-    'Аккаунт и прогресс привязаны к логину и хранятся на сервере. Войти можно из любого браузера. Используйте уникальный пароль — восстановить его мы не сможем.',
+    'Аккаунт и прогресс привязаны к логину и хранятся на сервере. Войти можно из любого браузера. Используйте уникальный пароль: восстановить его мы не сможем.',
   'auth.username': 'Имя пользователя',
   'auth.usernameHint': '3–32 символа: a–z, 0–9, точка, тире, подчёркивание',
   'auth.displayName': 'Отображаемое имя (необязательно)',
   'auth.password': 'Пароль',
   'auth.passwordHint': 'Не менее 4 символов',
   'auth.recover.link': 'Забыли пароль?',
-  'auth.recover.startHint': 'Введите имя пользователя. На сервере будет создан одноразовый 6-значный код. Поскольку у нас нет электронной почты, код будет напечатан в логах сервера — попросите администратора прочитать его.',
+  'auth.recover.context':
+    'Сервер без электронной почты, поэтому код восстановления появится в логах. Попросите администратора прочитать его и прислать вам.',
+  'auth.recover.startHint': 'Введите имя пользователя. На сервере будет создан одноразовый 6-значный код. Поскольку у нас нет электронной почты, код будет напечатан в логах сервера. Попросите администратора прочитать его.',
   'auth.recover.sendCode': 'Создать код',
   'auth.recover.verifyHint': 'Введите код из логов сервера и новый пароль. Код действует 15 минут и сгорает после первого использования.',
   'auth.recover.codeLabel': '6-значный код',
@@ -96,27 +102,33 @@ export const ru: Translations = {
   // Landing
   'landing.title': 'Учите казахский так, как когда-то учили свой родной.',
   'landing.lede':
-    'Учите казахский от A1 до C1. {count} отобранных слов, интервальное повторение, без расписания и streaks.',
+    'Карточки с интервальным повторением. От A1 до C1, от «Привет» до «независимо от обстоятельств».',
   'landing.ctaPrimary': 'Создать бесплатный аккаунт',
   'landing.ctaSecondary': 'У меня уже есть аккаунт',
-  'landing.feature.pace.title': 'Учите когда удобно',
-  'landing.feature.pace.body':
-    'Открыли на минуту или забыли на месяц. Без расписания и напоминаний.',
-  'landing.feature.curated.title': 'Только нужные слова',
-  'landing.feature.curated.body':
-    '3 996 слов из официального лексического минимума. Без устаревших слов и жаргона.',
-  'landing.feature.nopressure.title': 'Без streaks и вины',
-  'landing.feature.nopressure.body':
-    'Сложное вернётся завтра, знакомое через месяц. Без бейджей и упрёков.',
-  'landing.feature.own.title': 'Можно добавлять свои слова',
-  'landing.feature.own.body':
-    'Добавьте свою карточку за пару секунд, положите в «Мои» и учите вместе с остальными.',
-  'landing.feature.free.title': 'Открытый код, без рекламы',
-  'landing.feature.free.body':
-    'Исходники на GitHub, без баннеров и аналитики. Хотите свой экземпляр, разверните у себя.',
-  'landing.preview.title': 'Выберите уровень для старта',
+  // Caption under the demo card on the hero — explains the gesture
+  // without forcing the user to read it.
+  'landing.demoHint': 'Тап переворачивает, оценка 1–4 запоминает надолго',
+  // Three benefit blocks (rebranded from features).
+  'landing.benefits.title': '3 факта про колоду',
+  'landing.benefit.pace.title': 'Пауза не ломает прогресс',
+  'landing.benefit.pace.body':
+    'Открыли на минуту или забыли на месяц. Когда вернётесь, всё на месте.',
+  'landing.benefit.curated.title': 'Слова из лексического минимума',
+  'landing.benefit.curated.body':
+    '3 996 слов, которые составили авторы учебников казахского для школ. Никакого устаревшего жаргона.',
+  'landing.benefit.own.title': 'Свои карточки тоже попадают в очередь',
+  'landing.benefit.own.body':
+    'Добавьте свою карточку в «Мои» и она встанет в общий поток повторений.',
+  // Final CTA strip at the bottom — repeats the primary ask.
+  'landing.finalCta.title': 'Открыть карточки',
+  'landing.finalCta.body':
+    'Локальное приложение. Зашли, попробовали, закрыли. Никаких рассылок и пушей.',
+  'landing.preview.title': 'Уровни',
   'landing.preview.subtitle':
-    'Без требований. Начните с любого уровня, который вам по душе.',
+    'От A1 до C1. Выберите свой уровень и начните.',
+  'landing.feature.free.title': 'Исходный код открыт',
+  'landing.feature.free.body':
+    'Репозиторий на GitHub. Хотите свой экземпляр — разверните локально или на своём сервере.',
 
   // Dashboard
   'dashboard.welcome': 'С возвращением',
@@ -138,6 +150,7 @@ export const ru: Translations = {
   'dashboard.subtitleEmpty':
     'Выберите уровень ниже, чтобы начать учить первые слова.',
   'dashboard.cta.start': 'Начать учить',
+  'dashboard.cta.startA1': 'Начать с A1',
   'dashboard.cta.resume': 'Продолжить',
   'dashboard.activity.title': 'Активность за 7 недель',
   'dashboard.activity.openStats': 'Подробнее в Статистике',
@@ -153,7 +166,7 @@ export const ru: Translations = {
   'dashboard.dueOverview.title.many':
     '{count} повторений ждут по всем уровням',
   'dashboard.dueOverview.subtitle':
-    'Карточки распределены по уровням — выберите один или возьмите всё сразу.',
+    'Карточки распределены по уровням. Выберите один или возьмите всё сразу.',
   'dashboard.dueOverview.dueCount.one': '1 карточка',
   'dashboard.dueOverview.dueCount.few': '{count} карточки',
   'dashboard.dueOverview.dueCount.many': '{count} карточек',
@@ -226,18 +239,18 @@ export const ru: Translations = {
   'study.empty.titleDone': 'Сессия завершена.',
   'study.empty.titleDoneGreat': 'Отлично!',
   'study.empty.suggestNew.one':
-    'Попробуйте вкладку «{tab}» — 1 неизученная карточка ждёт.',
+    'Попробуйте вкладку «{tab}»: 1 неизученная карточка ждёт.',
   'study.empty.suggestNew.few':
-    'Попробуйте вкладку «{tab}» — {count} неизученные карточки ждут.',
+    'Попробуйте вкладку «{tab}»: {count} неизученные карточки ждут.',
   'study.empty.suggestNew.many':
-    'Попробуйте вкладку «{tab}» — {count} неизученных карточек ждут.',
+    'Попробуйте вкладку «{tab}»: {count} неизученных карточек ждут.',
   'study.empty.comeBack': 'Возвращайтесь, когда карточки будут готовы.',
   'study.empty.summary.one': 'Вы разобрали 1 карточку с точностью {accuracy}%.',
   'study.empty.summary.few': 'Вы разобрали {count} карточки с точностью {accuracy}%.',
   'study.empty.summary.many': 'Вы разобрали {count} карточек с точностью {accuracy}%.',
   'study.empty.back': 'К уровням',
   'study.empty.allDue': 'Все due',
-  'study.empty.nextLevel': 'Следующий уровень · {level} ({count})',
+  'study.empty.nextLevel': 'Следующий уровень ({level}, {count})',
   'study.empty.switchNew': 'Перейти к новым',
   'study.empty.studyAgain': 'Ещё раз',
   'study.direction.label': 'Направление',
@@ -245,8 +258,8 @@ export const ru: Translations = {
   'study.direction.ruKk': 'Рус → Қаз',
   'study.direction.kkRu.long': 'Казахский → Русский',
   'study.direction.ruKk.long': 'Русский → Казахский',
-  'study.direction.kkRu.hint': 'Видите казахское слово — вспоминаете русский перевод.',
-  'study.direction.ruKk.hint': 'Видите русский перевод — вспоминаете казахское слово.',
+  'study.direction.kkRu.hint': 'Видите казахское слово, вспоминаете русский перевод.',
+  'study.direction.ruKk.hint': 'Видите русский перевод, вспоминаете казахское слово.',
   'study.direction.tip': 'Меняйте направление, чтобы тренировать обе стороны каждой карточки.',
 
   // Онбординг — показывается один раз на пользователя на каждом
@@ -256,21 +269,21 @@ export const ru: Translations = {
 
   // Экран «Учёба»
   'onboarding.study.title': 'Добро пожаловать на страницу учёбы',
-  'onboarding.study.subtitle': 'Короткий тур — 30 секунд.',
+  'onboarding.study.subtitle': 'Короткий тур. 30 секунд.',
   'onboarding.study.step1.title': 'Как переворачивать карточку',
-  'onboarding.study.step1.body': 'Нажмите на карточку (или пробел), чтобы перевернуть. На лицевой стороне — вопрос, на обороте — ответ.',
+  'onboarding.study.step1.body': 'Нажмите на карточку (или пробел), чтобы перевернуть. На лицевой стороне вопрос, на обороте ответ.',
   'onboarding.study.step2.title': 'Два направления',
-  'onboarding.study.step2.body': '«Қаз → Рус» тренирует распознавание (видите казахское — вспоминаете русское). «Рус → Қаз» тренирует воспроизведение (вспоминаете казахское). Оцениваются независимо.',
+  'onboarding.study.step2.body': '«Қаз → Рус» тренирует распознавание: видите казахское, вспоминаете русское. «Рус → Қаз» тренирует воспроизведение: вспоминаете казахское. Оцениваются независимо.',
   'onboarding.study.step3.title': 'Оценивайте честно',
-  'onboarding.study.step3.body': '«Снова» — если не вспомнили. «Трудно» — если сомневались. «Хорошо» — если вспомнили с задержкой. «Легко» — если ответили моментально. Планировщик подстраивается под ваши оценки.',
+  'onboarding.study.step3.body': '«Снова» если не вспомнили. «Трудно» если сомневались. «Хорошо» если вспомнили с задержкой. «Легко» если ответили моментально. Планировщик подстраивается под ваши оценки.',
 
   // Экран «Все слова»
   'onboarding.browse.title': 'Просмотр всех карточек',
   'onboarding.browse.subtitle': 'Короткий тур.',
   'onboarding.browse.step1.title': 'Поиск и фильтры',
   'onboarding.browse.step1.body': 'Строка поиска работает по казахскому, транскрипции и переводу. Чипы уровня и темы сужают список.',
-  'onboarding.browse.step2.title': 'Подгрузка по мере чтения',
-  'onboarding.browse.step2.body': 'Сразу показываем 50 карточек. Если нужно больше — нажмите «Показать ещё» внизу списка.',
+  'onboarding.browse.step2.title': 'Пагинация внизу',
+  'onboarding.browse.step2.body': 'Страницы по 50 карточек. Кликайте номера или стрелки. Номер текущей страницы сохраняется в адресной строке, можно скопировать ссылку.',
 
   // Экран «Статистика»
   'onboarding.stats.title': 'Ваш прогресс',
@@ -290,7 +303,7 @@ export const ru: Translations = {
     '{count} казахских слов с транскрипцией и переводом.',
   'browse.search.placeholder': 'Поиск…',
   'browse.search.hint':
-    'Фасеты: level:b1 · topic:family. Или просто слово.',
+    'Фасеты: level:b1, topic:family. Или просто слово.',
   'browse.filter.level': 'Уровень',
   'browse.filter.levelAria': 'Фильтр по уровню',
   'browse.filter.topic': 'Тема',
@@ -318,7 +331,7 @@ export const ru: Translations = {
   'browse.importApkg.dismiss': 'Скрыть',
   'browse.delete': 'Удалить',
   'browse.edit': 'Редактировать',
-  'browse.studyTopic.title': 'Учить эту тему · {count}',
+  'browse.studyTopic.title': 'Учить эту тему ({count})',
   'browse.studyTopic.hint': 'Откроет выбранные карточки в режиме повторения',
   'browse.empty.mine': 'У вас пока нет своих карточек. Нажмите «Добавить карточку».',
   'browse.empty.filtered': 'Под фильтры ничего не подходит. Сбросьте их, чтобы увидеть все карточки.',
@@ -364,16 +377,16 @@ export const ru: Translations = {
   'stats.tab.overview': 'Сводка',
   'stats.tab.activity': 'Активность',
   'stats.tab.topics': 'Темы',
-  'stats.tab.overviewAria': 'Сводка — главные цифры и прогноз',
-  'stats.tab.activityAria': 'Активность — хитамапа, retention, проклятые',
-  'stats.tab.topicsAria': 'Темы — прогресс по каждой теме',
+  'stats.tab.overviewAria': 'Сводка. Главные цифры и прогноз',
+  'stats.tab.activityAria': 'Активность. Хитамапа, retention, проклятые',
+  'stats.tab.topicsAria': 'Темы. Прогресс по каждой теме',
   'stats.empty.title': 'Здесь пока пусто',
   'stats.empty.body':
-    'Сделайте несколько повторений — здесь появятся графики, точность, прогнозы и темы с прогрессом.',
+    'Сделайте несколько повторений, и здесь появятся графики, точность, прогнозы и темы с прогрессом.',
   'stats.empty.cta': 'Перейти к карточкам →',
   'stats.data.export': 'Скачать бэкап',
   'stats.data.export.tooltip':
-    'Сохраняет ваш прогресс и историю повторений в JSON-файл. Пароль в файл не попадает — для входа всё равно нужен логин и пароль.',
+    'Сохраняет ваш прогресс и историю повторений в JSON-файл. Пароль в файл не попадает: для входа всё равно нужен логин и пароль.',
   'stats.data.import': 'Загрузить бэкап',
   'stats.data.import.tooltip':
     'Заменяет локальный прогресс данными из бэкапа. Текущий прогресс будет перезаписан.',
@@ -383,14 +396,14 @@ export const ru: Translations = {
   // Backup-format specific errors. The `{code}` is for power users;
   // regular users just see the friendly message.
   'stats.data.importWrongFormat':
-    'Этот файл не похож на бэкап Qazaq. Откройте его в редакторе — в начале должно быть "format": "aq-export/v1".',
+    'Этот файл не похож на бэкап Qazaq. Откройте его в редакторе: в начале должно быть "format": "aq-export/v1".',
   'stats.data.importUnsupportedVersion':
     'Этот бэкап из более новой версии приложения (схема v{version}). Обновите приложение и попробуйте снова.',
   'stats.data.importMalformed':
     'Не удалось разобрать файл. Возможно, он повреждён или сохранён не в JSON.',
   'stats.data.importConfirmTitle': 'Загрузить бэкап?',
   'stats.data.importConfirmBody':
-    'Пользователь: {name} · создано {date}\nКарточек: {cards} · событий: {events}\n\nТекущий прогресс и история будут заменены данными из этого файла.',
+    'Пользователь: {name}, создано {date}\nКарточек: {cards}, событий: {events}\n\nТекущий прогресс и история будут заменены данными из этого файла.',
   'stats.data.importConfirmDifferentUser':
     'Внимание: бэкап принадлежит пользователю @{backupUser}, а вы вошли как @{currentUser}. Загрузить всё равно?',
   'stats.data.importConfirmButton': 'Загрузить и заменить',
@@ -413,11 +426,27 @@ export const ru: Translations = {
   'stats.kpi.leechesSub': 'Карточек с 8+ промахами',
   'stats.retention.title': 'Точность по дням',
   'stats.retention.subtitle':
-    'Процент верных ответов за последние 30 дней. 80–95% — здоровый диапазон.',
-  'stats.retention.legend': 'Пунктирные линии — ориентиры 80% и 95%.',
+    'Процент верных ответов за последние 30 дней. Здоровый диапазон: 80–95%.',
+  'stats.retention.legend': 'Пунктирные линии: ориентиры 80% и 95%.',
+  'stats.levels.title': 'Уровни по кольцам',
+  'stats.levels.subtitle':
+    'Внешнее кольцо: сколько слов из уровня вы уже открыли. Внутреннее: сколько закрепили в долгой памяти (интервал ≥ 21 день).',
+  'stats.levels.legendSeen': 'Открыто хотя бы раз',
+  'stats.levels.legendMastered': 'В долгой памяти',
+  'stats.levels.done': 'готово',
+  'stats.levels.etaDays': '{days} дн',
+  'stats.levels.ariaRing': 'Уровень {level}: {learned} из {total} открыто, {mastered} в долгой памяти',
+  'stats.ease.title': 'Сложность ваших карточек',
+  'stats.ease.subtitle':
+    'Anki хранит «легкость» для каждой карточки (от 1.3 до ~3.5). Большинство живёт в середине. Крайние значения: самые каверзные и самые лёгкие.',
+  'stats.ease.bucketLt1_5': 'Каверзные',
+  'stats.ease.bucket15_20': 'Сложные',
+  'stats.ease.bucket20_25': 'Средние',
+  'stats.ease.bucket25_30': 'Уверенные',
+  'stats.ease.bucketGt3': 'Лёгкие',
   'stats.leech.title': 'Проклятые карточки',
   'stats.leech.subtitle':
-    '{count} карточек, которые вылетают из головы снова и снова. Сбросьте их — начните учить заново.',
+    '{count} карточек, которые вылетают из головы снова и снова. Сбросьте их и начните учить заново.',
   'stats.leech.lapses': 'промахов: {n}',
   'stats.leech.reset': 'Сбросить',
   'stats.leech.confirmReset': 'Точно сбросить?',
@@ -426,7 +455,7 @@ export const ru: Translations = {
   'stats.leech.noTranslation': '(без перевода)',
   'stats.config.title': 'Параметры планировщика',
   'stats.config.subtitle':
-    'Внутренние настройки алгоритма SM-2, как в Anki. Совпадают с дефолтами колоды — только для чтения, пользовательские будут позже.',
+    'Внутренние настройки алгоритма SM-2, как в Anki. Совпадают с дефолтами колоды. Только для чтения, пользовательские будут позже.',
   'stats.config.toggle': 'Показать параметры SM-2',
   'stats.config.learningSteps': 'Шаги обучения',
   'stats.config.graduatingInterval': 'Стартовый интервал',
@@ -440,7 +469,7 @@ export const ru: Translations = {
   'stats.config.days': '{n} дн.',
   'stats.section.byTopic': 'По темам',
   'stats.section.byTopicSub':
-    '{topics} тем на {levels} уровнях. Клик по теме — сразу учить её.',
+    '{topics} тем на {levels} уровнях. Клик по теме сразу откроет её в режиме тренировки.',
 
   // Flashcard
   'card.front.kk': 'Что это значит?',
@@ -461,7 +490,7 @@ export const ru: Translations = {
   'card.audio.missing': 'Аудио ещё не готово',
   'card.audio.generate': 'Сгенерировать аудио',
   'card.audio.generating': 'Генерация…',
-  'card.audio.retry': 'Не удалось — попробовать снова',
+  'card.audio.retry': 'Не удалось. Попробуйте ещё раз.',
 
   // Главная страница (дашборд + лендинг)
   'home.aria.study': 'Учить {level}',
@@ -470,8 +499,8 @@ export const ru: Translations = {
   'home.previewCount.many': '{count} карточек',
 
   // Статистика
-  'stats.levelMeta': '{topics} тем · {learned} / {total} изучено',
-  'stats.levelMeta.due': ' · {count} ждут',
+  'stats.levelMeta': '{topics} тем, {learned} / {total} изучено',
+  'stats.levelMeta.due': ', {count} ждут',
   'stats.words.learned.one': '{learned} / {total} слово',
   'stats.words.learned.few': '{learned} / {total} слова',
   'stats.words.learned.many': '{learned} / {total} слов',
@@ -480,7 +509,7 @@ export const ru: Translations = {
 
   // Day-by-day activity
   'stats.activity.title': 'Активность по дням',
-  'stats.activity.subtitle': 'Последние {days} дней — видно, как вы держите ритм',
+  'stats.activity.subtitle': 'Последние {days} дней. Видно, как вы держите ритм',
   'stats.activity.streak': 'Серия',
   'stats.activity.streakValue.one': '{count} день',
   'stats.activity.streakValue.few': '{count} дня',
@@ -508,7 +537,7 @@ export const ru: Translations = {
   'stats.heatmap.day.fri': 'Пт',
   'stats.heatmap.less': 'меньше',
   'stats.heatmap.more': 'больше',
-  'stats.heatmap.cell': '{n} · {date}',
+  'stats.heatmap.cell': '{n} повторов, {date}',
   'stats.heatmap.cellCount.one': '{count} повторение',
   'stats.heatmap.cellCount.few': '{count} повторения',
   'stats.heatmap.cellCount.many': '{count} повторений',
@@ -531,7 +560,7 @@ export const ru: Translations = {
   'error.noCards': 'В этом уровне пока нет карточек.',
   'error.back': 'Назад',
   'error.boundary.title': 'Что-то сломалось',
-  'error.boundary.body': 'Страница не смогла отрисоваться. Попробуйте обновить её или вернуться на главную — если ошибка повторится, откройте консоль браузера (F12) и пришлите стек.',
+  'error.boundary.body': 'Страница не смогла отрисоваться. Попробуйте обновить её или вернуться на главную. Если ошибка повторится, откройте консоль браузера (F12) и пришлите стек.',
   'error.boundary.retry': 'Попробовать снова',
   'error.boundary.home': 'На главную',
 
@@ -539,6 +568,10 @@ export const ru: Translations = {
   'notFound.title': 'Страница не найдена',
   'notFound.body': 'Такой страницы не существует.',
   'notFound.back': 'На главную',
+  'notFound.suggestionsLabel': 'Куда дальше',
+  'notFound.suggestStudy': 'Начать учить A1',
+  'notFound.suggestBrowse': 'Все слова',
+  'notFound.suggestStats': 'Статистика',
 
   // AddCardModal — форма для пользовательских карточек
   'cards.form.title': 'Новая карточка',
@@ -584,9 +617,9 @@ export const ru: Translations = {
   'settings.daily.increment': 'Увеличить {label}',
   'settings.daily.decrement': 'Уменьшить {label}',
   'settings.about.title': 'Как работают повторения',
-  'settings.about.text': 'Несколько слов о механике — чтобы вы понимали, что происходит под капотом.',
+  'settings.about.text': 'Несколько слов о механике. Чтобы вы понимали, что происходит под капотом.',
   'settings.about.sm2.label': 'Алгоритм',
-  'settings.about.sm2.text': 'SuperMemo SM-2: карточки, которые вы помните, возвращаются через увеличивающиеся интервалы (1, 6, затем умножение на «фактор лёгкости»). Забытые — на следующий день.',
+  'settings.about.sm2.text': 'SuperMemo SM-2. Карточки, которые вы помните, возвращаются через увеличивающиеся интервалы (1, 6, затем умножение на «фактор лёгкости»). Забытые появляются на следующий день.',
   'settings.about.leech.label': 'Личи (трудные карточки)',
   'settings.about.leech.text': 'Карточка, которую вы забываете 8 раз в любом направлении, становится «личом». На странице статистики её можно сбросить и начать заново.',
   'settings.audio.title': 'Аудио',
@@ -596,12 +629,19 @@ export const ru: Translations = {
   'settings.account.username': 'Имя пользователя',
   'settings.account.hint': 'Данные хранятся локально на этом устройстве. Смена пароля не разлогинивает вас.',
   'settings.account.passwordOld': 'Текущий пароль',
+  'settings.account.passwordOld.placeholder': 'введите текущий пароль',
   'settings.account.passwordNew': 'Новый пароль',
+  'settings.account.passwordNew.placeholder': 'минимум 8 символов',
   'settings.account.passwordConfirm': 'Повторите новый пароль',
+  'settings.account.passwordConfirm.placeholder': 'повторите новый пароль',
   'settings.account.changePassword': 'Сменить пароль',
   'settings.account.passwordChanged': 'Пароль изменён',
   'settings.account.passwordMismatch': 'Пароли не совпадают',
   'settings.account.passwordTooShort': 'Минимум 8 символов',
+  'settings.daily.newPerDay.zeroNote': '0: пауза. Новых карточек сегодня не будет',
+  'settings.tour.title': 'Помощь по странице',
+  'settings.tour.restart': 'Показать тур ещё раз',
+  'settings.tour.restartHint': 'Откроет онбординг для текущей страницы',
   'settings.account.logout': 'Выйти из аккаунта',
   'settings.account.logoutConfirm': 'Точно выйти?',
   'settings.account.signedInAs': 'Вы вошли как {name}',

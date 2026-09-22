@@ -45,6 +45,18 @@
   line-height: 1.5;
 }
 
+/* Footnote-style note shown right under the "new cards / day"
+  stepper. Explains the value 0 used to be the "pause" trick — now
+  that min=1, this tells the user the old behaviour. Sized to read
+  as a footnote, not a warning. */
+.zeroNote {
+  margin: -2px 0 0;
+  padding-left: 0;
+  color: var(--text-subtle, var(--ink-muted));
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
 .row {
   display: flex;
   align-items: center;

@@ -55,6 +55,11 @@ interface OnboardingContextValue {
    *  with the server's view; on failure the local mirror stays
    *  as-is so the UI is consistent, and we log the error. */
   markSeen: (screen: TourScreen) => Promise<void>;
+  /** Clear one screen's "seen" flag. Powers the "Show tour again"
+   *  button in Settings so users can re-watch a tour without
+   *  dev-tools. Optimistic local mirror update + server DELETE in
+   *  the background. */
+  reset: (screen: TourScreen) => Promise<void>;
   /** Force a fresh fetch from the server. Used by AuthContext on
    *  login/logout to keep this context in sync with the user
    *  record, and by the (i) button if it wants to be sure. */
@@ -169,6 +174,28 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     [user],
   );
 
+  // Mirror of markSeen but in reverse. Same failure semantics: the
+  // local mirror is updated immediately so the next navigation
+  // re-opens the tour even if the DELETE never lands.
+  const reset = useCallback(
+    async (screen: TourScreen) => {
+      if (!user) return;
+      setSeen((prev) => {
+        const next = { ...prev };
+        delete next[screen];
+        return next;
+      });
+      try {
+        const { seen: server } = await api.onboarding.reset(screen);
+        setSeen(server);
+      } catch {
+        // Network down — the next page navigation will re-open
+        // the tour locally, which is the desired UX.
+      }
+    },
+    [user],
+  );
+
   const isSeen = useCallback(
     (screen: TourScreen) => {
       // Three states, in priority order:
@@ -187,8 +214,8 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   );
 
   const value = useMemo<OnboardingContextValue>(
-    () => ({ seen, hydrated, isSeen, markSeen, refresh }),
-    [seen, hydrated, isSeen, markSeen, refresh],
+    () => ({ seen, hydrated, isSeen, markSeen, reset, refresh }),
+    [seen, hydrated, isSeen, markSeen, reset, refresh],
   );
 
   return (

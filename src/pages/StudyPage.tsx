@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, NavLink, useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Sparkles, ArrowRight, Languages } from 'lucide-react';
+import { ArrowLeft, Sparkles, ArrowRight } from 'lucide-react';
 import { Flashcard } from '../components/Flashcard';
 import { TopicSelect } from '../components/TopicSelect';
 import { PickerSelect, type PickerOption } from '../components/PickerSelect';
@@ -59,12 +59,6 @@ export function StudyPage() {
     SCHEDULER_DEFAULTS.newCardsPerDay,
     1,
     500,
-  );
-  const dailyGoal = resolvePrefInt(
-    user?.preferences?.dailyGoalReviews,
-    SCHEDULER_DEFAULTS.dailyGoalReviews,
-    5,
-    1000,
   );
   // Daily counter (today). Fetched once on mount and after every
   // grade. The server is the source of truth — we keep a local
@@ -729,7 +723,7 @@ export function StudyPage() {
     name: string;
     count: number;
   } | null>(null);
-  const [nextLevelLoading, setNextLevelLoading] = useState(false);
+  const [, setNextLevelLoading] = useState(false);
   useEffect(() => {
     if (!done) {
       setNextLevel(null);
@@ -1151,39 +1145,6 @@ export function StudyPage() {
         </div>
       ) : null}
     </div>
-  );
-}
-
-
-/**
- * One chip in the unified queue-selector panel. All seven
- * options (Повтор / Новые / В изучении / На повторе /
- * Освоенные / Всё / Повторить всё) share this same shape and
- * the same active style — that's the point of flattening
- * the previous two-tier design into one row.
- */
-function QueueChip({
-  label,
-  count,
-  active,
-  onClick,
-}: {
-  label: string;
-  count: number;
-  active: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      role="radio"
-      aria-checked={active}
-      className={`${styles.queueChip} ${active ? styles.queueChipActive : ''}`}
-      onClick={onClick}
-    >
-      {label}
-      <span className={styles.queueChipCount}>{count}</span>
-    </button>
   );
 }
 
