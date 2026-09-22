@@ -13,6 +13,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useProgress } from '../contexts/ProgressContext';
 import { useLang } from '../contexts/LanguageContext';
 import { MiniHeatmap } from '../components/MiniHeatmap';
+import { Skeleton } from '../components/Skeleton';
 import { api } from '../lib/api';
 import {
   LEVELS,
@@ -180,6 +181,11 @@ function Dashboard({
   // are correct from the first render even when the user signs in and
   // lands on the dashboard without ever opening a deck.
   const [loaded, setLoaded] = useState<Record<string, Card[]>>({});
+  // Track whether the eager preload has finished — used to swap
+  // the level grid in for a skeleton while the JSONs are still
+  // on the wire. We can't tell `loaded` apart from "never
+  // started" without a separate flag, so we keep one.
+  const [levelsReady, setLevelsReady] = useState(false);
   useEffect(() => {
     let cancelled = false;
     Promise.all(LEVELS.map((l) => loadLevel(l.id))).then((results) => {
@@ -187,6 +193,7 @@ function Dashboard({
       const map: Record<string, Card[]> = {};
       LEVELS.forEach((l, i) => (map[l.id] = results[i]));
       setLoaded(map);
+      setLevelsReady(true);
     });
     return () => {
       cancelled = true;
@@ -309,6 +316,28 @@ function Dashboard({
         <header className={styles.sectionHead}>
           <h2>{t('dashboard.levels.title')}</h2>
         </header>
+        {/*
+          While the level JSONs are still being fetched, the
+          per-level "X / N learned" numbers would render as 0/0
+          — a misleading "you've learned nothing" state. Swap in
+          five skeleton rows until the preload resolves so the
+          user sees the layout's shape first, then the real
+          counts. aria-busy is the AT announcement for the same.
+        */}
+        {!levelsReady ? (
+          <div className={styles.levelsList} aria-busy="true" aria-live="polite">
+            {LEVELS.map((lvl) => (
+              <div key={lvl.id} className={styles.levelRow}>
+                <span className={styles.levelBadge}>{lvl.name}</span>
+                <div className={styles.levelBody}>
+                  <Skeleton variant="title" width="55%" />
+                  <Skeleton variant="text" width="80%" />
+                  <Skeleton variant="text" width="35%" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
         <div className={styles.levelsList}>
           {stats.map((lvl) => (
             <Link
@@ -350,6 +379,7 @@ function Dashboard({
             </Link>
           ))}
         </div>
+        )}
       </section>
 
       {/* "All due" panel — explicit entry point for the

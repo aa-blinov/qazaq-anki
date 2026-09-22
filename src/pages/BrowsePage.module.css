@@ -413,6 +413,18 @@
   margin: 0;
 }
 
+/*
+  Loading state — five card-shaped placeholders so the user
+  sees the list's geometry before the JSON arrives. Replaces
+  the bare "..." dot which looked like the page was stuck.
+  Matches the actual card row's vertical rhythm.
+*/
+.skeletonGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
 /* Paginator. The list above renders a 50-card slice of the full
    filtered corpus; this bar sits at the bottom with prev/next,
    page numbers (with smart ellipsis on large sets), and a

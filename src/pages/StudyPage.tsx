@@ -4,6 +4,7 @@ import { ArrowLeft, Sparkles, ArrowRight, Languages } from 'lucide-react';
 import { Flashcard } from '../components/Flashcard';
 import { TopicSelect } from '../components/TopicSelect';
 import { PickerSelect, type PickerOption } from '../components/PickerSelect';
+import { Skeleton } from '../components/Skeleton';
 import {
   loadLevel,
   preloadAllLevels,
@@ -852,9 +853,24 @@ export function StudyPage() {
   }
 
   if (loading) {
+    // Skeleton card + rating row — same vertical rhythm as the
+    // real study UI, so the page doesn't "jump" when the JSON
+    // arrives. aria-busy announces the loading state to AT.
     return (
-      <div className={styles.empty}>
-        <p className="muted">{t('error.loading')}</p>
+      <div className={styles.study} aria-busy="true" aria-live="polite">
+        <div className={styles.studyColumn}>
+          <div className={styles.studyHeader}>
+            <Skeleton variant="text" width="30%" />
+            <Skeleton variant="text" width="40%" />
+          </div>
+          <Skeleton variant="block" />
+          <div className={styles.ratingRow}>
+            <Skeleton variant="block" />
+            <Skeleton variant="block" />
+            <Skeleton variant="block" />
+            <Skeleton variant="block" />
+          </div>
+        </div>
       </div>
     );
   }

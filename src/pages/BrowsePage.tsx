@@ -17,6 +17,7 @@ import { makeProgressKey, type ProgressMap } from '../lib/progress';
 import { isDue } from '../lib/sm2';
 import { api, type UserCard } from '../lib/api';
 import { AddCardModal } from '../components/AddCardModal';
+import { Skeleton } from '../components/Skeleton';
 import styles from './BrowsePage.module.css';
 
 type SourceFilter = 'all' | 'official' | 'mine';
@@ -786,8 +787,14 @@ export function BrowsePage() {
         })}
 
         {loading ? (
-          <div className={styles.empty}>
-            <p className="muted">…</p>
+          // Skeleton grid — five card-shaped placeholders so the
+          // user can tell at a glance that "list is loading" rather
+          // than "list is empty". Prevents the awkward "..." spinner
+          // we used to show, which looked like the page was stuck.
+          <div className={styles.skeletonGrid} aria-busy="true" aria-live="polite">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} variant="card" lines={3} />
+            ))}
           </div>
         ) : filtered.length === 0 ? (
           <div className={styles.empty}>
