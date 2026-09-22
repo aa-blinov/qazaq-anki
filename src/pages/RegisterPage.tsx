@@ -3,7 +3,6 @@ import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 import { getAuthErrorCode, getAuthErrorField, translateAuthError } from '../lib/authError';
-import { Logo } from '../components/Logo';
 import styles from './Auth.module.css';
 
 export function RegisterPage() {
@@ -71,9 +70,6 @@ export function RegisterPage() {
     <div className={styles.wrap}>
       <div className={styles.panel}>
         <div className={styles.heading}>
-          <div className={styles.mark}>
-            <Logo size="lg" />
-          </div>
           <h1>{t('auth.register.title')}</h1>
           <p className="muted">{t('auth.register.subtitle')}</p>
         </div>

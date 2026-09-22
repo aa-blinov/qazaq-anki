@@ -4,7 +4,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 import { getAuthErrorCode, getAuthErrorField, translateAuthError } from '../lib/authError';
 import { api } from '../lib/api';
-import { Logo } from '../components/Logo';
 import styles from './Auth.module.css';
 
 export function LoginPage() {
@@ -64,9 +63,6 @@ export function LoginPage() {
     <div className={styles.wrap}>
       <div className={styles.panel}>
         <div className={styles.heading}>
-          <div className={styles.mark}>
-            <Logo size="lg" />
-          </div>
           <h1>{t('auth.login.title')}</h1>
           <p className="muted">{t('auth.login.subtitle')}</p>
         </div>
@@ -140,6 +136,10 @@ export function LoginPage() {
                 {busy ? '…' : t('auth.signIn')}
               </button>
             </form>
+
+            <p className={styles.recoverHint}>
+              {t('auth.recover.context')}
+            </p>
 
             <p className={styles.footer}>
               <button

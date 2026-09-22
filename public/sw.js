@@ -18,7 +18,7 @@
  * old cache is dropped instead of served stale.
  * --------------------------------------------------------------------------- */
 
-const CACHE_NAME = 'qazaq-shell-v1';
+const CACHE_NAME = 'soz-shell-v2';
 const APP_SHELL = [
   '/',
   '/index.html',

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import {
   Moon,
@@ -10,8 +10,10 @@ import {
   BookOpen,
   BarChart3,
   Settings,
+  Menu,
+  X,
 } from 'lucide-react';
-import { Logo } from './Logo';
+import { Wordmark } from './Wordmark';
 import { OnboardingModal, tourScreenFromPath } from './OnboardingModal';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -38,6 +40,37 @@ export function Layout() {
   // When the user clicks the (i) icon in the top bar, we open the tour
   // for the current screen regardless of whether they've seen it.
   const [forceTour, setForceTour] = useState(false);
+  // Mobile nav drawer — open via the burger button on phones. We
+  // close it on every successful navigation so it never lingers
+  // after a tap. The <nav> element is hidden on desktop and rendered
+  // as a slide-down panel on mobile via CSS (see Layout.module.css).
+  const [navOpen, setNavOpen] = useState(false);
+  const navRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!navOpen) return;
+    // Close on outside click + Escape so the drawer doesn't trap
+    // focus or persist after the user has made their choice.
+    const onPointer = (e: PointerEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) {
+        setNavOpen(false);
+      }
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setNavOpen(false);
+    };
+    document.addEventListener('pointerdown', onPointer);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('pointerdown', onPointer);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [navOpen]);
+  // Auto-close the drawer whenever the route changes. Without
+  // this the panel stays open after a tap, covering the new
+  // page until they manually dismiss it.
+  useEffect(() => {
+    setNavOpen(false);
+  }, [location.pathname]);
 
   return (
     <div className={styles.shell}>
@@ -52,53 +85,121 @@ export function Layout() {
 
       <header className={styles.header}>
         <Link to="/" className={styles.brand} aria-label={t('nav.homeAria')}>
-          <Logo />
+          {/* Plain-text "Söz" wordmark in Fredoka — replaces the
+              earlier BrandLockup. The tile icon + duplicated wordmark
+              stopped making sense once the product had a short,
+              ownable name. */}
+          <Wordmark size={30} />
         </Link>
 
         {user ? (
-          <nav className={styles.nav} aria-label={t('nav.primary')}>
-            <NavLink
-              to="/"
-              end
-              className={({ isActive }) =>
-                `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`
-              }
-              title={t('nav.home')}
+          <>
+            <nav className={styles.nav} aria-label={t('nav.primary')}>
+              <NavLink
+                to="/"
+                end
+                className={({ isActive }) =>
+                  `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`
+                }
+                title={t('nav.home')}
+              >
+                <Home size={16} aria-hidden="true" className={styles.navLinkIcon} />
+                <span className={styles.navLinkLabel}>{t('nav.home')}</span>
+              </NavLink>
+              <NavLink
+                to="/browse"
+                className={({ isActive }) =>
+                  `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`
+                }
+                title={t('nav.browse')}
+              >
+                <BookOpen size={16} aria-hidden="true" className={styles.navLinkIcon} />
+                <span className={styles.navLinkLabel}>{t('nav.browse')}</span>
+              </NavLink>
+              <NavLink
+                to="/stats"
+                className={({ isActive }) =>
+                  `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`
+                }
+                title={t('nav.stats')}
+              >
+                <BarChart3 size={16} aria-hidden="true" className={styles.navLinkIcon} />
+                <span className={styles.navLinkLabel}>{t('nav.stats')}</span>
+              </NavLink>
+              <NavLink
+                to="/settings"
+                className={({ isActive }) =>
+                  `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`
+                }
+                title={t('nav.settings')}
+              >
+                <Settings size={16} aria-hidden="true" className={styles.navLinkIcon} />
+                <span className={styles.navLinkLabel}>{t('nav.settings')}</span>
+              </NavLink>
+            </nav>
+            {/* Mobile-only burger toggle. Mirrors the same nav links
+                in a slide-down panel; only rendered at ≤540px via
+                CSS (.burger class is `display: none` on larger
+                screens). The hidden sm-only toggle lives next to the
+                brand on the left so thumb reach is easy. */}
+            <button
+              type="button"
+              className={styles.burger}
+              onClick={() => setNavOpen((o) => !o)}
+              aria-expanded={navOpen}
+              aria-controls="mobile-nav"
+              aria-label={navOpen ? t('nav.closeMenu') : t('nav.openMenu')}
             >
-              <Home size={16} aria-hidden="true" className={styles.navLinkIcon} />
-              <span className={styles.navLinkLabel}>{t('nav.home')}</span>
-            </NavLink>
-            <NavLink
-              to="/browse"
-              className={({ isActive }) =>
-                `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`
-              }
-              title={t('nav.browse')}
+              {navOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
+            {/* The drawer is a *separate* copy of the nav rendered
+                into the document flow on mobile (CSS toggles its
+                visibility per breakpoint). Reusing the desktop <nav>
+                would require restructuring its container. */}
+            <div
+              ref={navRef}
+              id="mobile-nav"
+              className={`${styles.mobileNav} ${navOpen ? styles.mobileNavOpen : ''}`}
             >
-              <BookOpen size={16} aria-hidden="true" className={styles.navLinkIcon} />
-              <span className={styles.navLinkLabel}>{t('nav.browse')}</span>
-            </NavLink>
-            <NavLink
-              to="/stats"
-              className={({ isActive }) =>
-                `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`
-              }
-              title={t('nav.stats')}
-            >
-              <BarChart3 size={16} aria-hidden="true" className={styles.navLinkIcon} />
-              <span className={styles.navLinkLabel}>{t('nav.stats')}</span>
-            </NavLink>
-            <NavLink
-              to="/settings"
-              className={({ isActive }) =>
-                `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`
-              }
-              title={t('nav.settings')}
-            >
-              <Settings size={16} aria-hidden="true" className={styles.navLinkIcon} />
-              <span className={styles.navLinkLabel}>{t('nav.settings')}</span>
-            </NavLink>
-          </nav>
+              <NavLink
+                to="/"
+                end
+                className={({ isActive }) =>
+                  `${styles.mobileNavLink} ${isActive ? styles.mobileNavLinkActive : ''}`
+                }
+              >
+                <Home size={18} aria-hidden="true" />
+                {t('nav.home')}
+              </NavLink>
+              <NavLink
+                to="/browse"
+                className={({ isActive }) =>
+                  `${styles.mobileNavLink} ${isActive ? styles.mobileNavLinkActive : ''}`
+                }
+              >
+                <BookOpen size={18} aria-hidden="true" />
+                {t('nav.browse')}
+              </NavLink>
+              <NavLink
+                to="/stats"
+                className={({ isActive }) =>
+                  `${styles.mobileNavLink} ${isActive ? styles.mobileNavLinkActive : ''}`
+                }
+              >
+                <BarChart3 size={18} aria-hidden="true" />
+                {t('nav.stats')}
+              </NavLink>
+              <NavLink
+                to="/settings"
+                className={({ isActive }) =>
+                  `${styles.mobileNavLink} ${isActive ? styles.mobileNavLinkActive : ''}`
+                }
+              >
+                <Settings size={18} aria-hidden="true" />
+                {t('nav.settings')}
+              </NavLink>
+            </div>
+          </>
         ) : (
           <div className={styles.navPlaceholder} />
         )}
