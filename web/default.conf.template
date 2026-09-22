@@ -1,0 +1,94 @@
+# nginx config for the Qazaq web container.
+#
+# Two jobs:
+#   1. Serve the Vite static bundle from /usr/share/nginx/html.
+#   2. Reverse-proxy /api/* to the qazaq-api service on its internal
+#      port (3001 inside the compose network). This way a single
+#      domain (port 8080) serves both frontend and API, no CORS.
+#
+# `try_files` falls back to index.html for any non-asset path so the
+# SPA's client-side router can take over (no 404 on /study/a1 etc).
+#
+# Override the API upstream via the QAZAQ_API env var if you put the
+# API on a different host. The default `qazaq-api:3001` is the
+# service name from docker-compose.yml.
+
+# HSTS only makes sense when the request reached us over HTTPS;
+# the map below pins HTTPS only for users who already arrived over
+# TLS, so a first-time visitor on plain HTTP doesn't get their
+# browser stuck in an HTTPS-only state.
+map $scheme $hsts_header {
+    https   "max-age=31536000; includeSubDomains";
+    default "";
+}
+
+upstream qazaq_api {
+    server ${QAZAQ_API} fail_timeout=0;
+}
+
+server {
+    listen 8080 default_server;
+
+    # Hide nginx version in Server header.
+    server_tokens off;
+
+    # Cap upload size to match the API's body limit. AnkiDroid
+    # .apkg imports can hit ~50 MB; allow 100 MB to be safe.
+    client_max_body_size 100m;
+
+    # Audio chunks can be large for long TTS prompts; don't
+    # buffer them through nginx.
+    proxy_buffering off;
+    proxy_request_buffering off;
+
+    gzip on;
+    gzip_types text/plain text/css application/javascript application/json image/svg+xml;
+    gzip_min_length 1024;
+
+    # Cache the Vite bundle aggressively. Files under /assets/
+    # have hashed filenames so the browser can cache forever;
+    # the SPA shell (index.html) is revalidated on every request.
+    location /assets/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        try_files $uri =404;
+    }
+
+    location /api/ {
+        proxy_pass http://qazaq_api;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 30s;
+    }
+
+    # Defense-in-depth security headers. The Express API also sends
+    # some of these (see server/server.js), but we duplicate them at
+    # the edge so the protections hold for static assets too.
+    add_header X-Frame-Options "DENY" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "same-origin" always;
+    add_header Permissions-Policy "geolocation=(), camera=(), microphone=()" always;
+    add_header Strict-Transport-Security $hsts_header always;
+    # Strict CSP for the production bundle. The <meta> CSP in
+    # index.html is dev-friendly (includes 'unsafe-eval' for Vite
+    # HMR); HTTP headers win over <meta> when they conflict, so this
+    # stricter policy is what the browser actually enforces once
+    # nginx is in front of the bundle.
+    add_header Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
+
+    # SPA fallback. Anything that isn't a real file is the SPA shell.
+    location / {
+        add_header Cache-Control "no-cache";
+        add_header X-Frame-Options "DENY" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header Referrer-Policy "same-origin" always;
+        add_header Permissions-Policy "geolocation=(), camera=(), microphone=()" always;
+        add_header Strict-Transport-Security $hsts_header always;
+        add_header Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
+        try_files $uri $uri/ /index.html;
+    }
+}

@@ -1,36 +1,12 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
 
-# Build output
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# Node
-node_modules
-.npmrc
-
-# Env (keep .env.example)
-.env
-.env.local
-.env.*.local
+# Build output (we COPY dist/ into the nginx image at build time)
+dist/
+build/
+*.tsbuildinfo
 
 # Runtime data — user accounts, progress, reviews, audit logs.
 # The dev DB is in server/data/, prod lives in a Docker named volume.
@@ -39,24 +15,34 @@ node_modules
 # committed to the repo so a fresh clone has the full deck without
 # needing to re-run the PDF parser.
 server/data/
+backups/
+secrets/
+/data/
 
-# Generated TTS audio — pre-generated at install time and committed
-# to the repo so a fresh clone has audio for every Kazakh word in
-# the official decks without needing to run the TTS pipeline.
-# Per-word lazy generation for user-added cards (see
-# scripts/tts_service.py + POST /api/tts/synthesize) lands in the
-# same directory at runtime — those new files are NOT gitignored
-# either, so a "wipe audio and rebuild" is `git checkout public/audio`
-# followed by `docker compose --profile tools run --rm qazaq-tts`
-# to regenerate anything missing.
-# public/audio/
+# Pre-generated TTS audio lives in the repo (committed in main) so a
+# fresh clone has audio without running the TTS pipeline. Lazy
+# generation for user-added cards lands in the same directory at
+# runtime — those new files are NOT gitignored, so a "wipe audio and
+# rebuild" is `git checkout public/audio` followed by
+# `docker compose --profile tools run --rm qazaq-tts` to regenerate
+# anything missing.
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
 
 # Playwright e2e output (reports, traces, screenshots)
 test-results/
 playwright-report/
 playwright/.cache/
 
-# Throwaway screenshot scripts used during dev (named `_shot-*.mjs`)
+# Throwaway screenshot scripts used during dev
 _shot-*.mjs
 _shot-*.png
 
@@ -64,14 +50,16 @@ _shot-*.png
 # Docker build. Downloaded on demand from HF, not part of the repo.
 models/
 
+# Test artifacts
+coverage/
+
+# Local env / secrets — never commit
+.env
+.env.local
+.env.*.local
+.env.*
+!.env.production.example
+
 # Misc
-*.tsbuildinfo
 .cache/
 .vite/
-coverage/
-/data/
-
-# Root-level data/ dir catches the stray sqlite file when the
-# server is started without DB_PATH (the .gitignore'd
-# server/data/ is for the real DB; data/ is for boot-time
-# accidents that should never be committed).

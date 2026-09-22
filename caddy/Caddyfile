@@ -1,0 +1,42 @@
+# Caddyfile — front-of-stack reverse proxy with automatic
+# Let's Encrypt for HTTPS.
+#
+# Required env:
+#   CADDY_DOMAIN  — public DNS name resolving to this host
+#                   (e.g. "anki.example.com"). ACME uses the
+#                   http-01 challenge on port 80.
+#   CADDY_EMAIL   — Let's Encrypt registration email.
+#
+# Optional:
+#   WEB_UPSTREAM  — defaults to "qazaq-web:8080" (the internal
+#                   compose hostname). Override if you put Caddy
+#                   on a different host.
+#
+# For LAN / dev / no-DNS setups, don't run this container —
+# hit the web tier (port 8080) directly.
+
+{$CADDY_DOMAIN} {
+    tls {
+        # Caddy registers this email with Let's Encrypt the first
+        # time it issues a cert; renewal emails go to the same
+        # address.
+        email {$CADDY_EMAIL}
+    }
+
+    encode gzip zstd
+
+    # All traffic goes to the nginx tier. nginx keeps handling
+    # the SPA fallback, /api/ proxy, security headers, gzip —
+    # we just terminate TLS and pass through.
+    reverse_proxy {$WEB_UPSTREAM:qazaq-web:8080} {
+        header_up X-Forwarded-Proto https
+        # Bigger body limit for .apkg imports (~50MB worst case).
+        request_body {max_size 100mb}
+    }
+}
+
+# HTTP on :80 only exists to answer the ACME http-01
+# challenge. Every other request gets a 301 to HTTPS.
+:80 {
+    redir https://{host}{uri} permanent
+}

@@ -1,0 +1,22 @@
+# Keep node_modules out of every image. The Dockerfile runs
+# `npm install --omit=dev` itself with the lockfile-free
+# package.json.
+node_modules
+.npm
+
+# Don't bake dev artifacts.
+.git
+.gitignore
+.dockerignore
+Dockerfile
+.vscode
+.idea
+*.log
+
+# Don't bake test fixtures or large local data.
+test/
+tests/
+coverage/
+data/
+backups/
+public/audio/
