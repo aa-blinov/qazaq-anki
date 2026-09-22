@@ -50,9 +50,15 @@ except ImportError:
 # from the host, so writes here land in ./public/audio/<lang>/ on
 # the host (and are served by the web container's nginx). Each
 # language has its own Piper voice model loaded once at startup.
+# Models live at ${TTS_MODELS_DIR}/<lang>/<file>.onnx — the
+# entrypoint script (tts/entrypoint.sh) populates this directory
+# via scripts/download_tts_models.py. Default `/app/models` is
+# kept for local dev runs (no Docker, models vendored under the
+# repo's `models/` symlink).
+_MODELS_DIR = os.environ.get("TTS_MODELS_DIR", "/app/models")
 LANGUAGES = {
-    "kk": {"model": "/app/models/kk/kk_KZ-issai-high.onnx",      "subdir": "kk"},
-    "ru": {"model": "/app/models/ru/ru_RU-denis-medium.onnx",   "subdir": "ru"},
+    "kk": {"model": f"{_MODELS_DIR}/kk/kk_KZ-issai-high.onnx",      "subdir": "kk"},
+    "ru": {"model": f"{_MODELS_DIR}/ru/ru_RU-denis-medium.onnx",   "subdir": "ru"},
 }
 MAX_TEXT_LEN = 200  # guardrail: an honest study card won't exceed this
 

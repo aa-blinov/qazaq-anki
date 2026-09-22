@@ -99,7 +99,16 @@ services:
     restart: unless-stopped
     environment:
       TTS_MODE: service
+      # Override the default /app/models — the named volume mounts
+      # here so Piper ONNX models survive restarts and aren't
+      # re-downloaded every time.
+      TTS_MODELS_DIR: /models
     volumes:
+      # Persistent Piper voice models. Populated on first start
+      # by scripts/download_tts_models.py via tts/entrypoint.sh.
+      # Without this named volume the TTS image would re-download
+      # ~100 MB of ONNX models on every restart.
+      - qazaq-tts-models:/models
       # TTS service writes generated WAVs here; nginx serves
       # them read-only.
       - ./public/audio:/audio:rw
@@ -176,6 +185,11 @@ networks:
 
 volumes:
   qazaq-data:
+    driver: local
+  qazaq-tts-models:
+    # Piper voice models for the TTS service. Populated on first
+    # start by scripts/download_tts_models.py (~100 MB across
+    # kk_KZ-issai-high and ru_RU-denis-medium).
     driver: local
   caddy-data:
     driver: local
