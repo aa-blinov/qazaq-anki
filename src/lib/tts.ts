@@ -32,17 +32,22 @@ const manifestPromises: Record<AudioLang, Promise<Set<string>> | null> = {
 
 /** Audio is generated for both Kazakh (`kk`) and Russian
  *  (`ru`). The manifest is per-language; the URL is too. */
+// Vite replaces `import.meta.env.BASE_URL` with the configured `base`
+// at build time. In dev / tests it resolves to '/', so URLs still
+// match the existing test expectations and the local dev server.
+const AUDIO_BASE = `${import.meta.env.BASE_URL}audio`;
+
 export function audioUrl(text: string, lang: AudioLang = 'kk'): string | null {
   if (!text || !text.trim()) return null;
   // Strip surrounding whitespace; the model already handles
   // punctuation via espeak. Anything non-empty is a candidate.
-  return `/audio/${lang}/${wordHash(text.trim())}.wav`;
+  return `${AUDIO_BASE}/${lang}/${wordHash(text.trim())}.wav`;
 }
 
 /** Synchronous URL with an explicit hash. Used by tests and by the
  *  manifest check; the URL is the same as `audioUrl().slice(...)`. */
 export function audioUrlForHash(hash: string, lang: AudioLang = 'kk'): string {
-  return `/audio/${lang}/${hash}.wav`;
+  return `${AUDIO_BASE}/${lang}/${hash}.wav`;
 }
 
 /** Does pre-generated audio exist for this text? Returns:
@@ -75,7 +80,7 @@ export function loadAudioManifest(lang: AudioLang = 'kk'): Promise<Set<string>> 
   if (manifestPromises[lang]) return manifestPromises[lang]!;
   manifestPromises[lang] = (async () => {
     try {
-      const res = await fetch(`/audio/${lang}/manifest.json`, {
+      const res = await fetch(`${AUDIO_BASE}/${lang}/manifest.json`, {
         cache: 'force-cache', // immutable per build
       });
       if (!res.ok) {
