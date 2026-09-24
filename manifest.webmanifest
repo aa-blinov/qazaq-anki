@@ -1,0 +1,21 @@
+{
+  "name": "Söz — учи казахские слова",
+  "short_name": "Söz",
+  "description": "Учите казахский по карточкам с интервальным повторением. Локально, без трекинга.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAF7F2",
+  "theme_color": "#C96442",
+  "lang": "ru",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
