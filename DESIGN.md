@@ -299,25 +299,50 @@ had — `danger`, `warn`, `ok`, `accent` — given a job in the study loop:
 | Хорошо | ok | green | `#4E6E36` | `#9CC074` |
 | Легко | accent | clay | `#96492A` | `#E08662` |
 
-Four roles per state, because they are different jobs:
+Three roles per state, because they are three different jobs:
 
-- `--<state>-soft` — resting fill, a tint of the state
-- `--<state>-text` — resting label and keyline
-- `--<state>-fill` — pressed fill
+- `--<state>-text` — resting label **and** resting keyline
+- `--<state>-fill` — pressed / hovered fill
 - `--<state>-ink` — pressed label
 
-The `-text` values are **deeper than the base state colour** in light mode. The
-base `--danger` on its own `--danger-soft` measures 4.28:1 and `--ok` measures
-3.99:1 — both short of AA. The dark theme needs no deepening, because there the
-state colours are already light against dark tints.
+The button surface itself is the neutral `--surface`, the same one every other
+control in the app sits on.
 
-Every pairing is verified in both themes: resting 4.62–6.32:1, pressed
-4.73–8.76:1, keyline above 3:1.
+### Why there is no `soft` role
 
-**Weight discipline.** At rest the buttons are soft tints with a 1px keyline, not
-solid fills, so the page CTA keeps the strongest colour on the screen. The solid
-fill lands on hover, marking the moment of commitment rather than decorating the
-resting state.
+There was a fourth role, `--<state>-soft`, for a tinted resting surface. It is
+gone, and this is the one place the product was genuinely too loud.
+
+Four full-surface tints sat directly under the flashcard — which is the actual
+work. On the study screen the learner is trying to recall the meaning of a
+Kazakh word, and the brightest, heaviest thing on the page was the answer
+widget sitting below it. It cost twice:
+
+- **Intensity.** Four saturated blocks, on screen for effectively the whole
+  session, out-shouting the card.
+- **Identity.** The `Легко` state reuses the accent role, so a large terracotta
+  block made the product's single accent read as "one of four peer colours"
+  rather than as the accent. The one colour the whole product spends carefully
+  had been diluted into a peer.
+
+The state identity survives on a 1px keyline and the label colour, both
+**permanent** — so it never depends on hover firing, which matters on touch,
+where `@media (hover: none)` means the pressed fill is the only state change a
+finger will ever see. The scale still reads as an ordered red → amber → green →
+clay row at a glance.
+
+The solid fill now lands only on hover and press. That is what "weight
+discipline" was always supposed to mean, and the tinted resting state was quietly
+undermining it: with all four buttons already saturated, the press had nothing
+left to add.
+
+Dropping the tint also **raised** resting contrast, because the state colour now
+sits on white rather than on a tint of itself. In light mode `--again-text`
+went from 4.62:1 on `--again-soft` to **6.96:1** on `--surface`; the old 3.99:1
+worst case is now 5.82:1.
+
+Every pairing verified in both themes: resting **5.10–7.92:1**, pressed
+**4.73–8.76:1**, keyline 5.10:1 and above.
 
 **Colour is never the only cue.** The Russian label and the 1–4 keyboard
 shortcut are always present on every button.
@@ -325,6 +350,41 @@ shortcut are always present on every button.
 Implementation: `data-grade` carries the SM-2 grade key; CSS selects
 `.ratingBtn[data-grade='…']`. Do not add per-state class names in the component —
 the attribute keeps the grade in one place.
+
+## What a "quieter" pass found
+
+A pass to reduce intensity looked at every surface — home, study, browse, stats,
+settings — in both themes, and this design is already restrained: one warm
+ground, one accent, no gradients, no glass, no glow, no gamification, and four
+earlier passes that each removed noise rather than adding it.
+
+The intensity was not distributed. It was concentrated in one place, and that
+place was the SM-2 rating row.
+
+**Deliberately left alone:**
+
+- **The study filter stack.** Three full-width bordered selects above the card
+  is the most box-like thing on the screen, and it does out-weigh the card
+  visually. It is not an oversight: `StudyPage.module.css` states the controls
+  stretch to the full column width "so they read as form fields, not toolbar
+  chips," and a full-width field is a stronger control affordance than a narrow
+  chip. Quieting it would trade usability for a preference.
+- **The `A1` level pill.** Solid accent, but it marks the *active filter*. With
+  the rating row no longer competing, it is the only solid accent mass on the
+  screen and it means exactly one thing.
+- **The stats page.** The accent appears on the rings and the histogram as one
+  systematic use across a whole screen, not as scattered highlights.
+- **The palette itself.** Quieter is not greyer. The warm ground and the
+  terracotta are the product's identity; desaturating them would produce a
+  different, less specific product.
+- **Type, motion, spacing.** The typeset and animate passes landed on this
+  code minutes ago and both measured correct.
+
+The general rule this surfaced: when a product has one accent and a semantic
+scale, check whether the scale is borrowing the accent. `--easy-*` reuses the
+accent role, so any *large* surface in that state silently competes with every
+CTA in the app. Colour identity belongs on a keyline and a label; area belongs
+to the one thing the screen is for.
 
 ## Type
 
