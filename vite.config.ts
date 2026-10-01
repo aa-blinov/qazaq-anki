@@ -3,11 +3,13 @@ import react from '@vitejs/plugin-react';
 
 // Different base for dev vs production.
 // Dev (npm run dev)   → '/' so the dev server works at http://localhost:5173/
-// Build (npm run build) → '/anki-qazaq/' so it deploys to https://<user>.github.io/anki-qazaq/
-// Override the production base by setting VITE_BASE before `npm run build`.
+// Pages (npm run build:pages / npm run deploy) → '/qazaq-anki/', matching
+//   the repository name. `npm run deploy` routes through build:pages so
+//   this base is never left to the fallback below.
+// Override with VITE_BASE before `npm run build`.
 const base: string =
   process.env.VITE_BASE ||
-  (process.env.NODE_ENV === 'production' ? '/anki-qazaq/' : '/');
+  (process.env.NODE_ENV === 'production' ? '/qazaq-anki/' : '/');
 
 export default defineConfig(({ mode }) => ({
   plugins: [react()],
