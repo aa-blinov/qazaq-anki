@@ -1,0 +1,816 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-01T17:36:09.825Z",
+  "title": "Design System: qazaq-anki",
+  "extensions": {
+    "colorMeta": {
+      "bg": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "oklch(97.7% 0.0074 80.7)",
+        "light": "#FAF7F2",
+        "dark": "#1A1916",
+        "darkOklch": "oklch(21.3% 0.0060 91.6)",
+        "purpose": "The page ground. Warm off-white, never a true white.",
+        "tonalRamp": [
+          "#0d0b08",
+          "#282622",
+          "#474541",
+          "#686661",
+          "#8b8984",
+          "#b0ada9",
+          "#d7d4cf",
+          "#f1eee9"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface",
+        "canonical": "oklch(100.0% 0.0000 89.9)",
+        "light": "#FFFFFF",
+        "dark": "#232220",
+        "darkOklch": "oklch(25.2% 0.0040 84.6)",
+        "purpose": "Cards, panels, and every resting control.",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#262626",
+          "#454545",
+          "#666666",
+          "#898989",
+          "#aeaeae",
+          "#d4d4d4",
+          "#eeeeee"
+        ]
+      },
+      "surface-2": {
+        "role": "neutral",
+        "displayName": "Surface Inset",
+        "canonical": "oklch(95.0% 0.0115 84.6)",
+        "light": "#F2EEE6",
+        "dark": "#2C2A27",
+        "darkOklch": "oklch(28.6% 0.0061 78.2)",
+        "purpose": "Subtle insets, secondary panels, hover fills, chip grounds.",
+        "tonalRamp": [
+          "#0d0b06",
+          "#292620",
+          "#48453e",
+          "#69665f",
+          "#8c8981",
+          "#b1ada6",
+          "#d8d4cc",
+          "#f2eee6"
+        ]
+      },
+      "surface-3": {
+        "role": "neutral",
+        "displayName": "Inset Strong",
+        "canonical": "oklch(91.7% 0.0186 86.1)",
+        "light": "#E9E3D6",
+        "dark": "#36332F",
+        "darkOklch": "oklch(32.3% 0.0082 75.3)",
+        "purpose": "Stronger insets, disabled fills, active filter chips.",
+        "tonalRamp": [
+          "#0f0b04",
+          "#2a261c",
+          "#49443a",
+          "#6b665a",
+          "#8e897d",
+          "#b3ada1",
+          "#dad4c7",
+          "#f4eee1"
+        ]
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "oklch(23.5% 0.0058 91.6)",
+        "light": "#1F1E1B",
+        "dark": "#ECE8DF",
+        "darkOklch": "oklch(93.2% 0.0128 86.8)",
+        "purpose": "Body copy.",
+        "tonalRamp": [
+          "#0c0b08",
+          "#272623",
+          "#464542",
+          "#676662",
+          "#8a8985",
+          "#afaeaa",
+          "#d5d4d0",
+          "#f0eeea"
+        ]
+      },
+      "text-strong": {
+        "role": "neutral",
+        "displayName": "Ink Strong",
+        "canonical": "oklch(15.9% 0.0045 84.6)",
+        "light": "#0E0D0B",
+        "dark": "#FAF7F2",
+        "darkOklch": "oklch(97.7% 0.0074 80.7)",
+        "purpose": "Headings, important emphasis.",
+        "tonalRamp": [
+          "#0c0b09",
+          "#272624",
+          "#464542",
+          "#676663",
+          "#8a8986",
+          "#afaeab",
+          "#d5d4d1",
+          "#f0eeeb"
+        ]
+      },
+      "text-muted": {
+        "role": "neutral",
+        "displayName": "Ink Muted",
+        "canonical": "oklch(51.8% 0.0100 84.6)",
+        "light": "#6B6862",
+        "dark": "#A8A29A",
+        "darkOklch": "oklch(71.5% 0.0134 75.3)",
+        "purpose": "Secondary copy, inactive nav.",
+        "tonalRamp": [
+          "#0d0b07",
+          "#292621",
+          "#47453f",
+          "#696660",
+          "#8c8982",
+          "#b1ada7",
+          "#d7d4cd",
+          "#f2eee7"
+        ]
+      },
+      "text-subtle": {
+        "role": "neutral",
+        "displayName": "Ink Subtle",
+        "canonical": "oklch(65.2% 0.0144 82.4)",
+        "light": "#948F86",
+        "dark": "#8C877E",
+        "darkOklch": "oklch(62.5% 0.0145 82.4)",
+        "purpose": "Captions, timestamps, helper text. 4.92:1 on --bg.",
+        "tonalRamp": [
+          "#0e0b05",
+          "#2a261f",
+          "#49443c",
+          "#6a655d",
+          "#8d8880",
+          "#b2ada4",
+          "#d9d4ca",
+          "#f3eee4"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Rule",
+        "canonical": "oklch(91.3% 0.0223 89.8)",
+        "light": "#E8E2D2",
+        "dark": "#36332F",
+        "darkOklch": "oklch(32.3% 0.0082 75.3)",
+        "purpose": "Default hairline.",
+        "tonalRamp": [
+          "#0f0b02",
+          "#2b261a",
+          "#4a4538",
+          "#6b6658",
+          "#8e897a",
+          "#b3ae9e",
+          "#dad4c4",
+          "#f4eede"
+        ]
+      },
+      "border-strong": {
+        "role": "neutral",
+        "displayName": "Rule Strong",
+        "canonical": "oklch(85.6% 0.0247 85.8)",
+        "light": "#D7CFBE",
+        "dark": "#4A463F",
+        "darkOklch": "oklch(39.6% 0.0127 81.8)",
+        "purpose": "Active hairline, control borders.",
+        "tonalRamp": [
+          "#100a02",
+          "#2c2618",
+          "#4b4436",
+          "#6c6556",
+          "#908879",
+          "#b5ad9d",
+          "#dbd3c2",
+          "#f6eedc"
+        ]
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "Clay",
+        "canonical": "oklch(61.7% 0.1375 39.0)",
+        "light": "#C96442",
+        "dark": "#E08662",
+        "darkOklch": "oklch(70.8% 0.1216 42.3)",
+        "purpose": "The brand accent. Fills that carry NO text.",
+        "tonalRamp": [
+          "#1b0300",
+          "#471200",
+          "#792400",
+          "#a54321",
+          "#cd6846",
+          "#f78d6a",
+          "#ffc5b1",
+          "#ffe9e2"
+        ]
+      },
+      "accent-solid": {
+        "role": "primary",
+        "displayName": "Clay Solid",
+        "canonical": "oklch(53.8% 0.1233 41.8)",
+        "light": "#A8522F",
+        "dark": "#E08662",
+        "darkOklch": "oklch(70.8% 0.1216 42.3)",
+        "purpose": "The only accent fill that carries text. Pairs with Clay Ink.",
+        "tonalRamp": [
+          "#1a0400",
+          "#451400",
+          "#762800",
+          "#9f4a26",
+          "#c66d4a",
+          "#ef926e",
+          "#ffc5af",
+          "#ffe9e1"
+        ]
+      },
+      "accent-hover": {
+        "role": "primary",
+        "displayName": "Clay Deep",
+        "canonical": "oklch(53.8% 0.1233 41.8)",
+        "light": "#A8522F",
+        "dark": "#EFA079",
+        "darkOklch": "oklch(77.5% 0.1083 46.9)",
+        "purpose": "Hover state on accent fills.",
+        "tonalRamp": [
+          "#1a0400",
+          "#451400",
+          "#762800",
+          "#9f4a26",
+          "#c66d4a",
+          "#ef926e",
+          "#ffc5af",
+          "#ffe9e1"
+        ]
+      },
+      "accent-soft": {
+        "role": "primary",
+        "displayName": "Clay Tint",
+        "canonical": "oklch(92.8% 0.0257 63.7)",
+        "light": "#F4E4D6",
+        "dark": "#3A2A20",
+        "darkOklch": "oklch(30.1% 0.0295 53.3)",
+        "purpose": "Soft tags, focus-ring glow.",
+        "tonalRamp": [
+          "#130902",
+          "#2f2419",
+          "#4f4237",
+          "#716357",
+          "#958679",
+          "#baab9e",
+          "#e1d1c3",
+          "#fbebdd"
+        ]
+      },
+      "accent-ink": {
+        "role": "primary",
+        "displayName": "Clay Text",
+        "canonical": "oklch(34.8% 0.0793 43.4)",
+        "light": "#5B2A14",
+        "dark": "#F4D3BD",
+        "darkOklch": "oklch(88.9% 0.0475 55.7)",
+        "purpose": "Accent text on a neutral background. NOT text-on-accent.",
+        "tonalRamp": [
+          "#1a0400",
+          "#441500",
+          "#68351f",
+          "#8c5740",
+          "#b27962",
+          "#d99e85",
+          "#ffc5ad",
+          "#ffe9e0"
+        ]
+      },
+      "accent-fg": {
+        "role": "primary",
+        "displayName": "Clay Ink",
+        "canonical": "oklch(97.7% 0.0074 80.7)",
+        "light": "#FAF7F2",
+        "dark": "#1A1916",
+        "darkOklch": "oklch(21.3% 0.0060 91.6)",
+        "purpose": "Ink for text on Clay Solid. 5.02:1 light / 6.49:1 dark.",
+        "tonalRamp": [
+          "#0d0b08",
+          "#282622",
+          "#474541",
+          "#686661",
+          "#8b8984",
+          "#b0ada9",
+          "#d7d4cf",
+          "#f1eee9"
+        ]
+      },
+      "ok": {
+        "role": "secondary",
+        "displayName": "Moss",
+        "canonical": "oklch(54.8% 0.0979 132.9)",
+        "light": "#5A7D3F",
+        "dark": "#9CC074",
+        "darkOklch": "oklch(76.3% 0.1093 129.3)",
+        "purpose": "Success. Also the Хорошо grade fill.",
+        "tonalRamp": [
+          "#050f00",
+          "#162e00",
+          "#2f4f0f",
+          "#4f7234",
+          "#729657",
+          "#96bc7b",
+          "#bbe3a0",
+          "#d5fdb9"
+        ]
+      },
+      "warn": {
+        "role": "secondary",
+        "displayName": "Amber",
+        "canonical": "oklch(65.8% 0.1278 84.4)",
+        "light": "#B68A1B",
+        "dark": "#D9B25B",
+        "darkOklch": "oklch(78.1% 0.1150 85.4)",
+        "purpose": "Warning — fill only. 3.16:1 as text; use warn-text.",
+        "tonalRamp": [
+          "#110a00",
+          "#332400",
+          "#594100",
+          "#826000",
+          "#ad8106",
+          "#d4a741",
+          "#fbcd6b",
+          "#ffecc7"
+        ]
+      },
+      "warn-text": {
+        "role": "secondary",
+        "displayName": "Amber Text",
+        "canonical": "oklch(49.7% 0.0957 86.8)",
+        "light": "#7A5E10",
+        "dark": "#D9B25B",
+        "darkOklch": "oklch(78.1% 0.1150 85.4)",
+        "purpose": "Warning used as text. 5.06:1 on --surface.",
+        "tonalRamp": [
+          "#110a00",
+          "#322400",
+          "#574100",
+          "#7e6216",
+          "#a2853f",
+          "#c8aa64",
+          "#f0d18a",
+          "#ffedc4"
+        ]
+      },
+      "danger": {
+        "role": "secondary",
+        "displayName": "Brick",
+        "canonical": "oklch(53.7% 0.1510 23.7)",
+        "light": "#B54141",
+        "dark": "#DA7474",
+        "darkOklch": "oklch(67.5% 0.1277 21.0)",
+        "purpose": "Error / destructive. Also the Снова grade fill.",
+        "tonalRamp": [
+          "#1f0001",
+          "#4f0008",
+          "#830a18",
+          "#ac3839",
+          "#d55e5b",
+          "#ff847f",
+          "#ffc3be",
+          "#ffe8e6"
+        ]
+      },
+      "again-text": {
+        "role": "secondary",
+        "displayName": "Grade Red",
+        "canonical": "oklch(48.3% 0.1445 24.3)",
+        "light": "#A03333",
+        "dark": "#DA7474",
+        "darkOklch": "oklch(67.5% 0.1277 21.0)",
+        "purpose": "Снова resting label + keyline.",
+        "tonalRamp": [
+          "#1f0001",
+          "#4f0007",
+          "#81121a",
+          "#a93c3b",
+          "#d2615c",
+          "#fc8680",
+          "#ffc3be",
+          "#ffe8e6"
+        ]
+      },
+      "again-fill": {
+        "role": "secondary",
+        "displayName": "Grade Red Solid",
+        "canonical": "oklch(53.7% 0.1510 23.7)",
+        "light": "#B54141",
+        "dark": "#DA7474",
+        "darkOklch": "oklch(67.5% 0.1277 21.0)",
+        "purpose": "Снова pressed fill.",
+        "tonalRamp": [
+          "#1f0001",
+          "#4f0008",
+          "#830a18",
+          "#ac3839",
+          "#d55e5b",
+          "#ff847f",
+          "#ffc3be",
+          "#ffe8e6"
+        ]
+      },
+      "hard-text": {
+        "role": "secondary",
+        "displayName": "Grade Amber",
+        "canonical": "oklch(49.7% 0.0957 86.8)",
+        "light": "#7A5E10",
+        "dark": "#D9B25B",
+        "darkOklch": "oklch(78.1% 0.1150 85.4)",
+        "purpose": "Трудно resting label + keyline.",
+        "tonalRamp": [
+          "#110a00",
+          "#322400",
+          "#574100",
+          "#7e6216",
+          "#a2853f",
+          "#c8aa64",
+          "#f0d18a",
+          "#ffedc4"
+        ]
+      },
+      "hard-fill": {
+        "role": "secondary",
+        "displayName": "Grade Amber Solid",
+        "canonical": "oklch(65.8% 0.1278 84.4)",
+        "light": "#B68A1B",
+        "dark": "#D9B25B",
+        "darkOklch": "oklch(78.1% 0.1150 85.4)",
+        "purpose": "Трудно pressed fill.",
+        "tonalRamp": [
+          "#110a00",
+          "#332400",
+          "#594100",
+          "#826000",
+          "#ad8106",
+          "#d4a741",
+          "#fbcd6b",
+          "#ffecc7"
+        ]
+      },
+      "good-text": {
+        "role": "secondary",
+        "displayName": "Grade Green",
+        "canonical": "oklch(49.9% 0.0905 133.2)",
+        "light": "#4E6E36",
+        "dark": "#9CC074",
+        "darkOklch": "oklch(76.3% 0.1093 129.3)",
+        "purpose": "Хорошо resting label + keyline.",
+        "tonalRamp": [
+          "#040f00",
+          "#162e00",
+          "#314f17",
+          "#517139",
+          "#73955b",
+          "#97bb7f",
+          "#bde2a4",
+          "#d7fcbe"
+        ]
+      },
+      "good-fill": {
+        "role": "secondary",
+        "displayName": "Grade Green Solid",
+        "canonical": "oklch(54.8% 0.0979 132.9)",
+        "light": "#5A7D3F",
+        "dark": "#9CC074",
+        "darkOklch": "oklch(76.3% 0.1093 129.3)",
+        "purpose": "Хорошо pressed fill.",
+        "tonalRamp": [
+          "#050f00",
+          "#162e00",
+          "#2f4f0f",
+          "#4f7234",
+          "#729657",
+          "#96bc7b",
+          "#bbe3a0",
+          "#d5fdb9"
+        ]
+      },
+      "easy-text": {
+        "role": "secondary",
+        "displayName": "Grade Clay",
+        "canonical": "oklch(49.6% 0.1126 41.7)",
+        "light": "#96492A",
+        "dark": "#E08662",
+        "darkOklch": "oklch(70.8% 0.1216 42.3)",
+        "purpose": "Легко resting label + keyline.",
+        "tonalRamp": [
+          "#1a0400",
+          "#461400",
+          "#742a07",
+          "#9a4d2e",
+          "#c27051",
+          "#ea9575",
+          "#ffc5af",
+          "#ffe9e1"
+        ]
+      },
+      "easy-fill": {
+        "role": "secondary",
+        "displayName": "Grade Clay Solid",
+        "canonical": "oklch(53.8% 0.1233 41.8)",
+        "light": "#A8522F",
+        "dark": "#E08662",
+        "darkOklch": "oklch(70.8% 0.1216 42.3)",
+        "purpose": "Легко pressed fill.",
+        "tonalRamp": [
+          "#1a0400",
+          "#451400",
+          "#762800",
+          "#9f4a26",
+          "#c66d4a",
+          "#ef926e",
+          "#ffc5af",
+          "#ffe9e1"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Newsreader",
+        "purpose": "The Kazakh word, and page headings. The only place the product shows a second voice."
+      },
+      "title": {
+        "displayName": "Inter 600",
+        "purpose": "Section headings."
+      },
+      "lead": {
+        "displayName": "Inter 400",
+        "purpose": "Lead paragraphs and card sentences."
+      },
+      "body": {
+        "displayName": "Inter 400",
+        "purpose": "Default reading and interface size."
+      },
+      "label": {
+        "displayName": "Inter 500",
+        "purpose": "Shortcut chips, captions, micro labels."
+      }
+    },
+    "shadows": [
+      {
+        "name": "shadow-xs",
+        "value": null,
+        "purpose": "The faintest lift; disabled and inert states."
+      },
+      {
+        "name": "shadow-sm",
+        "value": null,
+        "purpose": "Inset panels, the mobile drawer."
+      },
+      {
+        "name": "shadow-md",
+        "value": null,
+        "purpose": "The resting flashcard. Also the anchor of the card-landing animation."
+      },
+      {
+        "name": "shadow-lg",
+        "value": null,
+        "purpose": "Modals and dialogs only."
+      }
+    ],
+    "motion": [
+      {
+        "name": "dur-press",
+        "value": null,
+        "purpose": "The control acknowledging the finger. Under 150ms reads as physical."
+      },
+      {
+        "name": "dur-fast",
+        "value": null,
+        "purpose": "A routine state change: hover, colour, a row settling."
+      },
+      {
+        "name": "dur-base",
+        "value": null,
+        "purpose": "An overlay or a state swap: a modal, a toast, the scrim."
+      },
+      {
+        "name": "dur-slow",
+        "value": null,
+        "purpose": "The authored moment — the card landing. Reserved on purpose."
+      },
+      {
+        "name": "ease-out",
+        "value": null,
+        "purpose": "Every arrival. Exponential deceleration."
+      },
+      {
+        "name": "ease-in-out",
+        "value": null,
+        "purpose": "Loops that go out and come back (shimmer, audio pulse)."
+      },
+      {
+        "name": "ease-linear",
+        "value": null,
+        "purpose": "Continuous rotation only. Any easing on a spinner reads as stutter."
+      },
+      {
+        "name": "card-land",
+        "value": "420ms null",
+        "purpose": "The flashcard lands: shadow tightens onto an opaque surface, no fade."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "narrow",
+        "value": "420px"
+      },
+      {
+        "name": "nav-drawer",
+        "value": "540px",
+        "purpose": "Load-bearing: swaps the inline nav for the burger drawer."
+      },
+      {
+        "name": "card-compact",
+        "value": "600px"
+      },
+      {
+        "name": "table",
+        "value": "640px"
+      },
+      {
+        "name": "panel",
+        "value": "720px"
+      },
+      {
+        "name": "panel-alt",
+        "value": "760px"
+      },
+      {
+        "name": "grid",
+        "value": "768px"
+      },
+      {
+        "name": "study-split",
+        "value": "900px"
+      }
+    ],
+    "knownDebt": [
+      "No spacing token scale. 27 distinct px values are in use in padding/margin; the rhythm is a loose 2px step with a 4px preference, clustering on 4/6/8/10/12/14/16/20/24/32px.",
+      "Breakpoints are not unified — eight distinct max-width values. Only 540px is load-bearing.",
+      "The mobile nav drawer opens and closes with no transition; it is the only overlay not using the shared arrival vocabulary.",
+      "On the study screen at desktop width the undo toast overlaps the \"Показать ответ\" button."
+    ]
+  },
+  "components": [
+    {
+      "name": "Button — Primary",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one solid accent surface. Carries the page's primary action; text is Clay Ink on Clay Solid, never white on bare Clay.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">Начать с A1 <svg class=\"ds-ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><line x1=\"5\" x2=\"19\" y1=\"12\" y2=\"12\"/><polyline points=\"12 5 19 12 12 19\"/></svg></button>",
+      "css": ".ds-btn-primary { display:inline-flex; align-items:center; justify-content:center; gap:8px; line-height:1; min-height:38px; padding:0 14px; border:1px solid transparent; border-radius:var(--radius-md); background:var(--accent-solid); color:var(--accent-fg); font-family:var(--font-sans); font-weight:500; font-size:var(--text-small); letter-spacing:-0.005em; cursor:pointer; white-space:nowrap; transition:background var(--dur-fast) var(--ease-out), transform var(--dur-press) var(--ease-out); }\n.ds-btn-primary .ds-ico { width:1em; height:1em; }\n.ds-btn-primary:hover { background:var(--accent-hover); }\n.ds-btn-primary:active { transform:translateY(1px); }\n.ds-btn-primary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; box-shadow: 0 0 0 3px var(--accent-soft); }"
+    },
+    {
+      "name": "Button — Ghost",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "The default for every secondary action: a hairline and ink, no fill. Hover adds a tinted ground rather than colour.",
+      "html": "<button class=\"ds-btn-ghost\" type=\"button\">Скачать бэкап</button>",
+      "css": ".ds-btn-ghost { display:inline-flex; align-items:center; justify-content:center; gap:8px; line-height:1; min-height:38px; padding:0 14px; border:1px solid var(--border-strong); border-radius:var(--radius-md); background:transparent; color:var(--text); font-family:var(--font-sans); font-weight:500; font-size:var(--text-small); cursor:pointer; transition:background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out); }\n.ds-btn-ghost:hover { background:var(--surface-2); }\n.ds-btn-ghost:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; box-shadow: 0 0 0 3px var(--accent-soft); }"
+    },
+    {
+      "name": "SM-2 Rating Button — resting",
+      "kind": "custom",
+      "refersTo": "rating-good",
+      "description": "The study screen's signature control. Neutral surface; the state is carried by a 1px keyline and the label colour, never by the fill. The shortcut chip inherits the label colour.",
+      "html": "<button class=\"ds-rating ds-rating-good\" type=\"button\"><span class=\"ds-rating-key\">3</span><span class=\"ds-rating-label\">Хорошо</span></button>",
+      "css": ".ds-rating { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; min-height:56px; padding:14px 8px; border:1px solid var(--border-strong); border-radius:var(--radius-md); background:var(--surface); font-family:var(--font-sans); cursor:pointer; transition:background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out); }\n.ds-rating-good { border-color:var(--good-text); color:var(--good-text); }\n.ds-rating-label { font-size:var(--text-body); font-weight:600; letter-spacing:-0.005em; }\n.ds-rating-key { position:absolute; top:6px; left:8px; padding:1px 5px; border:1px solid currentColor; border-radius:4px; background:transparent; font-size:var(--text-micro); font-weight:500; opacity:.75; }\n.ds-rating:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; box-shadow: 0 0 0 3px var(--accent-soft); }",
+      "notes": "No :hover here on purpose — see the pressed entry. The resting state is a neutral surface, which is the whole point: it is what makes the press mean something."
+    },
+    {
+      "name": "SM-2 Rating Button — pressed",
+      "kind": "custom",
+      "refersTo": "rating-good-hover",
+      "description": "The commitment moment. Because the resting state is neutral, the solid state fill is the only saturated thing in the row and reads unambiguously as a choice being made.",
+      "html": "<button class=\"ds-rating ds-rating-good is-pressed\" type=\"button\"><span class=\"ds-rating-key\">3</span><span class=\"ds-rating-label\">Хорошо</span></button>",
+      "css": ".ds-rating.is-pressed { background:var(--good-fill); border-color:var(--good-fill); color:var(--good-ink); }\n.ds-rating.is-pressed .ds-rating-key { opacity:.95; }\n.ds-rating.is-pressed:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; box-shadow: 0 0 0 3px var(--accent-soft); }",
+      "notes": "No :hover rule, deliberately. The base .ratingBtn:hover (--surface-2 + accent border) is dead code in the real stylesheet — the per-grade :hover at higher specificity always wins, so a rating button goes straight from resting to the solid state fill. The two entries above are the two states that actually exist."
+    },
+    {
+      "name": "Level Chip — active",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "The single solid accent surface on the study screen. It marks the active filter and nothing else; the rating row is deliberately neutral so this keeps that meaning.",
+      "html": "<span class=\"ds-level\">A1</span>",
+      "css": ".ds-level { display:inline-flex; align-items:center; justify-content:center; min-width:44px; min-height:44px; border-radius:var(--radius-pill); background:var(--accent-solid); color:var(--accent-fg); font-family:var(--font-sans); font-size:var(--text-small); font-weight:600; }",
+      "notes": "A <span>, not a control: it renders the active filter and is not itself interactive, so it has no hover or focus state. This is the only solid accent surface on the study screen."
+    },
+    {
+      "name": "Chip — filter, unselected",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Filter chips sit on a tinted ground with muted ink. They never compete with the active level chip for attention.",
+      "html": "<button class=\"ds-chip\" type=\"button\">A2</button>",
+      "css": ".ds-chip { display:inline-flex; align-items:center; min-height:32px; padding:4px 12px; border:1px solid var(--border); border-radius:var(--radius-pill); background:var(--surface-2); color:var(--text-muted); font-family:var(--font-sans); font-size:var(--text-small); font-weight:500; cursor:pointer; transition:background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out); }\n.ds-chip:hover { background:var(--surface-3); color:var(--text); }\n.ds-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; box-shadow: 0 0 0 3px var(--accent-soft); }"
+    },
+    {
+      "name": "Flashcard",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "The study object. Opaque from frame one, lifted by a warm offset shadow — a page set down on a desk, not an overlay fading in. The Kazakh word is the only place the display serif is used at size.",
+      "html": "<div class=\"ds-card\">\n  <div class=\"ds-card-meta\"><span class=\"ds-card-level\">A1</span><button class=\"ds-card-audio\" type=\"button\" aria-label=\"Произнести\"><svg class=\"ds-ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11 4.7 6.6 8.4H3v7.2h3.6L11 19.3z\"/><path d=\"M15.5 8.8a4.5 4.5 0 0 1 0 6.4\"/><path d=\"M18.4 5.9a8.4 8.4 0 0 1 0 12.2\"/></svg></button></div>\n  <div class=\"ds-card-word\">яблоко</div>\n  <div class=\"ds-card-sub\">яблоко сладкое.</div>\n</div>",
+      "css": ".ds-card { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; max-width:640px; min-height:320px; padding:36px 40px; border:1px solid var(--border-strong); border-radius:var(--radius-xl); background:var(--surface); box-shadow:var(--shadow-md); text-align:center; font-family:var(--font-sans); }\n.ds-card-meta { position:absolute; top:18px; left:22px; right:22px; display:flex; align-items:center; justify-content:space-between; }\n.ds-card-level { font-size:var(--text-micro); font-weight:500; color:var(--text-muted); letter-spacing:0.02em; }\n.ds-card-audio { display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border:1px solid var(--border); border-radius:var(--radius-md); background:var(--surface-2); color:var(--text-muted); cursor:pointer; transition:color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out); }\n.ds-card-audio .ds-ico { width:18px; height:18px; }\n.ds-card-audio:hover { color:var(--accent); }\n.ds-card-audio:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; box-shadow: 0 0 0 3px var(--accent-soft); }\n.ds-card-word { font-family:var(--font-display); font-size:var(--text-lead); font-weight:400; color:var(--text-strong); }\n.ds-card-sub { font-size:var(--text-meta); color:var(--text-muted); }"
+    },
+    {
+      "name": "Input Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Focus swaps the hairline to the accent and adds a soft ring; :focus-visible adds the outline so keyboard and pointer focus look identical.",
+      "html": "<input class=\"ds-input\" type=\"search\" placeholder=\"Поиск…\" aria-label=\"Поиск по словам\">",
+      "css": ".ds-input { width:100%; padding:10px 14px; border:1px solid var(--border-strong); border-radius:var(--radius-md); background:var(--surface); color:var(--text); font-family:var(--font-sans); font-size:var(--text-body); transition:border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out); }\n.ds-input:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }\n.ds-input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; box-shadow: 0 0 0 3px var(--accent-soft); }",
+      "notes": "No :hover, matching the real stylesheet. A form field that changes on hover is noise; focus is the only state a field has."
+    },
+    {
+      "name": "Navigation — link",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Topbar links at body-small. The active link is a filled pill on the inset ground with strong ink — a tonal shift, not a colour one.",
+      "html": "<a class=\"ds-nav ds-nav-active\" href=\"#\"><svg class=\"ds-ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m3 10.5 9-7 9 7\"/><path d=\"M5 9.5V20h14V9.5\"/></svg> Главная</a>",
+      "css": ".ds-nav { display:inline-flex; align-items:center; gap:8px; padding:8px 14px; border-radius:var(--radius-md); color:var(--text-muted); font-family:var(--font-sans); font-size:var(--text-small); font-weight:500; text-decoration:none; transition:background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out); }\n.ds-nav .ds-ico { width:16px; height:16px; }\n.ds-nav:hover { background:var(--surface-2); color:var(--text); }\n.ds-nav-active { background:var(--surface-2); color:var(--text-strong); }\n.ds-nav:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; box-shadow: 0 0 0 3px var(--accent-soft); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Study Notebook",
+    "overview": "Warm, paper-grounded, editorial. The system is built to read like a well-typeset study notebook rather than an app: a warm cream ground, a serif face held in reserve for the Kazakh word, and one terracotta accent that has to earn every appearance. Density is a feature — this is a 3,996-word dictionary with a stats page full of meters, and the compactness was tuned deliberately at a 15px root — but density and noise are not the same thing. The product has no gradients, no glass, no glow, no gamification, and no decorative illustration; the personality lives in the warmth of the ground, the restraint of the accent, and the typographic contrast between the language the learner knows and the language they are learning.",
+    "keyCharacteristics": [
+      "One warm ground, one accent, and a documented refusal to let either grow.",
+      "A serif that appears only where the learner is meeting the new language.",
+      "Colour identity lives on a keyline and a label; area belongs to the work.",
+      "Token discipline: every value is a named role, never a literal.",
+      "The reduced-motion path is per-component and intentional, never a blanket."
+    ],
+    "rules": [
+      {
+        "name": "The Ink-on-Fill Rule",
+        "section": "colors",
+        "body": "Text never sits on bare --accent or bare --warn. Split the role: --accent-solid + --accent-fg."
+      },
+      {
+        "name": "The One-Area Rule",
+        "section": "colors",
+        "body": "When a product has one accent and a semantic scale, check whether the scale is borrowing the accent. --easy-* reuses the accent role, so any large surface in that state silently competes with every CTA in the app. Colour identity belongs on a keyline and a label; area belongs to the one thing the screen is for."
+      },
+      {
+        "name": "The Commitment Rule",
+        "section": "colors",
+        "body": "Solid fill is not a resting style. It marks the moment the learner commits. A control that is already saturated at rest has nothing left to give the press."
+      },
+      {
+        "name": "The Never-px Rule",
+        "section": "typography",
+        "body": "Never set a font size in px. px does not follow --font-scale, so a px shorthand silently opts that element out of the user's text-size setting."
+      },
+      {
+        "name": "The Root-Size Rule",
+        "section": "typography",
+        "body": "Root is 15px, not the 16px web default. The density was deliberately tuned at 15px, and the sm setting is clamped to 0.92× so the compact step cannot drive the smallest role below ~10.8px. Raising the root is a whole-product proportion change, not a side effect of a cleanup."
+      },
+      {
+        "name": "The Offset-and-Blur Rule",
+        "section": "elevation",
+        "body": "No zero-offset coloured halos, no hard offset shadows. Both are costume, not a depth system."
+      },
+      {
+        "name": "The Flat-by-Default Rule",
+        "section": "elevation",
+        "body": "A surface earns its shadow by being a floating object (a card, a modal), not by existing."
+      }
+    ],
+    "dos": [
+      "Use the token ramp for every font size, duration, curve, radius, colour, and shadow. If a value has no token, that is a finding.",
+      "Put text on --accent-solid / --accent-fg as a pair, never on bare --accent.",
+      "Keep colour identity on a keyline and a label, and let a large area be reserved for the one thing the screen is for.",
+      "Give every animation a prefers-reduced-motion alternative in the same file, written as an intentional substitute rather than a duration of zero.",
+      "Pair a hover affordance with :focus-visible and a @media (hover: none) fallback.",
+      "Verify contrast after changing a token, in both themes.",
+      "Use 62ch for sustained prose and text-wrap: balance on headings."
+    ],
+    "donts": [
+      "Don't reference a token that is not defined in src/styles/global.css.",
+      "Don't add a blanket reduced-motion rule. It removes feedback, and feedback is information.",
+      "Don't reintroduce the SM-2 tinted resting surface.",
+      "Don't use a coloured border-left/border-right above 1px on cards, list items, callouts, or alerts.",
+      "Don't use gradient text, glassmorphism as decoration, hard offset shadows, or zero-offset coloured halos.",
+      "Don't use a system display face, or monospace as a costume for 'technical'.",
+      "Don't use Unicode glyphs or emoji as an icon system.",
+      "Don't animate a layout-driving property when a transform will do.",
+      "Don't ship a study screen where the answer widget is the most prominent thing on the page.",
+      "Don't desaturate the palette in pursuit of quiet. Quieter is not greyer.",
+      "Don't flatten the study filter stack to save visual weight."
+    ]
+  }
+}

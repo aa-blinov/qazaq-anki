@@ -2,47 +2,254 @@
 name: qazaq-anki
 description: Warm paper-and-clay system. Editorial serif (Newsreader) for Kazakh content, neutral sans (Inter) for everything else; one terracotta accent; one warm ground.
 source: src/styles/global.css
+colors:
+  # Keys are the real custom property names in src/styles/global.css, not
+  # invented slugs: an agent generating a screen must emit variables that
+  # resolve. Descriptive names for each live in .impeccable/design.json
+  # under extensions.colorMeta.<key>.displayName. Values are the LIGHT theme,
+  # which is the default; dark values are in the same file under colorMeta.
+  bg: "#FAF7F2"
+  surface: "#FFFFFF"
+  surface-2: "#F2EEE6"
+  surface-3: "#E9E3D6"
+  text: "#1F1E1B"
+  text-strong: "#0E0D0B"
+  text-muted: "#6B6862"
+  text-subtle: "#948F86"
+  border: "#E8E2D2"
+  border-strong: "#D7CFBE"
+  accent: "#C96442"
+  accent-solid: "#A8522F"
+  accent-hover: "#A8522F"
+  accent-soft: "#F4E4D6"
+  accent-ink: "#5B2A14"
+  accent-fg: "#FAF7F2"
+  ok: "#5A7D3F"
+  warn: "#B68A1B"
+  warn-text: "#7A5E10"
+  danger: "#B54141"
+  again-text: "#A03333"
+  again-fill: "#B54141"
+  hard-text: "#7A5E10"
+  hard-fill: "#B68A1B"
+  good-text: "#4E6E36"
+  good-fill: "#5A7D3F"
+  easy-text: "#96492A"
+  easy-fill: "#A8522F"
+typography:
+  display:
+    fontFamily: "'Newsreader', 'Iowan Old Style', 'Apple Garamond', Georgia, 'Times New Roman', serif"
+    fontSize: "2.4rem"
+    fontWeight: 400
+    lineHeight: 1.12
+    letterSpacing: "-0.015em"
+  title:
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif"
+    fontSize: "1.5rem"
+    lineHeight: 1.25
+    fontWeight: 600
+  lead:
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif"
+    fontSize: "1.15rem"
+    lineHeight: 1.6
+    fontWeight: 400
+  body:
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif"
+    fontSize: "1rem"
+    lineHeight: 1.55
+    fontWeight: 400
+  label:
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif"
+    fontSize: "0.78rem"
+    lineHeight: 1.35
+    fontWeight: 500
+    letterSpacing: "0.02em"
+rounded:
+  sm: "6px"
+  md: "8px"
+  lg: "12px"
+  xl: "16px"
+  pill: "999px"
+components:
+  # Sub-tokens are limited to the 8 props Stitch's schema accepts
+  # (backgroundColor, textColor, typography, rounded, padding, size, height,
+  # width). Shadows, focus rings and transitions do not fit here — they are in
+  # the sidecar and in the Components section below.
+  button-primary:
+    backgroundColor: "{colors.accent-solid}"
+    textColor: "{colors.accent-fg}"
+    rounded: "{rounded.md}"
+    padding: "0 14px"
+    height: "38px"
+  button-ghost:
+    backgroundColor: "transparent"
+    textColor: "{colors.text}"
+    rounded: "{rounded.md}"
+    padding: "0 14px"
+    height: "38px"
+  input:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.text}"
+    rounded: "{rounded.md}"
+    padding: "10px 14px"
+  chip:
+    backgroundColor: "{colors.surface-2}"
+    textColor: "{colors.text-muted}"
+    rounded: "{rounded.pill}"
+    padding: "4px 12px"
+  card:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.text}"
+    rounded: "{rounded.xl}"
+    padding: "36px 40px"
+  rating-again:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.again-text}"
+    rounded: "{rounded.md}"
+    height: "56px"
+  rating-good:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.good-text}"
+    rounded: "{rounded.md}"
+    height: "56px"
+  rating-good-hover:
+    backgroundColor: "{colors.good-fill}"
+    textColor: "#FFFFFF"
+    rounded: "{rounded.md}"
+    height: "56px"
 ---
 
-# Design
+# Design System: qazaq-anki
 
-This document records the **incumbent** visual system of qazaq-anki as it
-ships today. Every value below mirrors `src/styles/global.css` verbatim —
-that file is the source of truth; if a token changes there, update both.
+## Overview
 
-## Visual world
+**Creative North Star: "The Study Notebook."**
 
-Warm, paper-grounded, editorial. Reads like a well-typeset study notebook:
-neutral cream surface, one terracotta accent that earns every use, and a
-serif face reserved for the Kazakh word so the learner feels the difference
-between the language they know and the language they are learning.
+Warm, paper-grounded, editorial. The system is built to read like a
+well-typeset study notebook rather than an app: a warm cream ground, a
+serif face held in reserve for the Kazakh word, and one terracotta accent
+that has to earn every appearance. Density is a feature — this is a
+3,996-word dictionary with a stats page full of meters, and the compactness
+was tuned deliberately at a 15px root — but density and noise are not the
+same thing. The product has no gradients, no glass, no glow, no
+gamification, and no decorative illustration; the personality lives in the
+warmth of the ground, the restraint of the accent, and the typographic
+contrast between the language the learner knows and the language they are
+learning.
+
+Russian is the interface language and Kazakh is the study content, and the
+type system makes that difference felt rather than stated: Russian reads
+neutral and familiar in Inter, the Kazakh word reads as something worth
+pausing for in Newsreader.
+
+**Key Characteristics:**
+
+- One warm ground, one accent, and a documented refusal to let either grow.
+- A serif that appears only where the learner is meeting the new language.
+- Colour identity lives on a keyline and a label; area belongs to the work.
+- Token discipline: every value is a named role, never a literal.
+- The reduced-motion path is per-component and intentional, never a blanket.
 
 ## Colors
 
-### Light theme (`html` default)
+One warm neutral ramp and one accent, plus a four-step semantic scale that
+exists only in the study loop.
 
-| Token | Value | Use |
-|---|---|---|
-| `--bg` | `#FAF7F2` | Page ground — warm off-white |
-| `--surface` | `#FFFFFF` | Card / panel ground |
-| `--surface-2` | `#F2EEE6` | Subtle inset, secondary panel |
-| `--surface-3` | `#E9E3D6` | Stronger inset, disabled fills |
-| `--text` | `#1F1E1B` | Body copy |
-| `--text-strong` | `#0E0D0B` | Headings, important emphasis |
-| `--text-muted` | `#6B6862` | Secondary copy |
-| `--text-subtle` | `#948F86` | Captions, timestamps |
-| `--border` | `#E8E2D2` | Default rule |
-| `--border-strong` | `#D7CFBE` | Active rule |
-| `--accent` | `#C96442` | Brand accent — fills that carry **no text** (borders, meters, rules) |
-| `--accent-hover` | `#A8522F` | Hover state on accent |
-| `--accent-soft` | `#F4E4D6` | Accent fill, soft tag background |
-| `--accent-solid` | `#A8522F` | Fill for accent surfaces that **carry text** |
-| `--accent-fg` | `#FAF7F2` | Ink for text on `--accent-solid` |
-| `--ok` | `#5A7D3F` | Success |
-| `--warn` | `#B68A1B` | Warning — fill only |
-| `--warn-text` | `#8A6A12` | Warning used as **text** |
-| `--warn-fg` | `#1F1E1B` | Ink for text on `--warn` |
-| `--danger` | `#B54141` | Error / destructive |
+### Primary
+
+- **Clay** (`--accent` `#C96442`): the brand accent. Correct for fills that
+  carry **no text** — borders, meters, rules, the active level pill. On its
+  own it is not a background for type.
+- **Clay Solid** (`--accent-solid` `#A8522F`): the only fill that carries
+  text. Pairs with **Clay Ink** (`--accent-fg` `#FAF7F2`) at 5.02:1 light /
+  6.49:1 dark.
+- **Clay Tint** (`--accent-soft` `#F4E4D6`): soft tags, the focus ring glow.
+- **Clay Ink** (`--accent-ink` `#5B2A14`): accent text on a neutral
+  background. This is a *different job* from `--accent-fg` and is not the
+  text-on-accent token — on `--accent-solid` it measures 3.01:1.
+
+### Neutral
+
+- **Paper** (`--bg` `#FAF7F2`): the page ground, warm off-white.
+- **Surface** (`--surface` `#FFFFFF`): cards, panels, and every resting
+  control.
+- **Surface Inset** (`--surface-2` `#F2EEE6`): subtle insets, secondary
+  panels, hover fills, chip grounds.
+- **Surface Inset Strong** (`--surface-3` `#E9E3D6`): stronger insets,
+  disabled fills.
+- **Ink** (`--text` `#1F1E1B`) / **Ink Strong** (`--text-strong` `#0E0D0B`):
+  body copy and headings.
+- **Ink Muted** (`--text-muted` `#6B6862`) / **Ink Subtle**
+  (`--text-subtle` `#948F86`, 4.92:1 on `--bg`): secondary copy, captions,
+  timestamps.
+- **Rule** (`--border` `#E8E2D2`) / **Rule Strong** (`--border-strong`
+  `#D7CFBE`): default and active hairlines.
+
+These grays are warm-tinted, never neutral gray. A tinted neutral reads as
+paper; a true gray reads as a default.
+
+### The SM-2 rating scale
+
+The four study grades are an ordered semantic scale, so each carries a
+colour identity. This is the one place in the product where colour encodes
+something the type does not: a learner presses one of these hundreds of
+times per session, and before the scale existed the four buttons were
+visually identical, forcing a label read on every single choice.
+
+**No new hues were introduced.** Each state reuses a role the palette
+already had:
+
+| Grade | Role | Resting label | Light | Dark |
+|---|---|---|---|---|
+| Снова | danger | red | `#A03333` | `#DA7474` |
+| Трудно | warn | amber | `#7A5E10` | `#D9B25B` |
+| Хорошо | ok | green | `#4E6E36` | `#9CC074` |
+| Легко | accent | clay | `#96492A` | `#E08662` |
+
+Three roles per state, because they are three different jobs:
+
+- `--<state>-text` — resting label **and** resting keyline
+- `--<state>-fill` — pressed / hovered fill
+- `--<state>-ink` — pressed label
+
+The button surface itself is the neutral `--surface`, the same one every
+other control in the app sits on.
+
+#### Why there is no `soft` role
+
+There was a fourth role, `--<state>-soft`, for a tinted resting surface. It
+is gone, and this is the one place the product was genuinely too loud.
+
+Four full-surface tints sat directly under the flashcard — which is the
+actual work. On the study screen the learner is trying to recall the
+meaning of a Kazakh word, and the brightest, heaviest thing on the page was
+the answer widget below it. It cost twice:
+
+- **Intensity.** Four saturated blocks, on screen for effectively the whole
+  session, out-shouting the card.
+- **Identity.** The `Легко` state reuses the accent role, so a large
+  terracotta block made the product's single accent read as "one of four
+  peer colours" rather than as the accent. The one colour the whole product
+  spends carefully had been diluted into a peer.
+
+The state identity survives on a 1px keyline and the label colour, both
+**permanent** — so it never depends on hover firing, which matters on
+touch, where `@media (hover: none)` means the pressed fill is the only
+state change a finger will ever see. The scale still reads as an ordered
+red → amber → green → clay row at a glance.
+
+The solid fill now lands only on hover and press. That is what "weight
+discipline" was always supposed to mean, and the tinted resting state was
+quietly undermining it: with all four buttons already saturated, the press
+had nothing left to add.
+
+Dropping the tint also **raised** resting contrast, because the state
+colour now sits on white rather than on a tint of itself. In light mode
+`--again-text` went from 4.62:1 on `--again-soft` to **6.96:1** on
+`--surface`; the old 3.99:1 worst case is now 5.82:1.
+
+Every pairing verified in both themes: resting **5.10–7.92:1**, pressed
+**4.73–8.76:1**, keyline 5.10:1 and above.
 
 ### Ink on filled surfaces — the rule that matters
 
@@ -54,97 +261,178 @@ between the language they know and the language they are learning.
 |---|---|---|---|
 | `--accent-solid` + `--accent-fg` | `#A8522F` + `#FAF7F2` | `#E08662` + `#1A1916` | 5.02:1 / 6.49:1 |
 
-The dark theme flips direction rather than value: its `--accent` is already a
-light tint, so the ink becomes the dark ground. Same two tokens, opposite
-direction.
+The dark theme flips direction rather than value: its `--accent` is already
+a light tint, so the ink becomes the dark ground. Same two tokens,
+opposite direction.
 
-**Use the pair together or not at all.** `var(--accent)` alone is correct for
-fills with no text. Any rule that puts text on an accent surface must set
-`background: var(--accent-solid); color: var(--accent-fg)`.
+**Use the pair together or not at all.** `var(--accent)` alone is correct
+for fills with no text. Any rule that puts text on an accent surface must
+set `background: var(--accent-solid); color: var(--accent-fg)`.
 
-`--accent-ink` is **not** the text-on-accent token. On `--accent-solid` it
-measures 3.01:1 in light and 1.92:1 in dark. It exists for accent-on-neutral
-pairing (accent text, neutral background), which is a different job.
+`--warn` is the same situation: a fill token only, 3.16:1 as text. Use
+`--warn-text` (`#7A5E10`, 5.06:1) for the label and `--warn-fg`
+(`#1F1E1B`) for ink on the fill.
 
-### Dark theme (`[data-theme="dark"]`)
+### Dark theme
 
-| Token | Value | Use |
-|---|---|---|
-| `--bg` | `#1A1916` | Page ground — warm near-black |
-| `--surface` | `#232220` | Panel ground |
-| _others_ | _see source_ | Inverted ramps in the same warm register |
+`[data-theme="dark"]` is not a separate design language. It is the same
+warm register at lower luminance: `#1A1916` ground, `#232220` surface, and
+the accent inverted to a light tint with dark ink. No neon, no cool blues,
+no separate accent ramp. The palette is **composed, not inverted** — on a
+light accent, the ink becomes dark.
 
-Dark mode is not a separate design language; it is the same warm register
-at lower luminance. No neon, no cool blues, no separate accent ramp.
+### Named rules
+
+**The Ink-on-Fill Rule.** Text never sits on bare `--accent` or bare
+`--warn`. Split the role: `--accent-solid` + `--accent-fg`.
+
+**The One-Area Rule.** When a product has one accent and a semantic scale,
+check whether the scale is borrowing the accent. `--easy-*` reuses the
+accent role, so any *large* surface in that state silently competes with
+every CTA in the app. Colour identity belongs on a keyline and a label;
+area belongs to the one thing the screen is for.
+
+**The Commitment Rule.** Solid fill is not a resting style. It marks the
+moment the learner commits. A control that is already saturated at rest has
+nothing left to give the press.
 
 ### Print
 
-`@media print` forces the light palette because dark mode wastes ink and
-printed pages are usually photocopied.
+`@media print` forces the light palette, because dark mode wastes ink and
+printed pages are usually photocopied. It also strips chrome, drops focus
+rings, appends link URLs, and unhides the card back face so a printed page
+can actually be studied.
 
 ## Typography
 
-- **Sans (UI):** Inter, with `-apple-system, BlinkMacSystemFont, 'Segoe UI',
-  Roboto, system-ui` as platform fallbacks. UI copy, buttons, navigation,
-  every label the learner reads in Russian.
-- **Display (Kazakh content):** Newsreader, with `Iowan Old Style`,
-  `Apple Garamond`, Georgia, `Times New Roman` as fallbacks. Used for the
-  Kazakh word on a flashcard and for `.kazakh` class. The contrast between
-  the two faces is the product's main typographic signal: Russian reads
-  neutral and familiar, Kazakh reads as something worth pausing for.
-- **Root size:** `15px * var(--font-scale)`. The user picks
-  `sm | md | lg | xl`; the scale token lives in `theme-init.js`.
-- **Type scale:** step ramp defined in `src/styles/global.css` — body, h1
-  through h4, plus the `.kazakh` display size. Every literal `font-size`
-  lands on a step.
+**Display Font:** Newsreader (`'Iowan Old Style', 'Apple Garamond', Georgia,
+'Times New Roman', serif` as fallbacks)
+**Body Font:** Inter (`-apple-system, BlinkMacSystemFont, 'Segoe UI',
+Roboto, system-ui, sans-serif` as fallbacks)
+**Label/Mono Font:** `ui-monospace, SFMono-Regular, 'SF Mono', Menlo,
+Consolas` — for code and measurement only, never as costume.
 
-## Geometry
+**Character:** the contrast between the two is the product's main
+typographic signal. Russian reads neutral and familiar; the Kazakh word
+reads as something worth pausing for. Both load from Google Fonts with
+`display=swap` and four weights each.
 
-- Radii: `--radius-sm` 6px, `--radius-md` 8px, `--radius-lg` 12px,
-  `--radius-xl` 16px, `--radius-pill` 999px. The product stays in the
-  middle of that range; nothing below 6px or above 16px except pills.
-- Shadows: `--shadow-xs / sm / md / lg`, all warm-tinted
-  (`rgba(31, 30, 27, …)`) with offset + blur. No zero-offset glow halos.
-  No hard offset shadows.
+### The ramp
 
-## Spacing
+Use these tokens, not raw `rem` values. Role names describe purpose.
 
-Step-based scale; the detector in Impeccable (when hooked) will check
-tight groups and generous separation — read the computed margins in the
-rendered output, not the literal `--space-*` value.
+| Token | Value | md | sm | Role |
+|---|---|---|---|---|
+| `--text-micro` | 0.78rem | 11.7px | 10.8px | shortcut chips, decorative markers |
+| `--text-meta` | 0.85rem | 12.8px | 11.7px | captions, timestamps, helper text |
+| `--text-small` | 0.95rem | 14.3px | 13.1px | secondary UI, dense rows |
+| `--text-body` | 1rem | 15px | 13.8px | default reading and interface size |
+| `--text-lead` | 1.15rem | 17.3px | 15.9px | lead paragraphs, card sentences |
+| `--text-title` | 1.5rem | 22.5px | 20.7px | section headings |
+| `--text-display` | 2.4rem | 36px | 33.1px | page and hero headings |
 
-## Naming
+**The floor is the point.** The app once carried 43 distinct sizes, with
+eleven steps packed between 0.65rem and 0.78rem — 9.8px to 11.7px. At that
+size nobody can tell 0.72 from 0.733, so those steps were not carrying
+distinct jobs. The tail is now four steps, and the smallest role is 11.7px
+instead of 9px. Sixty-eight declarations sat below 12px and 43 of them
+dropped under 10px at the `sm` setting — the very setting a learner opens
+when the default is hard to read.
 
-Every custom property is defined in `src/styles/global.css` and used by its
-exact name. There is one convention, and it is the one in that file:
+Line height is per-role, not one universal ratio (`--lh-micro` 1.35 through
+`--lh-display` 1.12) — small type needs more leading than large type to
+stay readable, and a display heading needs almost none. The dark theme
+gets a touch more; light text on a dark surface spreads optically.
 
-`--surface`, `--surface-2/3`, `--text`, `--text-muted`, `--text-subtle`,
-`--border`, `--accent*`, `--ok*`, `--warn*`, `--danger*`, `--font-*`,
-`--radius-*`, `--shadow-*`.
+### Named rules
 
-**Do not reference a token that is not defined there.** A `var(--name, #fallback)`
-for an undefined `--name` silently resolves to the fallback, which is how this
-codebase accumulated twelve phantom tokens across three competing conventions
-(`--ink*`, `--color-*`, `--surface-0/1`) before they were collapsed. Where a
-fallback is genuinely wanted for a caller-supplied override, the token still has
-to exist here first.
+**The Never-px Rule.** Never set a font size in `px`. `px` does not follow
+`--font-scale`, so a `font: 400 13px/1.45 …` shorthand silently opts that
+element out of the user's text-size setting. The stats toast and the
+mastery-ring legend had exactly this bug: they stayed 13px while everything
+around them scaled.
 
-A quick check after touching CSS:
+**The Root-Size Rule.** Root is 15px, not the 16px web default. This is a
+dense product and the density was deliberately tuned at 15px. The `sm`
+setting is 0.92×, not 0.875×, so the compact step cannot drive the smallest
+role below ~10.8px. Raising the root to 16px is a whole-product proportion
+change and needs its own pass with viewport verification, not a quiet side
+effect of a type cleanup.
 
-```bash
-node -e 'const fs=require("fs"),p=require("path");
-const w=d=>fs.readdirSync(d,{withFileTypes:true}).flatMap(e=>e.isDirectory()?w(p.join(d,e.name)):[p.join(d,e.name)]);
-const f=w("src").filter(x=>x.endsWith(".css")),d=new Set(),u=new Set();
-for(const x of f){const t=fs.readFileSync(x,"utf8");
-for(const m of t.matchAll(/(--[a-z0-9-]+)\s*:/g))d.add(m[1]);
-for(const m of t.matchAll(/var\(\s*(--[a-z0-9-]+)/g))u.add(m[1]);}
-const bad=[...u].filter(x=>!d.has(x));
-console.log(bad.length?bad:"all tokens resolve");'
-```
+### Russian specifics
+
+- Headings use `text-wrap: balance`. Russian wraps unpredictably, and a
+  two-word heading can break one word per line in a narrow card.
+- Onboarding step bodies are the only sustained prose in the product and
+  are capped at `62ch` rather than a px width, so the measure tracks the
+  user's text-size setting instead of drifting from it.
+- Body copy carries a little extra leading: Russian runs longer than
+  English at the same character count, and two-line labels crowd the
+  element below.
+- Shortcut chips and micro labels use `--tracking-micro` (0.02em); display
+  type tightens to −0.015em. The floor is −0.04em.
+
+## Layout
+
+Content is a single centred column. The study card is capped at 640px and
+320px tall (300px under 600px), the picker stack at 640px, and the browse
+table fills the viewport with pagination at 50 rows.
+
+**Spacing is not tokenized.** There is no `--space-*` scale in this codebase
+— 27 distinct `px` values appear in `padding`/`margin` alone. The observed
+rhythm is a loose 2px step with a 4px preference, clustering on 4, 6, 8,
+10, 12, 14, 16, 20, 24, 32px. Read the computed margins in the rendered
+output rather than reaching for a literal. This is recorded as known debt,
+not as a decision; `/impeccable layout` or `/impeccable extract` is the
+right pass to fix it.
+
+**Breakpoints are not unified either** — eight distinct `max-width` values
+are in use: 420, 540, 600, 640, 720, 760, 768, 900px. The 540px one is
+load-bearing (it swaps the inline nav for the burger drawer); the rest are
+local to individual modules. Also known debt.
+
+Above 900px the study page splits into the card column and a settings rail
+(`min-width: 901px`); below it they stack.
+
+### The filter stack is deliberate, not boxy
+
+The three full-width bordered selects above the card (Карточки / Язык /
+Тема) are the most box-like thing on the study screen, and they do
+out-weigh the card visually. They are not an oversight:
+`StudyPage.module.css` states that the controls stretch to the full column
+width "so they read as form fields, not toolbar chips," and a full-width
+field is a stronger control affordance than a narrow chip would be.
+Quieting them would trade usability for a preference. A quieter pass looked
+at this and left it alone; the next one should too.
+
+## Elevation & Depth
+
+Hybrid, leaning flat. Surfaces are flat at rest and depth comes from warm
+tonal layering plus a small, consistent shadow vocabulary. Every shadow
+carries an offset and a soft blur and is tinted with the warm ground
+(`rgba(31, 30, 27, …)`), never a neutral black halo.
+
+### Shadow vocabulary
+
+- **`--shadow-xs`** (`0 1px 2px rgba(31, 30, 27, 0.04)`): the faintest
+  lift; disabled and inert states.
+- **`--shadow-sm`** (`0 1px 3px rgba(31, 30, 27, 0.06), 0 1px 2px rgba(31, 30, 27, 0.04)`): inset panels, the mobile drawer.
+- **`--shadow-md`** (`0 4px 12px rgba(31, 30, 27, 0.06), 0 1px 3px rgba(31, 30, 27, 0.04)`): the resting flashcard. It is also the anchor of the card-landing animation.
+- **`--shadow-lg`** (`0 16px 40px rgba(31, 30, 27, 0.10), 0 2px 6px rgba(31, 30, 27, 0.05)`): modals and dialogs only.
+
+The dark theme uses the same four steps with a deeper, more opaque ramp
+(`rgba(0, 0, 0, 0.3)` through `0.55`) because a soft warm shadow
+disappears against a near-black ground.
+
+### Named rules
+
+**The Offset-and-Blur Rule.** No zero-offset coloured halos, no hard offset
+shadows. Both are costume, not a depth system.
+
+**The Flat-by-Default Rule.** A surface earns its shadow by being a
+floating object (a card, a modal), not by existing.
 
 ## Motion
-
-### The tokens
 
 Four durations and three curves, all in `src/styles/global.css`. The app
 had twelve hardcoded durations (`0.06s` … `1.4s`) and six different easing
@@ -166,8 +454,8 @@ was the CSS `ease` keyword — a browser default nobody had chosen.
 
 Loop *periods* (the shimmer's 1.4s cycle, the spinners' 1s turn) stay
 literal. They are cycle lengths, not transition durations, and folding
-them into the ramp would mean inventing a token for a number that only
-two rules use.
+them into the ramp would mean inventing a token for a number that only two
+rules use.
 
 **An entrance earns its full length; an exit uses `--dur-press`,** because
 leaving should be quicker than arriving.
@@ -215,17 +503,12 @@ deleted, leaving a stray `}` at the end of the file and the rule itself at
 the top level. An `!important` declaration at the top level beats every
 normal declaration in the cascade regardless of specificity — so this was
 not a reduced-motion path at all. It was turning off **every transition and
-animation in the app, for every user, on every device**, and no motion
-token in the stylesheet could have overridden it.
+animation in the app, for every user, on every device**, and no token
+could have overridden it. Verified in Chromium: transitions read 0.001ms
+before, 140ms with the authored curve after.
 
-It is gone, and blanket-off was the wrong behaviour as well as the wrong
-implementation: reduced motion means fewer and gentler animations, not the
-removal of feedback. A hover that snaps instead of crossfading, a toast
-that appears with no arrival, a progress bar that teleports — those cost
-real information, and a learner on this app studies for twenty minutes at a
-stretch.
-
-The reduced path is per-component and intentional:
+The blanket is gone, and blanket-off was the wrong behaviour as well as
+the wrong implementation. The reduced path is per-component:
 
 | Component | What is reduced | What survives |
 |---|---|---|
@@ -236,7 +519,7 @@ The reduced path is per-component and intentional:
 | `LevelMasteryRings` | ring sweeps | the arc |
 | `SettingsPage`, `Flashcard` | both infinite loops | colour, `disabled`, and the `aria-label` that names the state |
 | `TopicSelect` | the chevron half-turn | `[aria-expanded]` |
-| `global.css` | the skip link slide-in | — |
+| `global.css` | the skip-link slide-in | — |
 
 Colour and opacity transitions are deliberately left alone everywhere else.
 They carry state and confirmation, and have no spatial component to
@@ -261,8 +544,9 @@ only ever hover:
 - **Touch.** `@media (hover: none)` has no hover to fire, so on a phone
   there was no way at all to edit or delete a card you had added.
 
-Both now have the treatment the stats KPI tile already had: `:focus-visible`
-alongside `:hover`, and a permanent 75% under `(hover: none)`.
+Both now have the treatment the stats KPI tile already had:
+`:focus-visible` alongside `:hover`, and a permanent 75% under
+`(hover: none)`.
 
 ### Rules
 
@@ -270,229 +554,288 @@ alongside `:hover`, and a permanent 75% under `(hover: none)`.
 - Do not animate a layout-driving property (`width`, `height`, `top`,
   `left`, margins) when a transform will do.
 - Any new animation needs a `prefers-reduced-motion` alternative in the
-  same file, and a reason that survives the sentence "removing this
-  would lose nothing".
-- The mobile nav drawer still hard-cuts open and closed. Not yet addressed.
+  same file, and a reason that survives the sentence "removing this would
+  lose nothing".
+- Never add a blanket reduced-motion rule. It removes feedback, and
+  feedback is information.
 
-## Callouts
+## Shapes
 
-Error, hint, and toast surfaces use a 1px `border-left` at most, tinted with the
-matching semantic token, over a `--*-soft` or `--surface-2` fill. A thicker
-colored left rule is a recognisable generated-UI signature and carries no
-information the fill and text colour do not already carry.
+Restrained and consistent. The product stays in the middle of its radius
+range: nothing below 6px or above 16px except pills.
 
-## The SM-2 rating scale
+- `--radius-sm` 6px — the shortcut chip, small icon buttons
+- `--radius-md` 8px — buttons, inputs, selects, menu panels
+- `--radius-lg` 12px — the mobile drawer, the level card
+- `--radius-xl` 16px — the flashcard, modals, panels
+- `--radius-pill` 999px — pills, chips, tags, filter counters
 
-The four study grades are an ordered semantic scale, so each carries a colour
-identity. This is the one place in the product where colour encodes something
-the type does not: a learner presses one of these hundreds of times per session,
-and before the scale existed the four buttons were visually identical, forcing a
-label read on every single choice.
+Borders are 1px hairlines throughout, in `--border` at rest and
+`--border-strong` when a control needs to read as a target. A coloured
+`border-left` or `border-right` above 1px on a card, list item, callout, or
+alert is a generated-UI signature that carries no information the fill and
+text colour do not already carry.
 
-**No new hues were introduced.** Each state reuses a role the palette already
-had — `danger`, `warn`, `ok`, `accent` — given a job in the study loop:
+Overlapping is confined to the flashcard, where front and back are stacked
+in the same plane and crossfade by opacity. An earlier 3D `rotateY` flip
+was removed: the cascade could win on `transform` and lose on
+`transform-style`, leaving the back face rendered as a 2D mirror, and the
+spec mandates that `preserve-3d` be ignored unless an ancestor establishes
+`perspective` — so the workaround was more fragile than the feature.
 
-| Grade | Role | Resting label | Light | Dark |
-|---|---|---|---|---|
-| Снова | danger | red | `#A03333` | `#DA7474` |
-| Трудно | warn | amber | `#7A5E10` | `#D9B25B` |
-| Хорошо | ok | green | `#4E6E36` | `#9CC074` |
-| Легко | accent | clay | `#96492A` | `#E08662` |
+## Components
 
-Three roles per state, because they are three different jobs:
+### Buttons
 
-- `--<state>-text` — resting label **and** resting keyline
-- `--<state>-fill` — pressed / hovered fill
-- `--<state>-ink` — pressed label
+- **Shape:** 8px radius (`--radius-md`), `line-height: 1`, `min-height:
+  38px`, `padding: 0 14px`, `font-size: --text-small`, weight 500.
+  The explicit `line-height: 1` is load-bearing: `<button>` defaults to
+  `normal` while `<a>` inherits 1.55 from body, so without it the same
+  class renders 5px taller on one element than the other.
+- **Primary:** `--accent-solid` background with `--accent-fg` text. Hover
+  → `--accent-hover`. Active → `translateY(1px)` over `--dur-press`.
+  Disabled → `opacity: 0.5`, no transform.
+- **Ghost:** transparent with a `--border-strong` hairline and `--text`
+  ink; hover fills `--surface-2`.
+- **Focus:** a 2px `--accent` outline at 2px offset plus a 3px
+  `--accent-soft` ring. Buttons that paint their own hover background keep
+  the ring; the rest inherit it.
 
-The button surface itself is the neutral `--surface`, the same one every other
-control in the app sits on.
+### The SM-2 rating button
 
-### Why there is no `soft` role
+The signature control. Neutral surface, 8px radius, 56px minimum height
+(64px on narrow screens), a 1px keyline and label in the state colour, and
+a small 1–4 shortcut chip in the top-left corner.
 
-There was a fourth role, `--<state>-soft`, for a tinted resting surface. It is
-gone, and this is the one place the product was genuinely too loud.
+- **Resting:** `--surface` background. State lives on the keyline and the
+  label, never on the fill.
+- **Hover / press:** the solid `--<state>-fill` with `--<state>-ink`, which
+  is the commitment moment.
+- **Shortcut chip:** transparent background, `border-color: currentColor`,
+  inherited colour. A white chip would read as a blank block against the
+  pressed fill.
+- **Never hover-dependent:** identity is carried by the permanent keyline
+  and label, so touch users get the full ordered scale.
+- Colour is never the only cue — the Russian label and the 1–4 shortcut are
+  always present.
+- `data-grade` carries the grade key; CSS selects
+  `.ratingBtn[data-grade='…']`. Do not add per-state class names in the
+  component.
 
-Four full-surface tints sat directly under the flashcard — which is the actual
-work. On the study screen the learner is trying to recall the meaning of a
-Kazakh word, and the brightest, heaviest thing on the page was the answer
-widget sitting below it. It cost twice:
+### The flashcard
 
-- **Intensity.** Four saturated blocks, on screen for effectively the whole
-  session, out-shouting the card.
-- **Identity.** The `Легко` state reuses the accent role, so a large terracotta
-  block made the product's single accent read as "one of four peer colours"
-  rather than as the accent. The one colour the whole product spends carefully
-  had been diluted into a peer.
+The study screen's object. `--surface` fill, 1px `--border-strong`,
+16px radius, `--shadow-md`, 36×40px padding (26×24px under 600px),
+`overflow: hidden`, centred flex column. Front face carries the level tag,
+the word, the transliteration and the audio button; the back adds the
+example sentence, a 1px rule, and the source line. The Kazakh word is set
+in the display serif at `--text-lead` and up.
 
-The state identity survives on a 1px keyline and the label colour, both
-**permanent** — so it never depends on hover firing, which matters on touch,
-where `@media (hover: none)` means the pressed fill is the only state change a
-finger will ever see. The scale still reads as an ordered red → amber → green →
-clay row at a glance.
+### Chips
 
-The solid fill now lands only on hover and press. That is what "weight
-discipline" was always supposed to mean, and the tinted resting state was quietly
-undermining it: with all four buttons already saturated, the press had nothing
-left to add.
+Filter chips are pills on `--surface-2` with `--text-muted` ink. The active
+level chip is the one solid-accent surface on the study screen — it marks
+the active filter and nothing else. The browse source filter uses a
+`--surface-3` background for its active state.
 
-Dropping the tint also **raised** resting contrast, because the state colour now
-sits on white rather than on a tint of itself. In light mode `--again-text`
-went from 4.62:1 on `--again-soft` to **6.96:1** on `--surface`; the old 3.99:1
-worst case is now 5.82:1.
+### Cards / containers
 
-Every pairing verified in both themes: resting **5.10–7.92:1**, pressed
-**4.73–8.76:1**, keyline 5.10:1 and above.
+- **Corner:** 16px (`--radius-xl`) for panels and the flashcard; 12px for
+  the level card and drawer.
+- **Background:** `--surface` on `--bg`, separated by a 1px `--border`
+  hairline rather than by shadow.
+- **Shadow:** `--shadow-md` for the card, `--shadow-lg` for modals only.
+- **Padding:** 24px on panels; the study card is 36×40px.
 
-**Colour is never the only cue.** The Russian label and the 1–4 keyboard
-shortcut are always present on every button.
+### Inputs / fields
 
-Implementation: `data-grade` carries the SM-2 grade key; CSS selects
-`.ratingBtn[data-grade='…']`. Do not add per-state class names in the component —
-the attribute keeps the grade in one place.
+`--surface` fill, 1px `--border-strong`, 8px radius, `10px 14px` padding,
+`--text-body`. Focus drops the outline and swaps to an `--accent` border
+plus a 3px `--accent-soft` ring; `:focus-visible` gets the full 2px outline
+so keyboard and pointer focus look the same. Error state swaps both to
+`--danger` / `--danger-soft` and pairs with `aria-invalid="true"`.
 
-## What a "quieter" pass found
+### Navigation
 
-A pass to reduce intensity looked at every surface — home, study, browse, stats,
-settings — in both themes, and this design is already restrained: one warm
-ground, one accent, no gradients, no glass, no glow, no gamification, and four
-earlier passes that each removed noise rather than adding it.
+A sticky topbar with the wordmark, four inline links at `--text-small`, and
+the account controls on the right. Active links take `--text-strong` on a
+`--surface-2` pill. Under 540px the inline row is replaced by a burger that
+toggles a full-width drawer anchored below the topbar with `--shadow-md`.
+The drawer currently hard-cuts open and closed with no transition — the
+only overlay in the app not using the shared arrival vocabulary.
 
-The intensity was not distributed. It was concentrated in one place, and that
-place was the SM-2 rating row.
+### Callouts
 
-**Deliberately left alone:**
+Error, hint, and toast surfaces use a 1px `border-left` at most, tinted
+with the matching semantic token, over a `--*-soft` or `--surface-2`
+fill. Toasts are pinned to the bottom of the study column so they do not
+fight the rating row for attention.
 
-- **The study filter stack.** Three full-width bordered selects above the card
-  is the most box-like thing on the screen, and it does out-weigh the card
-  visually. It is not an oversight: `StudyPage.module.css` states the controls
-  stretch to the full column width "so they read as form fields, not toolbar
-  chips," and a full-width field is a stronger control affordance than a narrow
-  chip. Quieting it would trade usability for a preference.
-- **The `A1` level pill.** Solid accent, but it marks the *active filter*. With
-  the rating row no longer competing, it is the only solid accent mass on the
-  screen and it means exactly one thing.
-- **The stats page.** The accent appears on the rings and the histogram as one
-  systematic use across a whole screen, not as scattered highlights.
-- **The palette itself.** Quieter is not greyer. The warm ground and the
-  terracotta are the product's identity; desaturating them would produce a
-  different, less specific product.
-- **Type, motion, spacing.** The typeset and animate passes landed on this
-  code minutes ago and both measured correct.
+### Skeletons
 
-The general rule this surfaced: when a product has one accent and a semantic
-scale, check whether the scale is borrowing the accent. `--easy-*` reuses the
-accent role, so any *large* surface in that state silently competes with every
-CTA in the app. Colour identity belongs on a keyline and a label; area belongs
-to the one thing the screen is for.
+Deck loading renders `<Skeleton />` blocks: a `--surface-2` fill with a
+1.4s `--ease-in-out` background-position sheen, disabled under reduced
+motion to a static fill.
 
-## Type
-
-Two families, both loaded from Google Fonts with `display=swap` and four
-weights each: **Inter** for interface, **Newsreader** for the Kazakh word and
-headings. The contrast between them is the product's main typographic signal —
-Russian reads neutral and familiar, Kazakh reads as something worth pausing for.
-
-### The ramp
-
-Use these tokens, not raw `rem` values. Role names describe purpose.
-
-| Token | Value | md | sm | Role |
-|---|---|---|---|---|
-| `--text-micro` | 0.78rem | 11.7px | 10.8px | shortcut chips, decorative markers |
-| `--text-meta` | 0.85rem | 12.8px | 11.7px | captions, timestamps, helper text |
-| `--text-small` | 0.95rem | 14.3px | 13.1px | secondary UI, dense rows |
-| `--text-body` | 1rem | 15px | 13.8px | default reading and interface size |
-| `--text-lead` | 1.15rem | 17.3px | 15.9px | lead paragraphs, card sentences |
-| `--text-title` | 1.5rem | 22.5px | 20.7px | section headings |
-| `--text-display` | 2.4rem | 36px | 33.1px | page and hero headings |
-
-**The floor is the point.** The app once carried 43 distinct sizes, with eleven
-steps packed between 0.65rem and 0.78rem — 9.8px to 11.7px. At that size nobody
-can tell 0.72 from 0.733, so those steps were not carrying distinct jobs. The
-tail is now four steps, and the smallest role is 11.7px instead of 9px.
-
-Line height is per-role, not one universal ratio (`--lh-micro` 1.35 through
-`--lh-display` 1.12) — small type needs more leading than large type to stay
-readable, and a display heading needs almost none.
-
-**Never set a font size in `px`.** `px` does not follow `--font-scale`, so a
-`font: 400 13px/1.45 …` shorthand silently opts that element out of the user's
-text-size setting. The stats toast and the mastery-ring legend had exactly this
-bug: they stayed 13px while everything around them scaled.
-
-### Root size
-
-Root is 15px, not the 16px web default. This is a dense product — a
-3,996-row word list and a stats page full of meters — and that density was
-deliberately tuned at 15px. The `sm` setting is 0.92×, not 0.875×, so the
-compact step cannot drive the smallest role below ~10.8px. Raising the root to
-16px is a whole-product proportion change and needs its own pass with
-viewport verification, not a quiet side effect of a type cleanup.
-
-### Russian specifics
-
-- Headings use `text-wrap: balance`. Russian wraps unpredictably, and a
-  two-word heading can break one word per line in a narrow card.
-- Onboarding step bodies are the only sustained prose in the product and are
-  capped at `62ch` rather than a px width, so the measure tracks the user's
-  text-size setting instead of drifting from it.
-- Body copy carries a little extra leading: Russian runs longer than English
-  at the same character count, and two-line labels crowd the element below.
-
-## Components (current)
+### Component inventory
 
 | Component | File | Notes |
 |---|---|---|
-| Flashcard | `src/components/Flashcard.module.css` | The study screen. Front = Russian prompt, back = Kazakh word with audio button. |
-| Stats page | `src/components/LevelMasteryRings.module.css`, `EaseHistogram.module.css`, `MiniHeatmap.module.css` | Per-CEFR mastery rings, ease distribution, study heatmap. |
-| Onboarding modal | `src/components/OnboardingModal.module.css` | First-run card. |
-| Add-card modal | `src/components/AddCardModal.module.css` | User-authored cards. |
-| Error boundary | `src/components/ErrorBoundary.module.css` | Recovery state with Russian copy. |
+| Flashcard | `src/components/Flashcard.module.css` | Front = prompt, back = word + audio. |
+| ConfirmDialog | `src/components/ConfirmDialog.module.css` | Destructive confirmation. |
+| OnboardingModal | `src/components/OnboardingModal.module.css` | First-run card. |
+| AddCardModal | `src/components/AddCardModal.module.css` | User-authored cards. |
+| ErrorBoundary | `src/components/ErrorBoundary.module.css` | Recovery state with Russian copy. |
 | Skeleton | `src/components/Skeleton.module.css` | Loading state. |
-| Site footer | `src/components/SiteFooter.module.css` | Footer chrome. |
+| SiteFooter | `src/components/SiteFooter.module.css` | Footer chrome. |
+| LevelMasteryRings | `src/components/LevelMasteryRings.module.css` | Per-CEFR mastery rings. |
+| EaseHistogram | `src/components/EaseHistogram.module.css` | Ease distribution. |
+| MiniHeatmap | `src/components/MiniHeatmap.module.css` | Study heatmap. |
 
-## Browser surfaces
+### Browser surfaces
 
 - **Theme is applied synchronously** by `public/theme-init.js` in `<head>`
-  before first paint, to avoid a light-flash-to-dark flicker on reload.
-  Any future design hook or runtime must run *after* `theme-init.js`, never
-  before it.
-- **Text selection** colours are themed via CSS; default browser blue is
-  replaced with the accent at low alpha.
-- **Caret, scrollbars, focus rings, tabular numerals** must be themed from
-  the palette — not left as platform defaults. Audit list:
-  `::selection`, `::-webkit-scrollbar*`, `input { caret-color }`,
-  `*:focus-visible`, `<table>` numerals.
+  before first paint, to avoid a light-flash-to-dark flicker on reload. Any
+  future design hook or runtime must run *after* `theme-init.js`, never
+  before.
+- **Text selection**, **caret**, **scrollbars**, **focus rings**, and
+  **tabular numerals** are themed from the palette, not left as platform
+  defaults. Default selection blue is replaced with the accent at low
+  alpha. Numbers in tables and counters use `font-variant-numeric:
+  tabular-nums`.
+- **Lucide icons** are sized in `em` so they follow the user's text size,
+  scoped to `svg.lucide` so hand-drawn SVGs keep their dimensions.
 
-## Anti-patterns already present (to retire, not to extend)
-
-- **[inferred]** None observed on a quick read of the CSS. The accent is
-  used sparingly, no gradient text, no glassmorphism, no hard offset
-  shadows, no eyebrow labels. If a future change reintroduces any of
-  these, the Impeccable detector (when installed) will flag it.
-
-## State coverage (current)
+### State coverage
 
 | State | Coverage |
 |---|---|
 | Hover | Buttons + interactive rows |
 | Disabled | Forms, ratings during submit |
-| Loading | `<Skeleton />` for the deck load |
+| Loading | `<Skeleton />` for the deck load, spinner for TTS synthesis |
 | Error | `<ErrorBoundary />` with Russian recovery copy |
-| Empty | Empty-deck state on the Browse screen |
+| Empty | Empty-deck state on the Browse screen, filtered-result state with a one-click reset |
 | Keyboard focus | Visible ring token applied via `:focus-visible` |
 | Reduced motion | Per-component, with intentional alternatives — see [Motion](#motion) |
 
+## Do's and Don'ts
+
+### Do
+
+- **Do** use the token ramp for every font size, duration, curve, radius,
+  colour, and shadow. If a value has no token, that is a finding.
+- **Do** put text on `--accent-solid` / `--accent-fg` as a pair, never on
+  bare `--accent`.
+- **Do** keep colour identity on a keyline and a label, and let a large
+  area be reserved for the one thing the screen is for.
+- **Do** give every animation a `prefers-reduced-motion` alternative in
+  the same file, written as an intentional substitute rather than a
+  duration of zero.
+- **Do** pair a hover affordance with `:focus-visible` and a
+  `@media (hover: none)` fallback. Verified: opacity-0 hover reveals are
+  invisible to keyboard and absent on touch.
+- **Do** verify contrast after changing a token. Every SM-2 pair was
+  re-measured in both themes when the tint was dropped.
+- **Do** use `62ch` for sustained prose and `text-wrap: balance` on
+  headings.
+
+### Don't
+
+- **Don't** reference a token that is not defined in
+  `src/styles/global.css`. A `var(--name, #fallback)` for an undefined
+  `--name` silently resolves to the fallback, which is how this codebase
+  accumulated twelve phantom tokens across three competing conventions
+  (`--ink*`, `--color-*`, `--surface-0/1`) before they were collapsed.
+  Where a fallback is genuinely wanted for a caller-supplied override, the
+  token still has to exist first.
+
+  ```bash
+  node -e 'const fs=require("fs"),p=require("path");
+  const w=d=>fs.readdirSync(d,{withFileTypes:true}).flatMap(e=>e.isDirectory()?w(p.join(d,e.name)):[p.join(d,e.name)]);
+  const f=w("src").filter(x=>x.endsWith(".css")),d=new Set(),u=new Set();
+  for(const x of f){const t=fs.readFileSync(x,"utf8");
+  for(const m of t.matchAll(/(--[a-z0-9-]+)\s*:/g))d.add(m[1]);
+  for(const m of t.matchAll(/var\(\s*(--[a-z0-9-]+)/g))u.add(m[1]);}
+  const bad=[...u].filter(x=>!d.has(x));
+  console.log(bad.length?bad:"all tokens resolve");'
+  ```
+
+- **Don't** add a blanket reduced-motion rule. It removes feedback, and
+  feedback is information.
+- **Don't** reintroduce the SM-2 tinted resting surface. The neutral
+  resting state with a coloured keyline is what lets the press mean
+  something.
+- **Don't** use a coloured `border-left`/`border-right` above 1px on cards,
+  list items, callouts, or alerts.
+- **Don't** use gradient text, glassmorphism as decoration, hard offset
+  shadows, zero-offset coloured halos, sparklines, progress rings, or
+  soft-shadowed rounded rectangles standing in for content.
+- **Don't** use a system display face, or monospace as a costume for
+  "technical" rather than for code, data, or measurement.
+- **Don't** use Unicode glyphs or emoji as an icon system. Icons are drawn
+  from Lucide in one consistent stroke and weight.
+- **Don't** use geometric masks to approximate a photographic subject's
+  edge.
+- **Don't** animate a layout-driving property when a transform will do.
+- **Don't** ship a study screen where the answer widget is the most
+  prominent thing on the page.
+- **Don't** desaturate the palette in pursuit of quiet. Quieter is not
+  greyer: the warm ground and the terracotta are the product's identity,
+  and stripping them produces a different, less specific product. A pass
+  that reduces intensity by removing colour has gone too far.
+- **Don't** flatten the study filter stack to save visual weight. The
+  full-width form-field reading is the affordance.
+
 ## What this file does not cover yet
 
-- Sound design (TTS playback and waveform feedback).
-- Touch and gesture design on narrow screens — the responsive layout
-  exists but no documented breakpoint map.
-- Print layout beyond forced palette.
-- The mobile nav drawer opens and closes with no transition at all. It is
-  the only navigation on narrow screens and the only overlay in the app
-  that does not use the shared arrival vocabulary.
-- The undo toast overlaps the "Показать ответ" button on the study screen
-  at desktop width. A layout collision rather than a motion one, but it is
-  part of why the toast's arrival is easy to miss.
+- **Spacing tokens.** There is no `--space-*` scale; 27 distinct px values
+  are in use. Recorded above under Layout.
+- **A unified breakpoint map.** Eight distinct `max-width` values.
+  Recorded above under Layout.
+- **The mobile nav drawer transition.** The only overlay with no arrival
+  animation.
+- **The undo toast overlap.** On the study screen at desktop width the
+  toast overlaps the "Показать ответ" button. A layout collision rather
+  than a motion one, but it is part of why the toast's arrival is easy to
+  miss.
+- **Sound design** beyond TTS playback and the two state animations.
+- **Print layout** beyond the forced palette and the stripped chrome.
+
+## Drift this document now makes visible
+
+Writing the token layer into the frontmatter turned the Impeccable
+detector from blind on this project into an actual check — and it
+immediately found things that were always there and previously
+invisible. `impeccable detect src/` reported 0 anti-patterns before this
+pass and reports 1 plus 59 advisories now. Nothing regressed; the check
+simply started working.
+
+None of these are fixed here. They are recorded so the next pass can
+decide rather than rediscover.
+
+1. **A latent contrast bomb.** `AddCardModal.module.css` has
+   `background: var(--warn-soft, #fee)`. `--warn-soft` is defined, so the
+   fallback is dormant — but `#fee` is a bright yellow, and if the token
+   were ever renamed or removed the form would silently render yellow
+   behind `--warn-text`. This is the exact failure mode the "do not
+   reference an undefined token" rule exists to prevent, arrived at from
+   the other direction: a correct token with a template fallback welded on.
+
+2. **A font token bypass** (the one anti-pattern). `ErrorBoundary.module.css`
+   hardcodes `ui-monospace, 'SF Mono', Menlo, monospace` instead of
+   `var(--font-mono)`, so it misses `SFMono-Regular`, `Consolas`, and
+   `Liberation Mono` from the declared stack.
+
+3. **Ten off-ramp `rem` font sizes** across six modules — 1.1, 1.2, 1.3,
+   1.35, 1.6, 1.7rem, plus `1.5rem` written literally where
+   `--text-title` already means the same thing. These are *not* the
+   scale-breaking `px` bug the Never-px Rule exists for; they still track
+   `--font-scale` correctly. They are an un-collapsed tail of the type
+   ramp.
+
+4. **Twenty-one undocumented literal colours**, almost all
+   `rgba(0, 0, 0, 0.18–0.45)` modal scrims. These are legitimate — a
+   scrim is a fixed dim, not a palette colour — but they are invisible
+   convention rather than a token, which is how they drift. Either
+   document them as a named role or give them a `--scrim` token.
+
