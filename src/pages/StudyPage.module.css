@@ -258,6 +258,15 @@
   width: 100%;
 }
 
+/* SM-2 rating scale. The four grades are an ordered semantic scale, so each
+   state gets a colour identity the learner can pick out without reading.
+   At rest every button is a soft tint of its state with a 1px keyline — quiet
+   enough that the page CTA keeps the strongest colour on the screen. The
+   press is where the solid fill lands, so colour marks the moment of
+   commitment rather than decorating the resting state.
+
+   data-grade carries the SM-2 grade key. Colour is never the only cue: the
+   Russian label and the 1–4 shortcut are always present. */
 .ratingBtn {
   position: relative;
   display: flex;
@@ -280,6 +289,49 @@
   color: var(--accent-ink);
 }
 .ratingBtn:active { transform: translateY(1px); }
+
+.ratingBtn[data-grade='again'] {
+  background: var(--again-soft);
+  border-color: var(--again-text);
+  color: var(--again-text);
+}
+.ratingBtn[data-grade='hard'] {
+  background: var(--hard-soft);
+  border-color: var(--hard-text);
+  color: var(--hard-text);
+}
+.ratingBtn[data-grade='good'] {
+  background: var(--good-soft);
+  border-color: var(--good-text);
+  color: var(--good-text);
+}
+.ratingBtn[data-grade='easy'] {
+  background: var(--easy-soft);
+  border-color: var(--easy-text);
+  color: var(--easy-text);
+}
+
+.ratingBtn[data-grade='again']:hover { background: var(--again-fill); border-color: var(--again-fill); color: var(--again-ink); }
+.ratingBtn[data-grade='hard']:hover  { background: var(--hard-fill);  border-color: var(--hard-fill);  color: var(--hard-ink); }
+.ratingBtn[data-grade='good']:hover  { background: var(--good-fill);  border-color: var(--good-fill);  color: var(--good-ink); }
+.ratingBtn[data-grade='easy']:hover  { background: var(--easy-fill);  border-color: var(--easy-fill);  color: var(--easy-ink); }
+
+/* The shortcut chip sits in the corner. The base rule gives it a
+   --surface background and a --text-subtle colour, which is correct on a
+   plain surface but wrong here: the button behind it is a tinted or solid
+   state fill, so a white chip reads as a blank block. Transparent background
+   plus an inherited colour keeps the digit legible against both the resting
+   tint and the pressed fill, with no second colour to maintain. */
+.ratingBtn .ratingShortcut {
+  background: transparent;
+  border-color: currentColor;
+  color: inherit;
+  opacity: 0.75;
+}
+.ratingBtn[data-grade='again']:hover .ratingShortcut { color: var(--again-ink); opacity: 0.95; }
+.ratingBtn[data-grade='hard']:hover  .ratingShortcut { color: var(--hard-ink);  opacity: 0.95; }
+.ratingBtn[data-grade='good']:hover  .ratingShortcut { color: var(--good-ink);  opacity: 0.95; }
+.ratingBtn[data-grade='easy']:hover  .ratingShortcut { color: var(--easy-ink);  opacity: 0.95; }
 
 .ratingLabel {
   font-weight: 600;

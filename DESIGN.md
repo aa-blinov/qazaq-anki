@@ -162,6 +162,51 @@ matching semantic token, over a `--*-soft` or `--surface-2` fill. A thicker
 colored left rule is a recognisable generated-UI signature and carries no
 information the fill and text colour do not already carry.
 
+## The SM-2 rating scale
+
+The four study grades are an ordered semantic scale, so each carries a colour
+identity. This is the one place in the product where colour encodes something
+the type does not: a learner presses one of these hundreds of times per session,
+and before the scale existed the four buttons were visually identical, forcing a
+label read on every single choice.
+
+**No new hues were introduced.** Each state reuses a role the palette already
+had — `danger`, `warn`, `ok`, `accent` — given a job in the study loop:
+
+| Grade | Role | Resting label | Light | Dark |
+|---|---|---|---|---|
+| Снова | danger | red | `#A03333` | `#DA7474` |
+| Трудно | warn | amber | `#7A5E10` | `#D9B25B` |
+| Хорошо | ok | green | `#4E6E36` | `#9CC074` |
+| Легко | accent | clay | `#96492A` | `#E08662` |
+
+Four roles per state, because they are different jobs:
+
+- `--<state>-soft` — resting fill, a tint of the state
+- `--<state>-text` — resting label and keyline
+- `--<state>-fill` — pressed fill
+- `--<state>-ink` — pressed label
+
+The `-text` values are **deeper than the base state colour** in light mode. The
+base `--danger` on its own `--danger-soft` measures 4.28:1 and `--ok` measures
+3.99:1 — both short of AA. The dark theme needs no deepening, because there the
+state colours are already light against dark tints.
+
+Every pairing is verified in both themes: resting 4.62–6.32:1, pressed
+4.73–8.76:1, keyline above 3:1.
+
+**Weight discipline.** At rest the buttons are soft tints with a 1px keyline, not
+solid fills, so the page CTA keeps the strongest colour on the screen. The solid
+fill lands on hover, marking the moment of commitment rather than decorating the
+resting state.
+
+**Colour is never the only cue.** The Russian label and the 1–4 keyboard
+shortcut are always present on every button.
+
+Implementation: `data-grade` carries the SM-2 grade key; CSS selects
+`.ratingBtn[data-grade='…']`. Do not add per-state class names in the component —
+the attribute keeps the grade in one place.
+
 ## Components (current)
 
 | Component | File | Notes |
