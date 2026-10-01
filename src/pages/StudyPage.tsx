@@ -1097,6 +1097,7 @@ export function StudyPage() {
                 key={key}
                 type="button"
                 className={styles.ratingBtn}
+                data-grade={key}
                 onClick={() => handleGrade(key)}
                 aria-label={t('card.aria.interval', {
                   label,
