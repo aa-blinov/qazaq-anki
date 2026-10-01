@@ -66,28 +66,41 @@
      (danger / warn / ok / accent) given a job in the study loop. A learner
      learns "Снова is the red one" once and stops reading.
 
-     Four roles per state, because they are different jobs:
-       soft — the resting fill, a tint of the state
-       text — the resting label; deepened past the fill value so it clears
-              4.5:1 against its own soft tint (the base value does not)
-       fill — the pressed fill
-       ink  — the pressed label, verified against that fill */
-  --again-soft: #F5DDDD;
+     Three roles per state, because they are three different jobs:
+       text — the resting label AND the resting keyline. The button surface
+              itself is the neutral --surface, so this colour sits on white.
+       fill — the pressed / hovered fill
+       ink  — the pressed label, verified against that fill
+
+     There was a fourth role, `soft`, for a tinted resting surface. It is
+     gone. Four full-surface tints were the loudest thing in the product and
+     they sat directly under the flashcard — which is the actual work. Two
+     costs, one cut:
+
+       intensity — the study screen's brightest elements were the answer
+       widget, not the word being recalled.
+       identity  — the "Легко" state reuses the accent role, so a large
+       terracotta block made the product's single accent read as one of four
+       peer colours rather than as the accent.
+
+     The state identity survives on a 1px keyline and the label colour, both
+     permanent — so it does not depend on hover firing, which matters on
+     touch. Solid fill now lands only on hover / press, marking the moment
+     of commitment. Dropping the tint also raises resting label contrast,
+     since the state colour now sits on white rather than on a tint of
+     itself. */
   --again-text: #A03333;
   --again-fill: #B54141;
   --again-ink:  #FFFFFF;
 
-  --hard-soft:  #F4EAC7;
   --hard-text:  #7A5E10;
   --hard-fill:  #B68A1B;
   --hard-ink:   #1F1E1B;
 
-  --good-soft:  #E6EFDB;
   --good-text:  #4E6E36;
   --good-fill:  #5A7D3F;
   --good-ink:   #FFFFFF;
 
-  --easy-soft:  #F4E4D6;
   --easy-text:  #96492A;
   --easy-fill:  #A8522F;
   --easy-ink:   #FAF7F2;
@@ -287,28 +300,24 @@
 
   /* SM-2 rating scale, dark. Every state fill here is a light tint, so the
      pressed ink is the dark ground in all four cases. The resting text
-     values are the base state colours, which already clear 4.5:1 against
-     their own soft tint in this theme — no deepening needed. */
-  --again-soft: #3A2424;
+     values are the base state colours, and in this theme they are already
+     light enough to clear 4.5:1 against the dark --surface — so, as in
+     light, no deepening is needed now that nothing sits on a tint. */
   --again-text: #DA7474;
   --again-fill: #DA7474;
   --again-ink:  #1A1916;
 
-  --hard-soft:  #3A3220;
   --hard-text:  #D9B25B;
   --hard-fill:  #D9B25B;
   --hard-ink:   #1A1916;
 
-  --good-soft:  #2C3525;
   --good-text:  #9CC074;
   --good-fill:  #9CC074;
   --good-ink:   #1A1916;
 
-  --easy-soft:  #3A2A20;
   --easy-text:  #E08662;
   --easy-fill:  #E08662;
   --easy-ink:   #1A1916;
-
 
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.25);

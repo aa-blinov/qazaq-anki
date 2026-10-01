@@ -260,13 +260,29 @@
 
 /* SM-2 rating scale. The four grades are an ordered semantic scale, so each
    state gets a colour identity the learner can pick out without reading.
-   At rest every button is a soft tint of its state with a 1px keyline — quiet
-   enough that the page CTA keeps the strongest colour on the screen. The
-   press is where the solid fill lands, so colour marks the moment of
-   commitment rather than decorating the resting state.
+
+   At rest the button is a plain surface — the same one every other control
+   in the app sits on. The state is carried by a 1px keyline in the state
+   colour and by the label in the same colour, not by a tinted surface.
+
+   It used to be a full-surface tint, and that was the loudest thing in the
+   product. Four saturated blocks sat under the card, which is the actual
+   work: on the study screen the learner is trying to recall the meaning of
+   a Kazakh word, and the brightest thing on the page was the answer
+   widget. The same pass had a second, quieter cost — the "Легко" state
+   reuses the accent role, so a large terracotta block made the product's
+   one accent read as "one of four peer colours" instead of "the accent".
+
+   Colour on the mark, fill on commitment. The solid state fill now lands
+   only on hover / press, so it marks the moment the learner commits
+   rather than decorating a state they are only looking at. It also means
+   the resting label sits on white instead of on a tint, which raises its
+   contrast rather than lowering it.
 
    data-grade carries the SM-2 grade key. Colour is never the only cue: the
-   Russian label and the 1–4 shortcut are always present. */
+   Russian label and the 1–4 shortcut are always present, and on touch —
+   where no hover ever fires — the keyline and the coloured label are the
+   whole identity. */
 .ratingBtn {
   position: relative;
   display: flex;
@@ -291,22 +307,18 @@
 .ratingBtn:active { transform: translateY(1px); }
 
 .ratingBtn[data-grade='again'] {
-  background: var(--again-soft);
   border-color: var(--again-text);
   color: var(--again-text);
 }
 .ratingBtn[data-grade='hard'] {
-  background: var(--hard-soft);
   border-color: var(--hard-text);
   color: var(--hard-text);
 }
 .ratingBtn[data-grade='good'] {
-  background: var(--good-soft);
   border-color: var(--good-text);
   color: var(--good-text);
 }
 .ratingBtn[data-grade='easy'] {
-  background: var(--easy-soft);
   border-color: var(--easy-text);
   color: var(--easy-text);
 }
@@ -316,12 +328,12 @@
 .ratingBtn[data-grade='good']:hover  { background: var(--good-fill);  border-color: var(--good-fill);  color: var(--good-ink); }
 .ratingBtn[data-grade='easy']:hover  { background: var(--easy-fill);  border-color: var(--easy-fill);  color: var(--easy-ink); }
 
-/* The shortcut chip sits in the corner. The base rule gives it a
-   --surface background and a --text-subtle colour, which is correct on a
-   plain surface but wrong here: the button behind it is a tinted or solid
-   state fill, so a white chip reads as a blank block. Transparent background
-   plus an inherited colour keeps the digit legible against both the resting
-   tint and the pressed fill, with no second colour to maintain. */
+/* The shortcut chip sits in the corner. Its base rule gives it a --surface
+   background and a --text-subtle colour, which is correct on a plain surface
+   but wrong here: against the pressed state fill a white chip reads as a
+   blank block. A transparent background plus an inherited colour keeps the
+   digit legible against both the resting surface and the pressed fill, with
+   no second colour to maintain. */
 .ratingBtn .ratingShortcut {
   background: transparent;
   border-color: currentColor;
