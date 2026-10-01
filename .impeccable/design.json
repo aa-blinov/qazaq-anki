@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-01T17:36:09.825Z",
+  "generatedAt": "2026-10-01T18:38:50.207Z",
   "title": "Design System: qazaq-anki",
   "extensions": {
     "colorMeta": {
@@ -629,13 +629,13 @@
         "value": "420px"
       },
       {
-        "name": "nav-drawer",
-        "value": "540px",
-        "purpose": "Load-bearing: swaps the inline nav for the burger drawer."
-      },
-      {
         "name": "card-compact",
         "value": "600px"
+      },
+      {
+        "name": "nav-drawer",
+        "value": "760px",
+        "purpose": "Load-bearing: swaps the inline nav for the burger drawer. Raised from 540px — the full header row needs ~890px, so between 541 and ~890 it overflowed the viewport (measured 864px of content in an 844px landscape phone, on every page)."
       },
       {
         "name": "table",
@@ -656,13 +656,24 @@
       {
         "name": "study-split",
         "value": "900px"
+      },
+      {
+        "name": "touch-floor",
+        "value": "(max-width: 768px), (pointer: coarse)",
+        "purpose": "The gate for --tap-min and for the compact study layout. The same query is COMPACT_QUERY in StudyPage.tsx so the JSX and CSS cannot drift."
+      },
+      {
+        "name": "study-short",
+        "value": "max-height 520px + min-width 700px",
+        "purpose": "Landscape phone: splits the study screen into controls left, card and answer right."
       }
     ],
     "knownDebt": [
       "No spacing token scale. 27 distinct px values are in use in padding/margin; the rhythm is a loose 2px step with a 4px preference, clustering on 4/6/8/10/12/14/16/20/24/32px.",
-      "Breakpoints are not unified — eight distinct max-width values. Only 540px is load-bearing.",
+      "Breakpoints are not unified — the map is now seven max-width values plus two height queries and the touch gate. Only the touch gate and the landscape split are load-bearing across modules.",
       "The mobile nav drawer opens and closes with no transition; it is the only overlay not using the shared arrival vocabulary.",
-      "On the study screen at desktop width the undo toast overlaps the \"Показать ответ\" button."
+      "On the study screen at desktop width the undo toast overlaps the \"Показать ответ\" button.",
+      "The main study view renders no <h1> — only the done state has one. The .studyTitle class still exists in StudyPage.module.css and is rendered by nothing."
     ]
   },
   "components": [
@@ -741,6 +752,15 @@
       "description": "Topbar links at body-small. The active link is a filled pill on the inset ground with strong ink — a tonal shift, not a colour one.",
       "html": "<a class=\"ds-nav ds-nav-active\" href=\"#\"><svg class=\"ds-ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m3 10.5 9-7 9 7\"/><path d=\"M5 9.5V20h14V9.5\"/></svg> Главная</a>",
       "css": ".ds-nav { display:inline-flex; align-items:center; gap:8px; padding:8px 14px; border-radius:var(--radius-md); color:var(--text-muted); font-family:var(--font-sans); font-size:var(--text-small); font-weight:500; text-decoration:none; transition:background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out); }\n.ds-nav .ds-ico { width:16px; height:16px; }\n.ds-nav:hover { background:var(--surface-2); color:var(--text); }\n.ds-nav-active { background:var(--surface-2); color:var(--text-strong); }\n.ds-nav:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; box-shadow: 0 0 0 3px var(--accent-soft); }"
+    },
+    {
+      "name": "Collapsed filter row — study",
+      "kind": "disclosure",
+      "refersTo": "pickerToggle",
+      "description": "Compact-only. One 44px row that names the three active filter values instead of showing the three labelled selects, and opens the full stack on tap. The three rows are 187px; this is 44px. The form-field reading is unchanged — it is a height decision, not a quieting one.",
+      "html": "<button class=\"ds-filter\" type=\"button\" aria-expanded=\"false\"><svg class=\"ds-ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 6h16M7 12h10M10 18h4\"/></svg><span class=\"ds-filter-label\">Все · Қаз → Рус · Все темы</span><svg class=\"ds-ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\"/></svg></button>",
+      "css": ".ds-filter { display:flex; align-items:center; gap:8px; width:100%; min-height:var(--tap-min); padding:0 12px; background:var(--surface); border:1px solid var(--border-strong); border-radius:var(--radius-md); color:var(--text); font-family:var(--font-sans); font-size:var(--text-body); text-align:left; cursor:pointer; transition:background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out); }\n.ds-filter:hover { background:var(--surface-2); }\n.ds-filter-label { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:500; }\n.ds-filter[aria-expanded=\"true\"] { border-color:var(--accent); }\n.ds-filter[aria-expanded=\"true\"] .ds-ico:last-child { transform:rotate(180deg); }",
+      "notes": "The summary must keep naming the three active values. Collapsing that hides the controls, not the state they hold — a row of three words is the whole disclosure label."
     }
   ],
   "narrative": {

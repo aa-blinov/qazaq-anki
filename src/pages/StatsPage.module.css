@@ -623,7 +623,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: calc(24px + var(--safe-top)) calc(24px + var(--safe-right)) calc(24px + var(--safe-bottom)) calc(24px + var(--safe-left));
   background: rgba(31, 30, 27, 0.45);
   backdrop-filter: blur(2px);
   animation: scrim-in var(--dur-fast) var(--ease-out);
@@ -682,8 +682,10 @@
    import-validation errors that don't need a full modal. */
 .toast {
   position: fixed;
-  right: 16px;
-  bottom: 16px;
+  right: calc(16px + var(--safe-right));
+  /* A fixed toast pinned 16px from the physical bottom edge sits
+     directly on the home indicator. */
+  bottom: calc(16px + var(--safe-bottom));
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -1125,5 +1127,14 @@
      state is on the element itself, so the chevron can snap. */
   .configSummaryHint {
     transition: none;
+  }
+}
+
+/* Touch floor. Stats tabs sit 2px apart, so they grow rather than
+   take a hit-area overlay that would overlap their neighbours. */
+@media (max-width: 768px), (pointer: coarse) {
+  .tabButton,
+  .emptyCta {
+    min-height: var(--tap-min);
   }
 }

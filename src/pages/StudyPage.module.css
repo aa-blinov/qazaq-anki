@@ -47,6 +47,14 @@
 }
 .backLink:hover { color: var(--accent); text-decoration: none; }
 
+/* Touch floor. The back link is 18px of text with a title 8px below
+   it, so a hit-area overlay would sit on top of the title and block
+   selecting it. It grows for real instead — the text keeps its size
+   and the row around it becomes thumb-sized. */
+@media (max-width: 768px), (pointer: coarse) {
+  .backLink { min-height: var(--tap-min); }
+}
+
 /*
   Level switcher — six mutually exclusive pills (one for each
   CEFR level plus "Все"). The user is always one tap away from
@@ -620,9 +628,12 @@
    reflow doesn't kick the user. */
 .undoToast {
   position: fixed;
-  left: 16px;
-  right: 16px;
-  bottom: 16px;
+  left: calc(16px + var(--safe-left));
+  right: calc(16px + var(--safe-right));
+  /* Clears the home indicator. This toast is also the only
+     acknowledgement the learner gets that their grade was recorded, so
+     it is the last thing that should be sitting under a gesture bar. */
+  bottom: calc(16px + var(--safe-bottom));
   z-index: 50;
   display: flex;
   align-items: center;
@@ -692,4 +703,127 @@
   .undoToast {
     animation-name: var(--anim-arrive);
   }
+}
+
+/* ------------------------------- Compact layout ------------------------------
+   The phone layout of this screen, gated on the same query the JS
+   `useCompactLayout` hook uses. Everything here was decided from
+   measured band heights at 320/360/390/430/844-wide, not from
+   how the screen "feels".
+*/
+
+/* The collapsed filter row. One control, one line, naming the three
+   active values so collapsing hides the controls without hiding the
+   state they hold. It reads as a form field like the three rows it
+   replaces, because that is what it is. */
+.pickerBox {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+.pickerToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: var(--tap-min);
+  padding: 0 12px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  font-family: inherit;
+  font-size: var(--text-body);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+.pickerToggle:hover { background: var(--surface-2); }
+.pickerToggle > svg:first-child { flex-shrink: 0; color: var(--text-muted); }
+.pickerSummary {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+.pickerChev {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.pickerToggle[aria-expanded='true'] { border-color: var(--accent); }
+.pickerToggle[aria-expanded='true'] .pickerChev { transform: rotate(180deg); }
+
+@media (max-width: 768px), (pointer: coarse) {
+  .studyColumn { gap: 12px; }
+  .pickerStack { gap: 10px; }
+}
+
+/* Short viewports — a 640px phone, or a desktop window that has been
+   dragged short — spend the last of the height on the gaps rather
+   than on the card. 18px between every band is six gaps the study
+   loop does not need. */
+@media (max-height: 700px) {
+  .studyColumn { gap: 10px; }
+  .cardWrap { margin-top: 0; }
+}
+
+/* The shortest screens still in the set — a 320×568 phone — are 23px
+   short of the answer button after every other saving above. The
+   heading is the 34px they need, and it does not have to go: the back
+   link and the title sit side by side instead of stacked, which keeps
+   the <h1> on screen and costs the loop nothing. */
+@media (max-height: 600px) {
+  .studyHeaderLeft {
+    /* The level switcher takes its own line rather than sharing one
+       with the back link. Without `flex-basis: 100%` it competed for
+       the same row and the back link wrapped to two lines at 320px,
+       for no gain — the pills need the full width either way. */
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+  }
+  .levelSwitcher { flex-basis: 100%; }
+  .study { padding-top: 0; }
+}
+
+/* 320×568 — a 4-inch phone — is the one size still 13px short after
+   every saving above. The card is not elastic (its faces are absolutely
+   positioned inside a fixed box, so shrinking it clips the translation
+   and the source line), so the last 13px come out of the gaps instead:
+   the column gap goes to 8 and the leech-notice margin, which is 16px
+   of nothing whenever no leech is showing, goes to 0. */
+@media (max-height: 600px) and (orientation: portrait) {
+  .studyColumn { gap: 8px; }
+  .metaBar { margin: 0; padding: 0; }
+  .studyHeaderLeft { gap: 8px; }
+}
+
+/* Landscape on a phone: 844×390. Stacking the filters above the card
+   cannot work at 390px tall no matter how the gaps are spent — the
+   card and the answer button alone are 250px. The 844px of width is
+   the resource this orientation actually has, so the screen splits
+   into the two things it is: the controls on the left, the card and
+   its answer on the right. */
+@media (max-height: 520px) and (min-width: 700px) {
+  .study { padding-top: 0; }
+  .studyColumn {
+    display: grid;
+    grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+    grid-template-rows: auto auto auto 1fr auto;
+    column-gap: 24px;
+    align-content: start;
+  }
+  .studyHeader { grid-area: 1 / 1 / 2 / 2; }
+  .pickerBox,
+  .pickerStack { grid-area: 2 / 1 / 3 / 2; align-self: start; }
+  .progressBar { grid-area: 4 / 1 / 5 / 2; align-self: end; }
+  .cardWrap { grid-area: 1 / 2 / 4 / 3; align-self: start; }
+  .showAnswerBtn,
+  .ratingRow { grid-area: 4 / 2 / 5 / 3; align-self: end; }
+  .metaRow { grid-area: 5 / 1 / 6 / 3; }
 }

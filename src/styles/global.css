@@ -212,6 +212,24 @@
      modules reach it through a variable instead of naming it directly. */
   --anim-arrive: arrive-fade;
 
+  /* ---- Safe areas -------------------------------------------------------
+     The four physical insets a notched device reports. They are 0 on
+     every device without a cutout, so they are safe to add
+     unconditionally — no `@supports` needed, and no media query.
+
+     `viewport-fit=cover` in index.html is what makes these non-zero;
+     without it the browser clamps the page to the safe rectangle and
+     they read 0 forever. That meta tag is the gate, these are the
+     consumers.
+
+     Tokenised rather than inlined at each use site so the fallback value
+     lives in exactly one place, and so a device that reports an inset in
+     an unexpected unit cannot produce a broken calc() at a call site. */
+  --safe-top:    env(safe-area-inset-top, 0px);
+  --safe-right:  env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left:   env(safe-area-inset-left, 0px);
+
   /* Interface text scale — driven by FontSizeProvider. The inline
    * public/theme-init.js sets the same variable from localStorage on
    * first paint so the user's choice survives a refresh with no
@@ -489,6 +507,62 @@ p:last-child { margin-bottom: 0; }
 
 ::selection { background: var(--accent-soft); color: var(--accent-ink); }
 
+/* Tap highlight. This was the one browser surface the system had not
+   themed: iOS Safari was flashing its default #33B5E5 blue on every
+   touch, which is the single most visible piece of chrome on a warm
+   clay product. Tinted to the accent at low alpha instead, so the
+   "this is tappable" signal survives without a foreign colour landing
+   on a terracotta ground. */
+:root {
+  -webkit-tap-highlight-color: rgba(201, 100, 66, 0.18);
+}
+
+/* Touch target floor.
+   Apple HIG asks for 44pt, Material for 48dp, WCAG 2.5.5 (AAA) for
+   44×44 CSS px. This product deliberately runs a dense layout — 15px
+   root, 27px filter chips, 32px icon buttons — and that density is a
+   real product decision, not an oversight. So the floor is applied
+   only where there is no mouse: every rule that consumes --tap-min
+   sits behind `@media (max-width: 768px), (pointer: coarse)`, and a
+   pointer-fine user never sees the app change.
+
+   Two mechanisms, used per control depending on what is around it:
+     - real growth (`min-height: var(--tap-min)`) when the control is
+       isolated or is a text field;
+     - hit-area growth (an ::after box centred on the control) when
+       the control sits in a dense row and making it visibly bigger
+       would cost the layout more than it returns. */
+:root {
+  --tap-min: 44px;
+}
+
+/* `manipulation` drops the legacy 300ms double-tap-zoom delay without
+   disabling pinch-zoom — which a `touch-action: none` or a
+   `user-scalable=no` viewport would do, and which the viewport meta
+   deliberately does not do. */
+a,
+button,
+input,
+select,
+textarea,
+[role='button'],
+[role='tab'],
+label {
+  touch-action: manipulation;
+}
+
+/* A fixed overlay owns the viewport while it is open, so the page behind
+   it must not rubber-band when the gesture runs out of content. Without
+   this, dragging on a short modal scrolls the page underneath and the
+   scrim appears to slide. Applied to the scrim/overlay/backdrop layer
+   rather than to <body> so normal page scrolling is untouched. */
+[class*='scrim'],
+[class*='backdrop'],
+[class*='overlay'],
+[class*='Scrim'] {
+  overscroll-behavior: contain;
+}
+
 /* ----------------------------------------------------------------------------
    Reusable components — flat, quiet, no big rounded gradients
    ---------------------------------------------------------------------------- */
@@ -756,5 +830,27 @@ p:last-child { margin-bottom: 0; }
 @media (prefers-reduced-motion: reduce) {
   .skip {
     transition: none;
+  }
+}
+
+/* ------------------------------- Touch floor --------------------------------
+   At the very end of this file on purpose. `.btn` sets
+   `min-height: 38px` and `.input` sets `padding: 10px 14px` further
+   up; at equal specificity the later rule wins, so a block placed
+   next to the :root token was silently losing to both. Same
+   specificity, same media query, last word.
+
+   These three are global classes, so this one rule covers the auth
+   forms, every modal input, the browse search field and every
+   `.btn` / `.btn--ghost` in the product at once. Pointer-fine users
+   never reach it — the density is theirs until they ask for a phone.
+*/
+@media (max-width: 768px), (pointer: coarse) {
+  .btn,
+  .btn--sm,
+  .btn--ghost,
+  .input,
+  .skip {
+    min-height: var(--tap-min);
   }
 }

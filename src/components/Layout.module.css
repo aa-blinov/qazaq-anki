@@ -2,18 +2,26 @@
   display: flex;
   flex-direction: column;
   min-height: 100%;
+  /* Landscape on a notched phone puts the cutout on a side edge, not
+     the top, so the horizontal insets are consumed here once rather than
+     being repeated on every page that renders inside the shell. */
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
 }
 
 .header {
   display: flex;
   align-items: center;
   gap: 28px;
-  padding: 14px 28px;
+  /* `14px + env(safe-area-inset-top)`, not a fixed larger value: on a
+     device with no cutout this is exactly the old 14px. */
+  padding: calc(14px + var(--safe-top)) 28px 14px;
   background: var(--bg);
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
   z-index: 10;
+
   /* No backdrop-filter on purpose. Frosted-glass topbars were the
    * tell-tale 2020-2023 SaaS cliché; a solid background reads as
    * the same product family as a print magazine, not as a Notion
@@ -69,8 +77,39 @@
 .right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  /* 12px, not 8px: each .iconBtn below keeps its 32px visual box but
+     grows a 44px hit area, and at 8px the neighbouring hit areas
+     overlapped by 4px — the later one would steal the edge of its
+     neighbour's target. 12px makes them touch without overlap. */
+  gap: 12px;
   flex-shrink: 0;
+}
+
+/* 44px touch target without growing the 32px visual box.
+   The topbar is 57px tall, so a 44px hit area centred on the button
+   stays inside the header band and costs the layout nothing. */
+@media (max-width: 768px), (pointer: coarse) {
+  .iconBtn,
+  .burger,
+  .navLink,
+  .brand {
+    position: relative;
+  }
+  .iconBtn::after,
+  .burger::after,
+  .navLink::after,
+  .brand::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: var(--tap-min);
+    height: var(--tap-min);
+    transform: translate(-50%, -50%);
+  }
+  /* The nav links sit 2px apart, which is not enough clearance for a
+     44px hit area — six is, at a cost of 12px of header width. */
+  .nav { gap: 6px; }
 }
 
 .iconBtn {
@@ -190,12 +229,16 @@
   width: 100%;
   max-width: 1040px;
   margin: 0 auto;
-  padding: 40px 32px;
+  /* Bottom inset so the last row of any page clears the home indicator. */
+  padding: 40px 32px calc(32px + var(--safe-bottom));
 }
 
 @media (max-width: 768px) {
   .header {
-    padding: 10px 16px;
+    /* Re-adds the top inset the compact rule would otherwise drop —
+       the same `10px + env()` form, so a device without a cutout is
+       still exactly 10px. */
+    padding: calc(10px + var(--safe-top)) 16px 10px;
     gap: 12px;
     flex-wrap: wrap;
   }
@@ -209,7 +252,7 @@
   }
   .userName { display: none; }
   .userBubble { padding: 0 8px; }
-  .main { padding: 20px 16px 32px; }
+  .main { padding: 20px 16px calc(32px + var(--safe-bottom)); }
 }
 
 @media (max-width: 768px) {
@@ -233,14 +276,32 @@
   display: none;
 }
 
-@media (max-width: 540px) {
+/*
+  The header has three widths, not two.
+
+  Measured minimums for brand + nav + user bubble + four icon buttons
+  in one row: ~890px. The previous 540px breakpoint let the full row
+  render all the way down to 541px, so every viewport between 541 and
+  ~890 overflowed horizontally — measured 864px of content in an 844px
+  landscape phone, on all five pages, because the name bubble and the
+  nav together outgrew the row.
+
+  So: the name bubble goes first (it duplicates what Settings already
+  says), then the horizontal padding tightens, and the nav itself
+  collapses into the drawer once even that stops fitting.
+*/
+@media (max-width: 1000px) {
+  .userBubble { display: none; }
+  .header { gap: 20px; padding-left: 20px; padding-right: 20px; }
+}
+
+@media (max-width: 760px) {
   /* At narrow widths the inline nav and the @userBubble no longer
      fit cleanly — we swap to a single burger button that toggles
      a slide-down panel below the topbar. The previous inline row
      is hidden; the same nav links live inside the drawer. */
   .nav { display: none; }
   .navPlaceholder { display: none; }
-  .userBubble { display: none; }
   .burger {
     display: inline-flex;
     align-items: center;

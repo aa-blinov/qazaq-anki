@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, NavLink, useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Sparkles, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Sparkles, ArrowRight, ChevronDown, SlidersHorizontal } from 'lucide-react';
 import { Flashcard } from '../components/Flashcard';
 import { TopicSelect } from '../components/TopicSelect';
 import { PickerSelect, type PickerOption } from '../components/PickerSelect';
@@ -30,6 +30,30 @@ import { useAuth } from '../contexts/AuthContext';
 import styles from './StudyPage.module.css';
 
 type Mode = 'due' | 'new' | 'all' | 'cram';
+
+/*
+  The compact-layout query, in one place, because the CSS that pairs
+  with it is also in one place: the `--tap-min` rules in global.css
+  and the compact overrides in StudyPage.module.css both open with
+  `@media (max-width: 768px), (pointer: coarse)`. If the two ever
+  drift apart, the JSX would hide the filters while the CSS still
+  expects three rows — so both sides name the same query.
+*/
+const COMPACT_QUERY = '(max-width: 768px), (pointer: coarse)';
+
+function useCompactLayout(): boolean {
+  const [compact, setCompact] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia(COMPACT_QUERY).matches,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia(COMPACT_QUERY);
+    const sync = () => setCompact(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
+  return compact;
+}
 
 export function StudyPage() {
   // The current shape of the routes:
@@ -683,6 +707,61 @@ export function StudyPage() {
     };
   }, [allCards, activeCategory, direction, progress]);
 
+
+  /*
+    Compact layout. On a phone the three filter pickers cost 187px of
+    vertical space above the card — measured, not estimated — which
+    pushed "Показать ответ" below the fold on every phone size tried,
+    including a 390×844 iPhone. The filters are set-once controls; the
+    card is the loop. So on a compact layout they collapse into one
+    row that names the three active values, and open on tap. The
+    desktop layout keeps the three rows, where there is room for them.
+  */
+  const compact = useCompactLayout();
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
+  // The (mode, phaseFilter) pair, encoded as a single value so the
+  // PickerSelect can use one `value` + one `onChange`. Same seven
+  // options the previous chip row had, with per-option counts.
+  const cardsValue = mode === 'cram' ? 'cram' : `${mode}/${phaseFilter}`;
+  const cardsOptions: PickerOption[] = [
+    { value: 'due/all', label: t('study.tab.due'), count: counts.due },
+    { value: 'new/all', label: t('study.tab.new'), count: counts.new },
+    { value: 'all/learning', label: t('study.phase.learning'), count: counts.learning },
+    { value: 'all/review', label: t('study.phase.review'), count: counts.review },
+    { value: 'all/mastered', label: t('study.phase.mastered'), count: counts.mastered },
+    { value: 'all/all', label: t('study.tab.all'), count: counts.total },
+    { value: 'cram', label: t('study.tab.cram'), count: counts.total },
+  ];
+
+  // The collapsed row still has to say what it is filtering to —
+  // otherwise collapsing it would hide the state, not just the control.
+  const filterSummary = [
+    cardsOptions.find((o) => o.value === cardsValue)?.label ?? cardsValue,
+    direction === 'kk-ru' ? t('study.direction.kkRu') : t('study.direction.ruKk'),
+    activeCategory === 'all'
+      ? t('study.topic.all')
+      : activeCategory,
+  ].join(' · ');
+
+  const onCardsChange = useCallback(
+    (v: string) => {
+      if (v === 'cram') {
+        setMode('cram');
+        if (phaseFilter !== 'all') setPhaseFilter('all');
+        return;
+      }
+      const [m, p] = v.split('/') as [
+        'due' | 'new' | 'all',
+        'all' | 'learning' | 'review' | 'mastered',
+      ];
+      setMode(m);
+      setPhaseFilter(p);
+    },
+    [phaseFilter],
+  );
+
+
   // Leech count: cards with 8+ lapses in either direction,
   // deduplicated to one per card. Same definition the server
   // uses in /api/stats. We compute it client-side so the banner
@@ -958,44 +1037,24 @@ export function StudyPage() {
           labelled rows instead of one bordered panel +
           free-floating pills. Easier to scan and matches
           the rest of the form-style controls in the app.
+
+          On a compact layout the three rows collapse into a single
+          row that names the three active values — see `compact`
+          above for why the study screen cannot afford 187px of
+          filters above the card.
         */}
+        {(() => {
+          const pickerStack = (
         <div className={styles.pickerStack}>
           <div className={styles.pickerRow}>
             <span className={styles.pickerLabel}>{t('study.picker.cards')}</span>
             <div className={styles.pickerControl}>
-              {(() => {
-                // Encode the (mode, phaseFilter) pair as a single
-                // string so the PickerSelect can use one `value` +
-                // one `onChange`. Same seven options the previous
-                // chip row had, with per-option counts.
-                const cardsValue = mode === 'cram' ? 'cram' : `${mode}/${phaseFilter}`;
-                const cardsOptions: PickerOption[] = [
-                  { value: 'due/all', label: t('study.tab.due'), count: counts.due },
-                  { value: 'new/all', label: t('study.tab.new'), count: counts.new },
-                  { value: 'all/learning', label: t('study.phase.learning'), count: counts.learning },
-                  { value: 'all/review', label: t('study.phase.review'), count: counts.review },
-                  { value: 'all/mastered', label: t('study.phase.mastered'), count: counts.mastered },
-                  { value: 'all/all', label: t('study.tab.all'), count: counts.total },
-                  { value: 'cram', label: t('study.tab.cram'), count: counts.total },
-                ];
-                return (
-                  <PickerSelect
-                    value={cardsValue}
-                    options={cardsOptions}
-                    fullWidth
-                    onChange={(v) => {
-                      if (v === 'cram') {
-                        setMode('cram');
-                        if (phaseFilter !== 'all') setPhaseFilter('all');
-                        return;
-                      }
-                      const [m, p] = v.split('/') as ['due' | 'new' | 'all', 'all' | 'learning' | 'review' | 'mastered'];
-                      setMode(m);
-                      setPhaseFilter(p);
-                    }}
-                  />
-                );
-              })()}
+              <PickerSelect
+                value={cardsValue}
+                options={cardsOptions}
+                fullWidth
+                onChange={onCardsChange}
+              />
             </div>
           </div>
 
@@ -1036,6 +1095,30 @@ export function StudyPage() {
             </div>
           ) : null}
         </div>
+          );
+
+          if (!compact) return pickerStack;
+
+          return (
+            <div className={styles.pickerBox}>
+              <button
+                type="button"
+                className={styles.pickerToggle}
+                aria-expanded={filtersOpen}
+                onClick={() => setFiltersOpen((v) => !v)}
+              >
+                <SlidersHorizontal size={14} aria-hidden="true" />
+                <span className={styles.pickerSummary}>{filterSummary}</span>
+                <ChevronDown
+                  size={14}
+                  className={styles.pickerChev}
+                  aria-hidden="true"
+                />
+              </button>
+              {filtersOpen ? pickerStack : null}
+            </div>
+          );
+        })()}
 
         <div className={styles.progressBar}>
           <div

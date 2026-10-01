@@ -6,7 +6,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  /* The panel is centred inside this box, so the safe insets have to
+     push the box inward — otherwise the panel centres on the physical
+     screen and its top and bottom land under the cutout and the home
+     indicator. 20px stays the floor on a device with neither. */
+  padding: calc(20px + var(--safe-top)) calc(20px + var(--safe-right)) calc(20px + var(--safe-bottom)) calc(20px + var(--safe-left));
   z-index: 100;
   animation: fadeIn var(--dur-base) var(--ease-out);
 }
@@ -24,7 +28,19 @@
   padding: 32px 32px 24px;
   max-width: 560px;
   width: 100%;
+  /* 100vh is the LARGEST viewport on a mobile browser — the height
+     with the URL bar hidden. Using it here made the panel taller than
+     the area actually visible once the bar appeared, so on a landscape
+     phone the footer buttons (Далее / Пропустить) landed below the fold
+     with no visible way to reach them. 100dvh tracks the bar as it
+     collapses. The plain 100vh line stays first as the fallback for
+     engines without dvh, and is overridden the moment it is supported.
+
+     The safe insets are subtracted too: the overlay centres this panel
+     inside its own padded content box, so a max-height measured against
+     the raw viewport would still be taller than the space it gets. */
   max-height: calc(100vh - 40px);
+  max-height: calc(100dvh - 40px - var(--safe-top) - var(--safe-bottom));
   overflow-y: auto;
   box-shadow: var(--shadow-lg);
   animation: slideUp var(--dur-base) var(--ease-out);

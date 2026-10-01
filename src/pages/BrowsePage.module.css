@@ -241,6 +241,22 @@
 }
 .chipActive .chipMeta { color: var(--text-muted); }
 
+/* Touch floor. Filter chips wrap into rows 4px apart, so a hit-area
+   overlay would bleed into the row above and below — these grow for
+   real instead. The browse page has the vertical room to spend it;
+   the study page is where the height pressure lives, and its chips
+   are a different control. */
+@media (max-width: 768px), (pointer: coarse) {
+  .chip { min-height: var(--tap-min); padding-top: 0; padding-bottom: 0; }
+  .pagerArrow,
+  .pagerPage {
+    width: var(--tap-min);
+    height: var(--tap-min);
+    min-width: var(--tap-min);
+  }
+  .pagerEllipsis { height: var(--tap-min); }
+}
+
 .count {
   font-size: var(--text-meta);
   color: var(--text-muted);
@@ -560,4 +576,18 @@
     grid-template-columns: 1fr;
     gap: 8px;
   }
+}
+
+/* Pagination targets, kept at the end of the file for the same
+   reason as the touch floor in global.css: `.pagerArrow` and
+   `.pagerPage` declare their own 32px box further up, and at equal
+   specificity the last rule wins. */
+@media (max-width: 768px), (pointer: coarse) {
+  .pagerArrow,
+  .pagerPage {
+    width: var(--tap-min);
+    height: var(--tap-min);
+    min-width: var(--tap-min);
+  }
+  .pagerEllipsis { height: var(--tap-min); }
 }

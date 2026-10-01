@@ -225,6 +225,21 @@
   color: var(--accent-fg);
 }
 
+/* Touch floor. The stepper buttons sit 8px apart and the speed
+   segments 2px apart, so neither can take a hit-area overlay without
+   stealing its neighbour's target. Both grow for real; the speed
+   group gains a little horizontal padding so the taller segments
+   still read as one segmented control rather than a stack. */
+@media (max-width: 768px), (pointer: coarse) {
+  .stepBtn {
+    width: var(--tap-min);
+    height: var(--tap-min);
+  }
+  .speedBtn { min-height: var(--tap-min); }
+  .numInput { min-height: var(--tap-min); }
+  .control { gap: 12px; }
+}
+
 /* Account section. The username line is a quiet summary so the
    user knows which account they're in before changing anything. */
 .accountName {
@@ -316,4 +331,20 @@
    * disabled for the whole request and names the state in its
    * aria-label, so a static icon still communicates "working". */
   .spinner { animation: none; }
+}
+
+/* Touch floor, at the end of the file for the same cascade reason as
+   the block in global.css — the base rules for these sit earlier.
+
+   `.rowLabel` is a real <label for=…>: tapping it focuses the
+   stepper beside it, so it is a target, not a caption. It grows to
+   the floor and centres its own text so the label and the control it
+   drives share a row height. */
+@media (max-width: 768px), (pointer: coarse) {
+  .rowLabel {
+    display: flex;
+    align-items: center;
+    min-height: var(--tap-min);
+  }
+  .pwField input { min-height: var(--tap-min); }
 }
