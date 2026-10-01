@@ -40,7 +40,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 0.78rem;
+  font-size: var(--text-micro);
   color: var(--text-muted);
   text-decoration: none;
   align-self: flex-start;
@@ -70,7 +70,7 @@
   min-height: 44px;
   min-width: 44px;
   padding: 0 14px;
-  font-size: 0.84rem;
+  font-size: var(--text-meta);
   font-weight: 500;
   color: var(--text-muted);
   background: transparent;
@@ -151,7 +151,7 @@
 }
 
 .pickerLabel {
-  font-size: 0.7rem;
+  font-size: var(--text-micro);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -173,7 +173,7 @@
   background: var(--surface-2);
   color: var(--text-muted);
   border-radius: 999px;
-  font-size: 0.825rem;
+  font-size: var(--text-meta);
   font-weight: 500;
   cursor: pointer;
   transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
@@ -197,7 +197,7 @@
 
 .queueChipCount {
   font-variant-numeric: tabular-nums;
-  font-size: 0.75rem;
+  font-size: var(--text-micro);
   font-weight: 600;
   padding: 0.1rem 0.4rem;
   border-radius: 999px;
@@ -243,7 +243,7 @@
   margin-left: 6px;
   padding: 1px 6px;
   background: rgba(255, 255, 255, 0.18);
-  font-size: 0.65rem;
+  font-size: var(--text-micro);
   border-radius: 4px;
   font-weight: 500;
   text-transform: uppercase;
@@ -335,7 +335,7 @@
 
 .ratingLabel {
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: var(--text-body);
   letter-spacing: -0.005em;
 }
 
@@ -343,7 +343,7 @@
   position: absolute;
   top: 6px;
   left: 8px;
-  font-size: 0.6rem;
+  font-size: var(--text-micro);
   color: var(--text-subtle);
   font-weight: 500;
   font-family: var(--font-sans);
@@ -358,7 +358,7 @@
   justify-content: flex-end;
   align-items: center;
   width: 100%;
-  font-size: 0.86rem;
+  font-size: var(--text-meta);
   color: var(--text);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
@@ -381,7 +381,7 @@
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: 999px;
-  font-size: 0.84rem;
+  font-size: var(--text-meta);
   font-weight: 600;
   color: var(--text);
 }
@@ -389,7 +389,7 @@
 .counterPercent {
   font-weight: 500;
   color: var(--text-muted);
-  font-size: 0.78rem;
+  font-size: var(--text-micro);
 }
 
 /*
@@ -458,7 +458,7 @@
 .doneSub {
   color: var(--text-muted);
   margin: 0 0 28px;
-  font-size: 0.95rem;
+  font-size: var(--text-body);
   line-height: 1.55;
 }
 
@@ -488,10 +488,10 @@
     padding: 14px 8px 12px;
     min-height: 64px;
   }
-  .ratingLabel { font-size: 0.9rem; }
+  .ratingLabel { font-size: var(--text-small); }
   .doneCard { padding: 40px 24px; }
   .doneTitle { font-size: 1.5rem; }
-  .metaRow { font-size: 0.74rem; }
+  .metaRow { font-size: var(--text-micro); }
   .shortcut { display: none; }
   /* Touch target ≥44px stays in effect on narrow screens — the
      previous 36px min-width broke WCAG 2.5.5. Horizontal padding
@@ -500,7 +500,7 @@
     min-width: 44px;
     min-height: 44px;
     padding: 0 10px;
-    font-size: 0.82rem;
+    font-size: var(--text-meta);
   }
 }
 
@@ -553,7 +553,7 @@
 }
 
 .goalRingTextLabel {
-  font-size: 0.66rem;
+  font-size: var(--text-micro);
   font-weight: 500;
   color: var(--text-muted);
   letter-spacing: 0.02em;
@@ -561,7 +561,7 @@
 }
 
 .goalRingTextValue {
-  font-size: 0.85rem;
+  font-size: var(--text-meta);
   font-weight: 600;
   color: var(--text);
 }
@@ -580,7 +580,7 @@
   border: 1px solid var(--accent);
   border-radius: 999px;
   color: var(--text);
-  font-size: 0.78rem;
+  font-size: var(--text-micro);
   line-height: 1.2;
 }
 
@@ -594,7 +594,7 @@
   border: 0;
   color: var(--text-muted);
   cursor: pointer;
-  font-size: 1.1rem;
+  font-size: var(--text-lead);
   line-height: 1;
   padding: 0 4px;
 }
@@ -632,7 +632,7 @@
 }
 
 .undoLabel {
-  font-size: 0.9rem;
+  font-size: var(--text-small);
   color: var(--text);
 }
 
@@ -642,7 +642,7 @@
   border: 1px solid var(--border-strong, var(--border));
   color: var(--accent);
   font-weight: 600;
-  font-size: 0.88rem;
+  font-size: var(--text-meta);
   padding: 6px 14px;
   border-radius: 999px;
   cursor: pointer;

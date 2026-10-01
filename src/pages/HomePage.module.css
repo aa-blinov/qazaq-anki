@@ -1,17 +1,4 @@
 /* Shared */
-.kicker {
-  display: inline-block;
-  padding: 3px 10px;
-  background: var(--surface-2);
-  color: var(--text-muted);
-  font-size: 0.72rem;
-  font-weight: 500;
-  border-radius: var(--radius-pill);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  margin-bottom: 18px;
-}
-
 /* ------------------------------ Landing ------------------------------ */
 
 .landing {
@@ -57,7 +44,7 @@
 }
 
 .lede {
-  font-size: 1.05rem;
+  font-size: var(--text-lead);
   color: var(--text-muted);
   max-width: 520px;
   line-height: 1.55;
@@ -75,7 +62,7 @@
    this is one of the few "one primary CTA" rules that actually
    moves the needle for SaaS landing conversion. */
 .heroSecondaryLink {
-  font-size: 0.92rem;
+  font-size: var(--text-small);
   color: var(--accent);
   font-weight: 500;
   text-decoration: none;
@@ -97,7 +84,7 @@
 }
 
 .heroDemoHint {
-  font-size: 0.78rem;
+  font-size: var(--text-micro);
   color: var(--text-subtle, var(--text-muted));
   text-align: center;
   max-width: 340px;
@@ -150,14 +137,14 @@
 
 .benefit h3 {
   font-family: var(--font-sans);
-  font-size: 0.95rem;
+  font-size: var(--text-body);
   font-weight: 600;
   letter-spacing: -0.005em;
   color: var(--text-strong);
 }
 
 .benefit p {
-  font-size: 0.88rem;
+  font-size: var(--text-meta);
   line-height: 1.5;
   color: var(--text-muted);
 }
@@ -208,20 +195,20 @@
   background: var(--surface-2);
   color: var(--text);
   border-radius: 6px;
-  font-size: 0.72rem;
+  font-size: var(--text-micro);
   font-weight: 600;
   letter-spacing: 0.02em;
   margin-bottom: 4px;
 }
 
 .previewChipTitle {
-  font-size: 0.92rem;
+  font-size: var(--text-small);
   font-weight: 600;
   color: var(--text-strong);
 }
 
 .previewChipCount {
-  font-size: 0.78rem;
+  font-size: var(--text-micro);
   font-weight: 500;
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
@@ -249,7 +236,7 @@
 }
 .finalCta p {
   margin: 0 0 12px;
-  font-size: 0.95rem;
+  font-size: var(--text-body);
 }
 
 /* ----------------------------- Dashboard ----------------------------- */
@@ -275,7 +262,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.78rem;
+  font-size: var(--text-micro);
   font-weight: 500;
   color: var(--accent);
   text-transform: uppercase;
@@ -293,7 +280,7 @@
 }
 
 .welcomeSub {
-  font-size: 0.95rem;
+  font-size: var(--text-body);
   color: var(--text-muted);
   margin: 0;
   max-width: 520px;
@@ -313,7 +300,7 @@
   background: var(--accent-solid);
   color: var(--accent-fg);
   border-radius: 999px;
-  font-size: 0.92rem;
+  font-size: var(--text-small);
   font-weight: 600;
   text-decoration: none;
   transition: background 0.12s ease, transform 0.08s ease;
@@ -345,7 +332,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 0.85rem;
+  font-size: var(--text-meta);
   font-weight: 500;
   color: var(--text-muted);
   text-decoration: none;
@@ -420,11 +407,11 @@
 }
 .dueRowLevel {
   font-weight: 600;
-  font-size: 0.92rem;
+  font-size: var(--text-small);
 }
 .dueRowCount {
   color: var(--text-muted);
-  font-size: 0.86rem;
+  font-size: var(--text-meta);
   font-variant-numeric: tabular-nums;
 }
 .dueOverviewCta {
@@ -480,14 +467,14 @@
 
 .levelTop h3 {
   font-family: var(--font-sans);
-  font-size: 1rem;
+  font-size: var(--text-body);
   font-weight: 600;
   color: var(--text-strong);
   margin: 0;
 }
 
 .dueTag {
-  font-size: 0.74rem;
+  font-size: var(--text-micro);
   font-weight: 500;
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
@@ -495,7 +482,7 @@
 }
 
 .levelBody > p {
-  font-size: 0.85rem;
+  font-size: var(--text-meta);
   margin: 0 0 10px;
 }
 
@@ -527,7 +514,7 @@
 }
 
 .progressMeta {
-  font-size: 0.74rem;
+  font-size: var(--text-micro);
   color: var(--text-subtle);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -565,7 +552,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 0.84rem;
+  font-size: var(--text-meta);
   color: var(--text-muted);
   text-decoration: none;
   font-weight: 500;

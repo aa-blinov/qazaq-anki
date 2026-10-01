@@ -21,7 +21,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.74rem;
+  font-size: var(--text-micro);
   color: var(--text-muted);
   font-weight: 500;
 }
@@ -36,7 +36,7 @@
   border-radius: 6px;
   background: var(--surface-2);
   color: var(--text);
-  font-size: 0.72rem;
+  font-size: var(--text-micro);
   font-weight: 600;
   letter-spacing: 0.02em;
 }
@@ -57,7 +57,7 @@
 }
 
 .translit {
-  font-size: 0.92rem;
+  font-size: var(--text-small);
   font-style: italic;
   color: var(--text-muted);
   text-align: center;
@@ -78,14 +78,14 @@
 }
 
 .answerLabel {
-  font-size: 0.7rem;
+  font-size: var(--text-micro);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--text-subtle, var(--text-muted));
 }
 
 .answerText {
-  font-size: 1.1rem;
+  font-size: var(--text-lead);
   font-weight: 500;
   color: var(--text);
 }

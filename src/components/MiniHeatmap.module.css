@@ -45,7 +45,7 @@
   padding: 6px 10px;
   border-radius: 6px;
   border: 1px solid var(--tooltip-ring);
-  font-size: 0.78rem;
+  font-size: var(--text-micro);
   line-height: 1.2;
   pointer-events: none;
   white-space: nowrap;
@@ -54,7 +54,7 @@
 }
 
 .heatmapTooltipDate {
-  font-size: 0.7rem;
+  font-size: var(--text-micro);
   color: var(--tooltip-muted);
 }
 

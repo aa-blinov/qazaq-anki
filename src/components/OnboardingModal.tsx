@@ -206,13 +206,13 @@ export function OnboardingModal({
         </button>
 
         <header className={styles.head}>
-          <span className={styles.kicker}>
-            <GraduationCap size={14} aria-hidden="true" />
-            {t(content.subtitleKey)}
-          </span>
           <h2 id="onboarding-title" className={styles.title}>
             {t(content.titleKey)}
           </h2>
+          <p className={styles.kicker}>
+            <GraduationCap size={14} aria-hidden="true" />
+            {t(content.subtitleKey)}
+          </p>
         </header>
 
         <div className={styles.steps}>

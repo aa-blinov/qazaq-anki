@@ -12,8 +12,9 @@
 
 .title {
   margin: 0;
-  font-size: 18px;
+  font-size: 1.2rem;
   font-weight: 600;
+  line-height: var(--lh-title);
 }
 
 .row {
@@ -85,7 +86,7 @@
 }
 
 .level {
-  font-size: 11px;
+  font-size: var(--text-micro);
   font-weight: 700;
   letter-spacing: 0.05em;
   color: var(--text-muted);
@@ -93,21 +94,21 @@
 }
 
 .percent {
-  font-size: 20px;
+  font-size: 1.35rem;
   font-weight: 700;
-  line-height: 1;
+  line-height: 1.1;
   color: var(--text);
   margin-top: 2px;
 }
 
 .percentSign {
-  font-size: 12px;
+  font-size: var(--text-micro);
   font-weight: 500;
   color: var(--text-muted);
 }
 
 .eta {
-  font-size: 10px;
+  font-size: var(--text-micro);
   color: var(--text-muted);
   margin-top: 2px;
   white-space: nowrap;
@@ -117,7 +118,7 @@
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
-  font-size: 12px;
+  font-size: var(--text-micro);
   color: var(--text-muted);
 }
 

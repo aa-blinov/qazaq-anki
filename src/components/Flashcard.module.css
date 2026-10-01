@@ -100,7 +100,7 @@
 }
 
 .levelTag {
-  font-size: 0.72rem;
+  font-size: var(--text-micro);
   font-weight: 600;
   color: var(--text-subtle);
   font-variant-numeric: tabular-nums;
@@ -145,7 +145,7 @@
  * duplication competing for attention with the actual word. */
 
 .phasePill {
-  font-size: 0.68rem;
+  font-size: var(--text-micro);
   font-weight: 600;
   padding: 2px 8px;
   border-radius: var(--radius-pill);
@@ -292,7 +292,7 @@
 }
 
 .transliteration {
-  font-size: 1.05rem;
+  font-size: var(--text-lead);
   color: var(--text-muted);
   font-style: italic;
   margin-bottom: 16px;
@@ -304,7 +304,7 @@
   bottom: 18px;
   left: 0;
   right: 0;
-  font-size: 0.75rem;
+  font-size: var(--text-micro);
   color: var(--text-subtle);
   letter-spacing: 0.02em;
 }
@@ -322,14 +322,14 @@
 }
 
 .exampleKk {
-  font-size: 1rem;
+  font-size: var(--text-body);
   font-weight: 500;
   color: var(--text, inherit);
   font-style: normal;
 }
 
 .exampleRu {
-  font-size: 0.85rem;
+  font-size: var(--text-meta);
   color: var(--text-muted, #666);
   font-style: italic;
 }
@@ -348,7 +348,7 @@
   align-items: baseline;
   gap: 8px;
   margin-top: 14px;
-  font-size: 0.7rem;
+  font-size: var(--text-micro);
   color: var(--text-subtle);
   flex-wrap: wrap;
 }
@@ -369,7 +369,7 @@
   cursor: default;
 }
 .sourceLicense {
-  font-size: 0.66rem;
+  font-size: var(--text-micro);
   color: var(--text-subtle);
   opacity: 0.85;
 }

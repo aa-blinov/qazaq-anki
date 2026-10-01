@@ -17,7 +17,7 @@
 .lede {
   margin: -0.5rem 0 0;
   color: var(--text-muted);
-  font-size: 0.95rem;
+  font-size: var(--text-body);
   line-height: 1.5;
 }
 
@@ -33,7 +33,7 @@
 
 .card h2 {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: var(--text-lead);
   font-weight: 600;
   letter-spacing: -0.005em;
 }
@@ -41,7 +41,7 @@
 .hint {
   margin: 0;
   color: var(--text-muted);
-  font-size: 0.875rem;
+  font-size: var(--text-meta);
   line-height: 1.5;
 }
 
@@ -53,7 +53,7 @@
   margin: -2px 0 0;
   padding-left: 0;
   color: var(--text-subtle, var(--text-muted));
-  font-size: 0.78rem;
+  font-size: var(--text-micro);
   line-height: 1.4;
 }
 
@@ -74,7 +74,7 @@
 
 .rowLabel {
   flex: 1 1 12rem;
-  font-size: 0.95rem;
+  font-size: var(--text-body);
   font-weight: 500;
   color: var(--text);
 }
@@ -91,7 +91,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
+  font-size: var(--text-lead);
   line-height: 1;
   border: 1px solid var(--surface-2);
   background: var(--surface);
@@ -114,7 +114,7 @@
 .numInput {
   width: 4.5rem;
   text-align: center;
-  font-size: 0.95rem;
+  font-size: var(--text-body);
   font-variant-numeric: tabular-nums;
   padding: 0.4rem 0.5rem;
   border: 1px solid var(--surface-2);
@@ -164,7 +164,7 @@
   border-radius: 8px;
   background: var(--danger-soft);
   color: var(--error, #dc2626);
-  font-size: 0.875rem;
+  font-size: var(--text-meta);
 }
 
 .aboutList {
@@ -174,7 +174,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  font-size: 0.875rem;
+  font-size: var(--text-meta);
   line-height: 1.5;
   color: var(--text-muted);
 }
@@ -203,7 +203,7 @@
   padding: 6px 14px;
   border-radius: 6px;
   font-family: inherit;
-  font-size: 0.85rem;
+  font-size: var(--text-meta);
   font-weight: 500;
   color: var(--text-muted);
   cursor: pointer;
@@ -229,7 +229,7 @@
    user knows which account they're in before changing anything. */
 .accountName {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: var(--text-body);
   color: var(--text);
   font-weight: 500;
 }
@@ -247,7 +247,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  font-size: 0.875rem;
+  font-size: var(--text-meta);
   color: var(--text-muted);
 }
 
@@ -258,7 +258,7 @@
 
 .pwField input {
   font-family: inherit;
-  font-size: 0.95rem;
+  font-size: var(--text-body);
   padding: 0.5rem 0.65rem;
   border: 1px solid var(--surface-2);
   background: var(--surface);
@@ -278,7 +278,7 @@
   border-radius: 6px;
   background: rgba(34, 139, 70, 0.08);
   color: var(--ok, #1d6f3a);
-  font-size: 0.85rem;
+  font-size: var(--text-meta);
 }
 
 .pwErr {
@@ -287,7 +287,7 @@
   border-radius: 6px;
   background: var(--danger-soft);
   color: var(--error, #dc2626);
-  font-size: 0.85rem;
+  font-size: var(--text-meta);
 }
 
 .pwForm button[type='submit'] {
