@@ -410,7 +410,7 @@ function Dashboard({
                   <div className={styles.progressBar}>
                     <div
                       className={styles.progressFill}
-                      style={{ width: `${lvl.mastery}%` }}
+                      style={{ transform: `scaleX(${lvl.mastery / 100})` }}
                     />
                   </div>
                   <span className={styles.progressMeta}>

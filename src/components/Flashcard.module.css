@@ -264,7 +264,7 @@
 }
 .speakBtnGenerate:hover:not(:disabled) {
   background: var(--accent);
-  color: var(--accent-fg, #fff);
+  color: var(--accent-fg);
 }
 
 /* Spinner for the in-flight generation state. We animate the

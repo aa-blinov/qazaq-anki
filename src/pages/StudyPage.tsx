@@ -1041,7 +1041,9 @@ export function StudyPage() {
           <div
             className={styles.progressFill}
             style={{
-              width: `${queue.length > 0 ? (currentIdx / queue.length) * 100 : 0}%`,
+              transform: `scaleX(${
+                queue.length > 0 ? currentIdx / queue.length : 0
+              })`,
             }}
           />
         </div>

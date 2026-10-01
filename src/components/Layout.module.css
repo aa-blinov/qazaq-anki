@@ -133,11 +133,11 @@
   color: var(--text);
 }
 .langBtnActive {
-  background: var(--accent);
-  color: #FAF7F2;
+  background: var(--accent-solid);
+  color: var(--accent-fg);
 }
 .langBtnActive:hover {
-  color: #FAF7F2;
+  color: var(--accent-fg);
 }
 
 .avatar {
@@ -147,8 +147,8 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: var(--accent);
-  color: #FAF7F2;
+  background: var(--accent-solid);
+  color: var(--accent-fg);
   font-family: var(--font-display);
   font-weight: 600;
   font-size: 0.8rem;
