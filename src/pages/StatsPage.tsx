@@ -1579,7 +1579,7 @@ function TopicGroups({
                       <div className={styles.topicProgressBar}>
                         <div
                           className={styles.topicProgressFill}
-                          style={{ width: `${mastery}%` }}
+                          style={{ transform: `scaleX(${mastery / 100})` }}
                         />
                       </div>
                       <span className={styles.topicMeta}>

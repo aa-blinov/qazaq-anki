@@ -33,13 +33,38 @@ between the language they know and the language they are learning.
 | `--text-subtle` | `#948F86` | Captions, timestamps |
 | `--border` | `#E8E2D2` | Default rule |
 | `--border-strong` | `#D7CFBE` | Active rule |
-| `--accent` | `#C96442` | Primary CTA, the one brand colour |
+| `--accent` | `#C96442` | Brand accent — fills that carry **no text** (borders, meters, rules) |
 | `--accent-hover` | `#A8522F` | Hover state on accent |
 | `--accent-soft` | `#F4E4D6` | Accent fill, soft tag background |
-| `--accent-ink` | `#5B2A14` | Text on accent surface |
+| `--accent-solid` | `#A8522F` | Fill for accent surfaces that **carry text** |
+| `--accent-fg` | `#FAF7F2` | Ink for text on `--accent-solid` |
 | `--ok` | `#5A7D3F` | Success |
-| `--warn` | `#B68A1B` | Warning |
+| `--warn` | `#B68A1B` | Warning — fill only |
+| `--warn-text` | `#8A6A12` | Warning used as **text** |
+| `--warn-fg` | `#1F1E1B` | Ink for text on `--warn` |
 | `--danger` | `#B54141` | Error / destructive |
+
+### Ink on filled surfaces — the rule that matters
+
+`--accent` is mid-tone. White on it is **3.65:1** and `--text` on it is
+**4.27:1** — neither reaches the 4.5:1 AA floor for body-sized labels, so
+**no ink works on bare `--accent`**. The system therefore splits the role:
+
+| Pair | Light | Dark | Contrast |
+|---|---|---|---|
+| `--accent-solid` + `--accent-fg` | `#A8522F` + `#FAF7F2` | `#E08662` + `#1A1916` | 5.02:1 / 6.49:1 |
+
+The dark theme flips direction rather than value: its `--accent` is already a
+light tint, so the ink becomes the dark ground. Same two tokens, opposite
+direction.
+
+**Use the pair together or not at all.** `var(--accent)` alone is correct for
+fills with no text. Any rule that puts text on an accent surface must set
+`background: var(--accent-solid); color: var(--accent-fg)`.
+
+`--accent-ink` is **not** the text-on-accent token. On `--accent-solid` it
+measures 3.01:1 in light and 1.92:1 in dark. It exists for accent-on-neutral
+pairing (accent text, neutral background), which is a different job.
 
 ### Dark theme (`[data-theme="dark"]`)
 
@@ -87,6 +112,55 @@ printed pages are usually photocopied.
 Step-based scale; the detector in Impeccable (when hooked) will check
 tight groups and generous separation — read the computed margins in the
 rendered output, not the literal `--space-*` value.
+
+## Naming
+
+Every custom property is defined in `src/styles/global.css` and used by its
+exact name. There is one convention, and it is the one in that file:
+
+`--surface`, `--surface-2/3`, `--text`, `--text-muted`, `--text-subtle`,
+`--border`, `--accent*`, `--ok*`, `--warn*`, `--danger*`, `--font-*`,
+`--radius-*`, `--shadow-*`.
+
+**Do not reference a token that is not defined there.** A `var(--name, #fallback)`
+for an undefined `--name` silently resolves to the fallback, which is how this
+codebase accumulated twelve phantom tokens across three competing conventions
+(`--ink*`, `--color-*`, `--surface-0/1`) before they were collapsed. Where a
+fallback is genuinely wanted for a caller-supplied override, the token still has
+to exist here first.
+
+A quick check after touching CSS:
+
+```bash
+node -e 'const fs=require("fs"),p=require("path");
+const w=d=>fs.readdirSync(d,{withFileTypes:true}).flatMap(e=>e.isDirectory()?w(p.join(d,e.name)):[p.join(d,e.name)]);
+const f=w("src").filter(x=>x.endsWith(".css")),d=new Set(),u=new Set();
+for(const x of f){const t=fs.readFileSync(x,"utf8");
+for(const m of t.matchAll(/(--[a-z0-9-]+)\s*:/g))d.add(m[1]);
+for(const m of t.matchAll(/var\(\s*(--[a-z0-9-]+)/g))u.add(m[1]);}
+const bad=[...u].filter(x=>!d.has(x));
+console.log(bad.length?bad:"all tokens resolve");'
+```
+
+## Motion
+
+Progress fills (`.progressFill`, `.topicProgressFill`, `.fill`) are animated
+with `transform: scaleX()` and `transform-origin: left center`, never `width` —
+a width animation forces synchronous layout every frame, and these bars sit on
+the study loop. The inline style sets `scaleX(0..1)`; the CSS supplies
+`width: 100%` and the transition. Each module carries its own
+`prefers-reduced-motion` override, because class names in CSS modules are
+hashed and a global rule cannot reach them.
+
+Easing is `cubic-bezier(0.16, 1, 0.3, 1)` — exponential ease-out from an
+already-visible default.
+
+## Callouts
+
+Error, hint, and toast surfaces use a 1px `border-left` at most, tinted with the
+matching semantic token, over a `--*-soft` or `--surface-2` fill. A thicker
+colored left rule is a recognisable generated-UI signature and carries no
+information the fill and text colour do not already carry.
 
 ## Components (current)
 

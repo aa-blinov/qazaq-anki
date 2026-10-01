@@ -78,15 +78,15 @@
 }
 
 .error {
-  color: var(--warn, #c00);
+  color: var(--warn-text);
   font-size: 0.78rem;
   margin: 0;
 }
 
 .formError {
   background: var(--warn-soft, #fee);
-  color: var(--warn, #c00);
-  border: 1px solid var(--warn, #c00);
+  color: var(--warn-text);
+  border: 1px solid var(--warn);
   border-radius: var(--radius-sm);
   padding: 8px 12px;
   font-size: 0.85rem;
@@ -94,7 +94,7 @@
 }
 
 .inputError {
-  border-color: var(--warn, #c00);
+  border-color: var(--warn);
 }
 
 .advanced {

@@ -63,7 +63,7 @@ export function EaseHistogram({ stats }: { stats: ServerStats }) {
               <span className={styles.track} aria-hidden="true">
                 <span
                   className={styles.fill}
-                  style={{ width: `${pct}%` }}
+                  style={{ transform: `scaleX(${pct / 100})` }}
                 />
               </span>
               <span className={styles.count}>{n.toLocaleString()}</span>

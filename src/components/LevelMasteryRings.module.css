@@ -52,19 +52,19 @@
 
 .track {
   fill: none;
-  stroke: rgba(122, 90, 60, 0.12);
+  stroke: var(--border);
 }
 
 .fill {
   fill: none;
-  stroke: var(--color-accent, #c96442);
+  stroke: var(--accent);
   stroke-linecap: round;
   transition: stroke-dashoffset 600ms ease;
 }
 
 .trackInner {
   fill: none;
-  stroke: rgba(122, 90, 60, 0.12);
+  stroke: var(--border);
 }
 
 .fillInner {
@@ -88,7 +88,7 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.05em;
-  color: var(--color-muted, #7a5a3c);
+  color: var(--text-muted);
   text-transform: uppercase;
 }
 
@@ -96,19 +96,19 @@
   font-size: 20px;
   font-weight: 700;
   line-height: 1;
-  color: var(--color-text, #2a1a0e);
+  color: var(--text);
   margin-top: 2px;
 }
 
 .percentSign {
   font-size: 12px;
   font-weight: 500;
-  color: var(--color-muted, #7a5a3c);
+  color: var(--text-muted);
 }
 
 .eta {
   font-size: 10px;
-  color: var(--color-muted, #7a5a3c);
+  color: var(--text-muted);
   margin-top: 2px;
   white-space: nowrap;
 }
@@ -118,7 +118,7 @@
   gap: 16px;
   flex-wrap: wrap;
   font-size: 12px;
-  color: var(--color-muted, #7a5a3c);
+  color: var(--text-muted);
 }
 
 .legendItem {
@@ -135,7 +135,7 @@
 }
 
 .dotOuter {
-  background: var(--color-accent, #c96442);
+  background: var(--accent);
 }
 
 .dotInner {

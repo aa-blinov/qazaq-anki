@@ -35,16 +35,33 @@
   --accent-soft:   #F4E4D6;
   --accent-ink:    #5B2A14;
 
+  /* Ink for text sitting ON a filled accent surface, and the fill that ink
+     is verified against. The base --accent (#C96442) is mid-tone: white on it
+     lands at 3.65:1 and --text on it at 4.27:1, so neither reaches the 4.5:1
+     AA floor for body-sized labels. --accent-solid deepens the fill to the
+     existing hover value, which pairs with --accent-fg at 5.02:1.
+     Use --accent-solid + --accent-fg together, never one without the other.
+     Keep bare --accent for fills that carry no text (borders, meters, rules). */
+  --accent-solid: #A8522F;
+  --accent-fg:    #FAF7F2;
+
   --ok:        #5A7D3F;
   --ok-soft:   #E6EFDB;
   --warn:      #B68A1B;
   --warn-soft: #F4EAC7;
+  /* Ink for text on a filled --warn surface. White lands at 3.16:1, this at
+     5.27:1. Dark --warn is a light gold, so the dark theme keeps the dark ink. */
+  --warn-fg:    #1F1E1B;
+  /* --warn is a FILL token: as text it is only 3.16:1. This is the
+     text-safe variant (5.06:1 on --surface, 4.73:1 on --bg). */
+  --warn-text:  #8A6A12;
   --danger:    #B54141;
   --danger-soft:#F5DDDD;
 
   /* Typography */
   --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
   --font-display: 'Newsreader', 'Iowan Old Style', 'Apple Garamond', Georgia, 'Times New Roman', serif;
+  --font-mono:    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 
   /* Geometry — subtle, not chunky */
   --radius-sm: 6px;
@@ -85,7 +102,9 @@
   --tooltip-muted: rgba(250, 247, 242, 0.72);
   --tooltip-ring:  rgba(255, 255, 255, 0.08);
   --text-muted:  #A8A29A;
-  --text-subtle: #7A766E;
+  --text-subtle: #8C877E;  /* 4.92:1 on --bg; the old #7A766E sat at 3.89:1 and carried
+                       every timestamp, which is exactly the text a learner
+                       scans to judge when they last studied something. */
 
   --border:        #36332F;
   --border-strong: #4A463F;
@@ -96,10 +115,18 @@
   --accent-soft:   #3A2A20;
   --accent-ink:    #F4D3BD;
 
+  /* Dark theme flips the direction of the pairing: --accent is already a
+     light tint here, so the ink has to be the dark ground, not a light one.
+     #1A1916 on #E08662 is 6.49:1. See the light-theme note for the rationale. */
+  --accent-solid: #E08662;
+  --accent-fg:    #1A1916;
+
   --ok:        #9CC074;
   --ok-soft:   #2C3525;
   --warn:      #D9B25B;
   --warn-soft: #3A3220;
+  --warn-fg:    #1A1916;
+  --warn-text:  #D9B25B;
   --danger:    #DA7474;
   --danger-soft:#3A2424;
 
@@ -161,8 +188,8 @@ html, body, #root { height: 100%; margin: 0; }
   left: 12px;
   top: 12px;
   padding: 8px 14px;
-  background: var(--accent);
-  color: #fff;
+  background: var(--accent-solid);
+  color: var(--accent-fg);
   border-radius: var(--radius-md);
   font-weight: 600;
   font-size: 0.9rem;
@@ -290,8 +317,8 @@ p:last-child { margin-bottom: 0; }
   padding: 0 14px;
   border: 1px solid transparent;
   border-radius: var(--radius-md);
-  background: var(--accent);
-  color: white;
+  background: var(--accent-solid);
+  color: var(--accent-fg);
   font-weight: 500;
   font-size: 0.92rem;
   letter-spacing: -0.005em;

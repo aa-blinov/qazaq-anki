@@ -35,7 +35,7 @@
 
 .range {
   font-variant-numeric: tabular-nums;
-  color: var(--color-muted, #7a5a3c);
+  color: var(--text-muted);
   font-weight: 500;
   text-align: right;
 }
@@ -43,22 +43,33 @@
 .track {
   position: relative;
   height: 16px;
-  background: rgba(122, 90, 60, 0.08);
+  background: var(--border);
   border-radius: 4px;
   overflow: hidden;
 }
 
 .fill {
+  /* Animated with scaleX, not width: width animation forces a
+     synchronous layout on every frame, and this bar sits on the
+     study loop. The inline style sets transform: scaleX(0..1). */
+  transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
   display: block;
+  width: 100%;
   height: 100%;
-  background: var(--color-accent, #c96442);
+  transform-origin: left center;
+  background: var(--accent);
   border-radius: 4px;
-  transition: width 600ms ease;
-  min-width: 1px;
 }
 
 .count {
   font-variant-numeric: tabular-nums;
   font-weight: 600;
   text-align: left;
+}
+@media (prefers-reduced-motion: reduce) {
+  /* A bar sweeping 0 -> 100% is motion the learner did not ask for. The fill
+     still lands on its correct value; only the travel is removed. */
+  .fill {
+    transition: none;
+  }
 }

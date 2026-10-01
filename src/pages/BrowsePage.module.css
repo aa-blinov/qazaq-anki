@@ -53,15 +53,14 @@
 }
 
 .importOk {
-  background: rgba(34, 197, 94, 0.08);
-  color: #15803d;
-  border: 1px solid rgba(34, 197, 94, 0.25);
+  background: var(--ok-soft);
+  color: var(--ok);
+  border: 1px solid var(--border);
 }
-
 .importErr {
-  background: rgba(220, 38, 38, 0.08);
-  color: #b91c1c;
-  border: 1px solid rgba(220, 38, 38, 0.25);
+  background: var(--danger-soft);
+  color: var(--danger);
+  border: 1px solid var(--border);
 }
 
 .dismissBtn {
@@ -304,7 +303,7 @@
 .row:hover .deleteBtn { opacity: 1; }
 .deleteBtn:hover {
   background: var(--surface-2);
-  color: var(--warn, #c00);
+  color: var(--warn);
 }
 
 .editBtn {
@@ -326,17 +325,17 @@
 .row:hover .editBtn { opacity: 1; }
 .editBtn:hover {
   background: var(--surface-2);
-  color: var(--accent, #2f6f4e);
+  color: var(--accent);
 }
 .deleteBtnConfirm {
   opacity: 1;
-  background: var(--warn, #c00);
-  color: white;
-  border-color: var(--warn, #c00);
+  background: var(--warn);
+  color: var(--warn-fg);
+  border-color: var(--warn);
 }
 .deleteBtnConfirm:hover {
-  background: var(--warn, #c00);
-  color: white;
+  background: var(--warn);
+  color: var(--warn-fg);
 }
 
 .meta {
@@ -502,16 +501,16 @@
 }
 
 .pagerPageActive {
-  background: var(--accent, #2f6f4e);
-  border-color: var(--accent, #2f6f4e);
-  color: #fff;
+  background: var(--accent-solid);
+  border-color: var(--accent);
+  color: var(--accent-fg);
   cursor: default;
 }
 
 .pagerPageActive:hover {
-  background: var(--accent, #2f6f4e);
-  color: #fff;
-  border-color: var(--accent, #2f6f4e);
+  background: var(--accent-solid);
+  color: var(--accent-fg);
+  border-color: var(--accent);
 }
 
 .pagerEllipsis {
