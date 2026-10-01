@@ -12,8 +12,9 @@
 
 .title {
   margin: 0;
-  font-size: 16px;
+  font-size: 1.1rem;
   font-weight: 600;
+  line-height: var(--lh-title);
 }
 
 .bars {
@@ -30,7 +31,8 @@
   grid-template-columns: 80px 1fr 56px;
   align-items: center;
   gap: 12px;
-  font-size: 13px;
+  font-size: var(--text-meta);
+  line-height: var(--lh-meta);
 }
 
 .range {

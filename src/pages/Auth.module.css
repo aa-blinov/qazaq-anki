@@ -40,7 +40,7 @@
 }
 
 .heading .muted {
-  font-size: 0.92rem;
+  font-size: var(--text-small);
   line-height: 1.5;
 }
 
@@ -49,7 +49,7 @@
   color: var(--accent-ink);
   padding: 12px 14px;
   border-radius: var(--radius-md);
-  font-size: 0.88rem;
+  font-size: var(--text-meta);
   margin-bottom: 20px;
   border: 1px solid transparent;
   line-height: 1.5;
@@ -71,7 +71,7 @@
   color: var(--danger);
   padding: 10px 14px;
   border-radius: var(--radius-md);
-  font-size: 0.88rem;
+  font-size: var(--text-meta);
   border: 1px solid transparent;
 }
 
@@ -94,7 +94,7 @@
   border-left: 1px solid var(--danger);
   border-radius: 4px;
   color: var(--danger);
-  font-size: 0.82rem;
+  font-size: var(--text-meta);
   line-height: 1.4;
 }
 
@@ -108,7 +108,7 @@
   padding: 10px 12px;
   background: var(--surface-2);
   border-radius: var(--radius-md);
-  font-size: 0.78rem;
+  font-size: var(--text-micro);
   line-height: 1.45;
   color: var(--text-muted);
 }
@@ -116,7 +116,7 @@
 .footer {
   margin-top: 22px;
   text-align: center;
-  font-size: 0.88rem;
+  font-size: var(--text-meta);
   color: var(--text-muted);
 }
 
@@ -132,7 +132,7 @@
   padding: 8px 12px;
   background: var(--surface-2);
   border-radius: var(--radius-md);
-  font-size: 0.78rem;
+  font-size: var(--text-micro);
   line-height: 1.45;
   color: var(--text-muted);
 }
@@ -164,7 +164,7 @@
   border: 1px solid var(--border);
   border-left: 1px solid var(--accent);
   border-radius: 4px;
-  font-size: 0.825rem;
+  font-size: var(--text-meta);
   line-height: 1.5;
   color: var(--text-muted);
 }

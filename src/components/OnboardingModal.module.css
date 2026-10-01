@@ -60,16 +60,19 @@
   margin-bottom: 24px;
 }
 
+/* Was an eyebrow above the heading. The craft floor bans that pattern: a
+   label above a title makes the title look like a caption and adds a thing
+   to read before the real message. The line carries a real promise
+   ("Короткий тур. 30 секунд."), so it stays — below the heading, as a lead
+   line, where it reads as support rather than as a label. */
 .kicker {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--accent);
-  margin-bottom: 8px;
+  margin: 6px 0 0;
+  color: var(--text-muted);
+  font-size: var(--text-small);
+  line-height: var(--lh-small);
 }
 
 .title {
@@ -110,7 +113,7 @@
   background: var(--accent-soft);
   color: var(--accent-ink);
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: var(--text-meta);
   font-variant-numeric: tabular-nums;
 }
 
@@ -123,17 +126,22 @@
 }
 
 .stepTitle {
-  font-size: 0.95rem;
+  font-size: var(--text-body);
   font-weight: 600;
   margin: 0 0 4px;
   color: var(--text-strong);
 }
 
 .stepBody {
-  font-size: 0.85rem;
+  font-size: var(--text-meta);
   color: var(--text-muted);
-  line-height: 1.5;
+  line-height: var(--lh-meta);
   margin: 0;
+  /* Onboarding bodies are the only sustained prose in the product. Russian
+     runs ~15% longer than English per line, so cap the measure in ch rather
+     than px — the cap then tracks the user's font-size setting. */
+  max-width: 62ch;
+  text-wrap: pretty;
 }
 
 .footer {
@@ -149,9 +157,9 @@
 
 @media (max-width: 600px) {
   .modal { padding: 24px 20px 18px; }
-  .title { font-size: 1.35rem; }
+  .title { font-size: 1.3; }
   .step { grid-template-columns: 28px 24px 1fr; gap: 10px; padding: 12px 12px; }
-  .stepBody { font-size: 0.82rem; }
+  .stepBody { font-size: var(--text-meta); }
   .footer { flex-direction: column-reverse; }
   .footer .btn { width: 100%; }
 }

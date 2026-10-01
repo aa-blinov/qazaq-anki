@@ -6,7 +6,7 @@
   padding: 24px 0 8px;
   border-top: 1px solid var(--border, rgba(0, 0, 0, 0.06));
   color: var(--text-muted);
-  font-size: 0.82rem;
+  font-size: var(--text-meta);
 }
 
 .inner {
@@ -38,5 +38,5 @@
 .copy {
   font-variant-numeric: tabular-nums;
   color: var(--text-subtle, var(--text-muted));
-  font-size: 0.78rem;
+  font-size: var(--text-micro);
 }

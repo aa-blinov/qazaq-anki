@@ -207,6 +207,60 @@ Implementation: `data-grade` carries the SM-2 grade key; CSS selects
 `.ratingBtn[data-grade='…']`. Do not add per-state class names in the component —
 the attribute keeps the grade in one place.
 
+## Type
+
+Two families, both loaded from Google Fonts with `display=swap` and four
+weights each: **Inter** for interface, **Newsreader** for the Kazakh word and
+headings. The contrast between them is the product's main typographic signal —
+Russian reads neutral and familiar, Kazakh reads as something worth pausing for.
+
+### The ramp
+
+Use these tokens, not raw `rem` values. Role names describe purpose.
+
+| Token | Value | md | sm | Role |
+|---|---|---|---|---|
+| `--text-micro` | 0.78rem | 11.7px | 10.8px | shortcut chips, decorative markers |
+| `--text-meta` | 0.85rem | 12.8px | 11.7px | captions, timestamps, helper text |
+| `--text-small` | 0.95rem | 14.3px | 13.1px | secondary UI, dense rows |
+| `--text-body` | 1rem | 15px | 13.8px | default reading and interface size |
+| `--text-lead` | 1.15rem | 17.3px | 15.9px | lead paragraphs, card sentences |
+| `--text-title` | 1.5rem | 22.5px | 20.7px | section headings |
+| `--text-display` | 2.4rem | 36px | 33.1px | page and hero headings |
+
+**The floor is the point.** The app once carried 43 distinct sizes, with eleven
+steps packed between 0.65rem and 0.78rem — 9.8px to 11.7px. At that size nobody
+can tell 0.72 from 0.733, so those steps were not carrying distinct jobs. The
+tail is now four steps, and the smallest role is 11.7px instead of 9px.
+
+Line height is per-role, not one universal ratio (`--lh-micro` 1.35 through
+`--lh-display` 1.12) — small type needs more leading than large type to stay
+readable, and a display heading needs almost none.
+
+**Never set a font size in `px`.** `px` does not follow `--font-scale`, so a
+`font: 400 13px/1.45 …` shorthand silently opts that element out of the user's
+text-size setting. The stats toast and the mastery-ring legend had exactly this
+bug: they stayed 13px while everything around them scaled.
+
+### Root size
+
+Root is 15px, not the 16px web default. This is a dense product — a
+3,996-row word list and a stats page full of meters — and that density was
+deliberately tuned at 15px. The `sm` setting is 0.92×, not 0.875×, so the
+compact step cannot drive the smallest role below ~10.8px. Raising the root to
+16px is a whole-product proportion change and needs its own pass with
+viewport verification, not a quiet side effect of a type cleanup.
+
+### Russian specifics
+
+- Headings use `text-wrap: balance`. Russian wraps unpredictably, and a
+  two-word heading can break one word per line in a narrow card.
+- Onboarding step bodies are the only sustained prose in the product and are
+  capped at `62ch` rather than a px width, so the measure tracks the user's
+  text-size setting instead of drifting from it.
+- Body copy carries a little extra leading: Russian runs longer than English
+  at the same character count, and two-line labels crowd the element below.
+
 ## Components (current)
 
 | Component | File | Notes |

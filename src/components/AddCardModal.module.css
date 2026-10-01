@@ -79,7 +79,7 @@
 
 .error {
   color: var(--warn-text);
-  font-size: 0.78rem;
+  font-size: var(--text-micro);
   margin: 0;
 }
 
@@ -89,7 +89,7 @@
   border: 1px solid var(--warn);
   border-radius: var(--radius-sm);
   padding: 8px 12px;
-  font-size: 0.85rem;
+  font-size: var(--text-meta);
   margin: 0;
 }
 
@@ -105,7 +105,7 @@
 }
 .advanced summary {
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: var(--text-meta);
   color: var(--text-muted);
   user-select: none;
 }

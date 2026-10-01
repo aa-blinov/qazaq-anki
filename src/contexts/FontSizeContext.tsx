@@ -21,7 +21,7 @@ import { readJSON, writeJSON } from '../lib/storage';
  * size).
  *
  * 4 steps feels right: the middle one ('md', 1.0×) is the default;
- * 'sm' (0.875×) packs more text on small screens or for users who
+ * 'sm' (0.92×) packs more text on small screens or for users who
  * prefer denser UI; 'lg' (1.125×) and 'xl' (1.25×) help with
  * accessibility / readability at the cost of fitting less per screen.
  */
@@ -57,7 +57,7 @@ export function FontSizeProvider({ children }: { children: ReactNode }) {
     // Map the enum to a CSS multiplier. The inline theme-init.js
     // sets the same variable from the same key on first paint, so
     // there's no FOUC between this useEffect and the page render.
-    const scale = { sm: 0.875, md: 1, lg: 1.125, xl: 1.25 }[fontSize];
+    const scale = { sm: 0.92, md: 1, lg: 1.125, xl: 1.25 }[fontSize];
     document.documentElement.style.setProperty('--font-scale', String(scale));
     writeJSON(KEY, fontSize);
   }, [fontSize]);
