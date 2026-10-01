@@ -11,11 +11,14 @@
    * feature it was enabling.
    *
    * Switched to a plain opacity crossfade. Both faces are stacked
-   * in the same plane; whichever has `opacity: 1` is visible. A
-   * 200ms transition on opacity is short enough to read as
-   * "deliberate reveal" without making the card feel laggy. The
-   * user still gets clear visual feedback that the back is the
-   * back (no perspective tricks needed). */
+   * in the same plane; whichever has `opacity: 1` is visible. The
+   * crossfade is short enough to read as a deliberate reveal
+   * without making the card feel laggy. The user still gets clear
+   * visual feedback that the back is the back (no perspective
+   * tricks needed).
+
+   * Opacity under reduced motion: a crossfade has no spatial
+   * component, so it stays. The land (below) is what gets reduced. */
   position: relative;
   width: 100%;
   max-width: 640px;
@@ -35,14 +38,31 @@
   position: relative;
   width: 100%;
   height: 100%;
-  animation: cardEnter 0.32s ease;
 }
 
-@keyframes cardEnter {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+/* The card LANDS, it does not appear.
 
+   This was a 320ms opacity + translateY(6px) fade-and-rise, which is the
+   generic entrance every generated card UI ships with. It also fights the
+   crossfade below: the same element was both arriving and swapping, so the
+   two motions overlapped into mush on the first card of a session.
+
+   The replacement is the gesture this product's world already has — a page
+   set down on a desk. The surface is opaque on frame one (a card that fades
+   in reads as an overlay floating above the page; a card whose shadow
+   tightens onto it reads as contact with the page), and the shadow is what
+   moves: wide and soft at 0, settled to --shadow-md at 1. The 1.5% scale is
+   not visible as text size — it is the last of the descent.
+
+   The animation lives on `.face`, not `.cardInner`, because the shadow does:
+   `.cardInner` is a bare wrapper and its faces are opaque children that would
+   cover it. Re-keying `instanceId` on card.id re-runs this once per card, so
+   the learner lands a fresh card ~20 times per session and never sees the
+   same landing twice in a row.
+
+   box-shadow is a paint-bound property, so this is deliberately one element
+   in an isolated region for a one-shot 420ms — not a filter or blur stack
+   anywhere near it. */
 .face {
   position: absolute;
   inset: 0;
@@ -61,7 +81,19 @@
    * `.isRevealed` is applied; front face goes the other way.
    * The transition lives on `.face` so both directions animate
    * the same way. */
-  transition: opacity 0.2s ease;
+  transition: opacity var(--dur-base) var(--ease-out);
+  animation: cardLand var(--dur-slow) var(--ease-out);
+}
+
+@keyframes cardLand {
+  from {
+    transform: scale(1.015);
+    box-shadow: 0 18px 44px rgba(31, 30, 27, 0.05), 0 2px 5px rgba(31, 30, 27, 0.03);
+  }
+  to {
+    transform: scale(1);
+    box-shadow: var(--shadow-md);
+  }
 }
 
 .scene:not(.isRevealed) .front {
@@ -126,7 +158,7 @@
   align-items: center;
   justify-content: center;
   padding: 0;
-  transition: color 120ms ease, background 120ms ease, border-color 120ms ease;
+  transition: color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
 }
 .flipBackBtn:hover {
   color: var(--accent);
@@ -226,7 +258,7 @@
   justify-content: center;
   padding: 0;
   flex-shrink: 0;
-  transition: color 120ms ease, background 120ms ease, border-color 120ms ease, transform 80ms ease;
+  transition: color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), transform var(--dur-press) var(--ease-out);
 }
 .speakBtn:hover:not(:disabled) {
   color: var(--accent);
@@ -245,7 +277,7 @@
 
 .speakBtnPlaying {
   color: var(--accent);
-  animation: speakBtnPulse 0.9s ease-in-out infinite;
+  animation: speakBtnPulse 0.9s var(--ease-in-out) infinite;
 }
 @keyframes speakBtnPulse {
   0%, 100% { transform: scale(1); }
@@ -270,7 +302,7 @@
 /* Spinner for the in-flight generation state. We animate the
    icon (Loader2 from lucide) by spinning the SVG. */
 .speakBtnSpin {
-  animation: speakBtnSpin 1s linear infinite;
+  animation: speakBtnSpin 1s var(--ease-linear) infinite;
 }
 @keyframes speakBtnSpin {
   to { transform: rotate(360deg); }
@@ -359,7 +391,7 @@
   text-underline-offset: 2px;
   text-decoration-color: var(--border-strong);
   text-decoration-thickness: 1px;
-  transition: color 120ms ease, text-decoration-color 120ms ease;
+  transition: color var(--dur-fast) var(--ease-out), text-decoration-color var(--dur-fast) var(--ease-out);
 }
 .sourceLink:hover {
   color: var(--accent);
@@ -378,4 +410,33 @@
   .scene { height: 300px; }
   .face { padding: 26px 24px; }
   .kazakhWord { font-size: 2.2rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The land is a scale and a moving shadow. Both are spatial, so both go.
+   * The card still arrives — it is simply already resting when it appears,
+   * which is what the resting state is for. Keeping an opacity fade here
+   * would reintroduce the ghost it replaced. */
+  .face {
+    animation: none;
+  }
+
+  /* Two infinite loops lived here and neither had a reduced-motion path.
+   *
+   * speakBtnPulse marks "audio is playing" by breathing the icon forever.
+   * Under reduced motion the colour alone carries it: the button already
+   * turns to --accent while `playing` is true, and the state ends when the
+   * Audio element fires 'ended'. A loop that never stops is the worst case
+   * for vestibular sensitivity — it cannot be looked away from.
+   *
+   * speakBtnSpin marks "synthesizing". The button is `disabled` for the
+   * whole request and carries an aria-label that names the state in
+   * Russian, so the icon going static leaves the information intact for
+   * both sighted and screen-reader users. */
+  .speakBtnPlaying {
+    animation: none;
+  }
+  .speakBtnSpin {
+    animation: none;
+  }
 }

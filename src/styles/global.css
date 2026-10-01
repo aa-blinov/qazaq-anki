@@ -159,6 +159,46 @@
   --shadow-md: 0 4px 12px rgba(31, 30, 27, 0.06), 0 1px 3px rgba(31, 30, 27, 0.04);
   --shadow-lg: 0 16px 40px rgba(31, 30, 27, 0.10), 0 2px 6px rgba(31, 30, 27, 0.05);
 
+  /* ---- Motion ------------------------------------------------------------
+     The app carried twelve hardcoded durations (0.06s … 1.4s) and six
+     different easing curves across twenty-three files, and the curve most of
+     them used was the CSS `ease` keyword — a browser default nobody chose.
+     Four durations, by the job the change is doing:
+
+       press — the control acknowledging the finger. Under 150ms this reads
+               as physical rather than animated; longer and the button feels
+               like it is lagging the hand.
+       fast  — a routine state change: hover, colour, a row settling. The
+               workhorse; almost every transition in the app is this one.
+       base  — an overlay or a state swap: a modal arriving, a toast, the
+               scrim fading the page out from under it.
+       slow  — the authored moment, on the study loop. Reserved on purpose:
+               if everything is 400ms nothing is.
+
+     Only one curve does the real work. --ease-out is exponential
+     deceleration: fast at the start, settled at the end, which is how a thing
+     that was travelling comes to rest. It is the curve on every arrival in
+     the app, including the progress fills it was written for. --ease-in-out
+     is reserved for loops that go out and come back, and --ease-linear for
+     continuous rotation, where any easing would read as stutter.
+
+     Duration carries the asymmetry the eye expects: an entrance earns its
+     full length, an exit uses --dur-press because leaving should be quicker
+     than arriving. */
+  --dur-press: 100ms;
+  --dur-fast:  140ms;
+  --dur-base:  220ms;
+  --dur-slow:  420ms;
+
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-linear: linear;
+
+  /* Name of the shared reduced-motion arrival keyframe, declared just
+     below this block. See the "Shared motion" comment there for why the
+     modules reach it through a variable instead of naming it directly. */
+  --anim-arrive: arrive-fade;
+
   /* Interface text scale — driven by FontSizeProvider. The inline
    * public/theme-init.js sets the same variable from localStorage on
    * first paint so the user's choice survives a refresh with no
@@ -167,6 +207,37 @@
   --font-scale: 1;
 
   color-scheme: light;
+}
+
+/* ---- Shared motion ------------------------------------------------------
+
+   The app had five near-identical keyframe sets across four modal
+   implementations and two toasts, under six different names
+   (`fadeIn`/`scrimIn`/`scrim-in`, `slideUp`/`dialogIn`/`dialog-in`,
+   `toast-in`/`undoToastIn`) and five different durations between 120ms
+   and 200ms. Same gesture, re-declared by hand, drifting every time.
+
+   The modules still declare their own default keyframes, because those
+   carry component-specific travel (an 8px rise for a toast, a rise plus a
+   2% scale for a dialog) — but the reduced-motion alternative is identical
+   everywhere, so it is defined once here and pointed at from each module.
+
+   `arrive-fade` is the important one: under reduced motion an overlay
+   loses its travel and its scale and keeps its opacity. The fade is what
+   says "this has arrived"; it has no spatial component, so removing it
+   would cost real information rather than comfort.
+
+   The modules reach this name through `--anim-arrive` rather than writing
+   `animation-name: arrive-fade` directly. CSS Modules localises literal
+   animation names, so a module that names a keyframe it does not declare
+   gets a reference to a hashed name that does not exist — the animation
+   silently does not run, which in the reduced-motion path means the
+   overlay just appears with no arrival at all. A `var()` is left alone by
+   the localiser and resolves to the real global name at runtime. */
+
+@keyframes arrive-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 [data-theme='dark'] {
@@ -305,7 +376,7 @@ html, body, #root { height: 100%; margin: 0; }
   text-decoration: none;
   z-index: 100;
   transform: translateY(-200%);
-  transition: transform 0.15s ease;
+  transition: transform var(--dur-fast) var(--ease-out);
 }
 .skip:focus,
 .skip:focus-visible {
@@ -379,7 +450,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  transition: background-color 0.18s ease, color 0.18s ease;
+  transition: background-color var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
 }
 
 a {
@@ -436,7 +507,7 @@ p:last-child { margin-bottom: 0; }
   font-size: var(--text-small);
   letter-spacing: -0.005em;
   cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease, transform 0.06s ease;
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), transform var(--dur-press) var(--ease-out);
   text-decoration: none;
   white-space: nowrap;
 }
@@ -490,7 +561,7 @@ p:last-child { margin-bottom: 0; }
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
   font-size: var(--text-body);
-  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+  transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
 }
 .input:focus {
   outline: none;
@@ -624,20 +695,57 @@ p:last-child { margin-bottom: 0; }
   }
 }
 
+/*
+  Reduced motion.
 
-  *, *::before, *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
-  }
-  /*
-    Card flip is a 3D rotateY. Even at 0ms duration the 3D
-    transform still applies, which can disorient vestibular-
-    sensitive users. Flatten the perspective so reduced-motion
-    users see an instant cross-fade instead of a 180° flip.
-  */
-  [class*="cardInner"] {
-    transform-style: flat !important;
+  This block used to be a blanket:
+
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+      ...
+    }
+
+  Its `@media (prefers-reduced-motion: reduce)` opening line had been
+  deleted at some point, leaving a stray `}` at the end of the file and
+  the rule itself at the top level. An `!important` declaration at the
+  top level beats every normal declaration in the cascade regardless of
+  specificity, so it was not a reduced-motion path at all — it was
+  turning off every transition and animation in the app, for every
+  user, on every device. No motion token in this stylesheet could have
+  overridden it.
+
+  The blanket is gone because blanket-off is the wrong behaviour, not
+  just the wrong implementation. Reduced motion means fewer and gentler
+  animations; it does not mean removing feedback. A hover that snaps
+  instead of crossfading, a toast that appears with no arrival, a
+  progress bar that teleports — those cost real information, and the
+  learner on this app studies for twenty minutes at a stretch.
+
+  So the reduced path is per-component and intentional, and it lives with
+  the component that moves:
+
+    Flashcard         card lands, audio pulse, synth spinner
+    AddCardModal      panel arrival
+    OnboardingModal   panel arrival
+    ConfirmDialog     scrim + panel arrival
+    StatsPage         scrim, dialog, toast, ring sweep, progress bar
+    StudyPage         progress bar, undo toast
+    HomePage          progress bar
+    EaseHistogram     bar sweep
+    LevelMasteryRings ring sweep
+    TopicSelect       chevron half-turn
+    SettingsPage      spinner
+
+  Colour and opacity transitions are deliberately left alone everywhere
+  else: they carry state and confirmation and have no spatial component
+  to trigger a vestibular response.
+
+  What is left here is the one global case — the skip link, which
+  slides in from above the viewport on focus.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .skip {
+    transition: none;
   }
 }

@@ -11,7 +11,7 @@
       var(--surface-2) 100%
     );
   background-size: 200% 100%;
-  animation: shimmer 1.4s ease-in-out infinite;
+  animation: shimmer 1.4s var(--ease-in-out) infinite;
   vertical-align: middle;
 }
 
@@ -48,7 +48,7 @@
       var(--surface-2) 100%
     );
   background-size: 200% 100%;
-  animation: shimmer 1.4s ease-in-out infinite;
+  animation: shimmer 1.4s var(--ease-in-out) infinite;
 }
 
 @keyframes shimmer {

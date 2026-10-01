@@ -144,16 +144,135 @@ console.log(bad.length?bad:"all tokens resolve");'
 
 ## Motion
 
-Progress fills (`.progressFill`, `.topicProgressFill`, `.fill`) are animated
-with `transform: scaleX()` and `transform-origin: left center`, never `width` —
-a width animation forces synchronous layout every frame, and these bars sit on
-the study loop. The inline style sets `scaleX(0..1)`; the CSS supplies
-`width: 100%` and the transition. Each module carries its own
-`prefers-reduced-motion` override, because class names in CSS modules are
-hashed and a global rule cannot reach them.
+### The tokens
 
-Easing is `cubic-bezier(0.16, 1, 0.3, 1)` — exponential ease-out from an
-already-visible default.
+Four durations and three curves, all in `src/styles/global.css`. The app
+had twelve hardcoded durations (`0.06s` … `1.4s`) and six different easing
+curves spread across twenty-three files, and the curve most of them used
+was the CSS `ease` keyword — a browser default nobody had chosen.
+
+| Token | Value | The job |
+|---|---|---|
+| `--dur-press` | 100ms | The control acknowledging the finger. Under 150ms this reads as physical; longer and the button feels like it is lagging the hand. |
+| `--dur-fast` | 140ms | A routine state change: hover, colour, a row settling. The workhorse. |
+| `--dur-base` | 220ms | An overlay or a state swap: a modal, a toast, the scrim. |
+| `--dur-slow` | 420ms | The authored moment, on the study loop. Reserved on purpose — if everything is 400ms, nothing is. |
+
+| Token | Value | Use |
+|---|---|---|
+| `--ease-out` | `cubic-bezier(0.16, 1, 0.3, 1)` | Every arrival. Exponential deceleration: fast at the start, settled at the end — how a thing that was travelling comes to rest. |
+| `--ease-in-out` | `cubic-bezier(0.4, 0, 0.2, 1)` | Loops that go out and come back (skeleton shimmer, audio pulse). |
+| `--ease-linear` | `linear` | Continuous rotation only. Any easing on a spinner reads as stutter. |
+
+Loop *periods* (the shimmer's 1.4s cycle, the spinners' 1s turn) stay
+literal. They are cycle lengths, not transition durations, and folding
+them into the ramp would mean inventing a token for a number that only
+two rules use.
+
+**An entrance earns its full length; an exit uses `--dur-press`,** because
+leaving should be quicker than arriving.
+
+### The focal moment: the card lands
+
+The study screen is the product, and it runs about twenty cards a session.
+Each card used to arrive with a 320ms `opacity` + `translateY(6px)`
+fade-and-rise — the generic entrance every generated card UI ships with,
+and it also collided with the crossfade underneath it, since the same
+element was both arriving and swapping.
+
+It now **lands.** The surface is opaque on frame one: a card that fades in
+reads as an overlay floating above the page, a card whose shadow tightens
+onto it reads as contact with the page. `box-shadow` runs wide-and-soft →
+`--shadow-md` over `--dur-slow`, with a 1.5% scale as the last of the
+descent. `cardLand` lives on `.face`, because that is where the shadow is.
+
+### Everything else
+
+Meters — `.progressFill`, `.topicProgressFill`, `.fill` — animate
+`transform: scaleX()` with `transform-origin: left center`, never `width`.
+A width animation forces synchronous layout every frame and these bars sit
+on the study loop. The inline style sets `scaleX(0..1)`; the CSS supplies
+`width: 100%` and the transition. The mastery rings sweep
+`stroke-dashoffset` the same way.
+
+Each module carries its own `prefers-reduced-motion` override, because
+class names in CSS modules are hashed and a global rule cannot reach them.
+
+### The blanket that was switched off
+
+`global.css` used to end with:
+
+```css
+*, *::before, *::after {
+  animation-duration: 0.001ms !important;
+  transition-duration: 0.001ms !important;
+  ...
+}
+```
+
+Its `@media (prefers-reduced-motion: reduce)` opening line had been
+deleted, leaving a stray `}` at the end of the file and the rule itself at
+the top level. An `!important` declaration at the top level beats every
+normal declaration in the cascade regardless of specificity — so this was
+not a reduced-motion path at all. It was turning off **every transition and
+animation in the app, for every user, on every device**, and no motion
+token in the stylesheet could have overridden it.
+
+It is gone, and blanket-off was the wrong behaviour as well as the wrong
+implementation: reduced motion means fewer and gentler animations, not the
+removal of feedback. A hover that snaps instead of crossfading, a toast
+that appears with no arrival, a progress bar that teleports — those cost
+real information, and a learner on this app studies for twenty minutes at a
+stretch.
+
+The reduced path is per-component and intentional:
+
+| Component | What is reduced | What survives |
+|---|---|---|
+| `Flashcard` | card land, audio pulse, synth spinner | the face crossfade (opacity only) |
+| `AddCardModal`, `OnboardingModal`, `ConfirmDialog`, `StatsPage` dialog | the 8px rise and the 2% scale | the opacity fade |
+| `StatsPage`, `StudyPage` toasts | the 8px rise | the opacity fade |
+| `StatsPage`, `HomePage`, `StudyPage`, `EaseHistogram` | bar sweeps | the filled value |
+| `LevelMasteryRings` | ring sweeps | the arc |
+| `SettingsPage`, `Flashcard` | both infinite loops | colour, `disabled`, and the `aria-label` that names the state |
+| `TopicSelect` | the chevron half-turn | `[aria-expanded]` |
+| `global.css` | the skip link slide-in | — |
+
+Colour and opacity transitions are deliberately left alone everywhere else.
+They carry state and confirmation, and have no spatial component to
+trigger a vestibular response.
+
+The one shared piece is `@keyframes arrive-fade` — opacity in, opacity
+out, no travel — used by all four overlay types. CSS Modules localises
+literal animation names, so a module that names a keyframe it does not
+declare ends up referencing a hashed name that does not exist and the
+animation silently does not run. The modules therefore reach it through
+`var(--anim-arrive)`, which the localiser leaves alone.
+
+### Two paths that were unreachable
+
+The browse list's edit and delete buttons sit at `opacity: 0` and fade in
+on row hover — the right call for a list you mostly read. It was, however,
+only ever hover:
+
+- **Keyboard.** A tab stop at `opacity: 0` is still a tab stop, so focus
+  landed on a button with nothing drawn on it, and a keyboard user could
+  tab the whole word list and never know the actions existed.
+- **Touch.** `@media (hover: none)` has no hover to fire, so on a phone
+  there was no way at all to edit or delete a card you had added.
+
+Both now have the treatment the stats KPI tile already had: `:focus-visible`
+alongside `:hover`, and a permanent 75% under `(hover: none)`.
+
+### Rules
+
+- Do not write a duration or a curve literally. Use the tokens.
+- Do not animate a layout-driving property (`width`, `height`, `top`,
+  `left`, margins) when a transform will do.
+- Any new animation needs a `prefers-reduced-motion` alternative in the
+  same file, and a reason that survives the sentence "removing this
+  would lose nothing".
+- The mobile nav drawer still hard-cuts open and closed. Not yet addressed.
 
 ## Callouts
 
@@ -303,7 +422,7 @@ viewport verification, not a quiet side effect of a type cleanup.
 | Error | `<ErrorBoundary />` with Russian recovery copy |
 | Empty | Empty-deck state on the Browse screen |
 | Keyboard focus | Visible ring token applied via `:focus-visible` |
-| Reduced motion | `@media (prefers-reduced-motion)` short-circuits animations |
+| Reduced motion | Per-component, with intentional alternatives — see [Motion](#motion) |
 
 ## What this file does not cover yet
 
@@ -311,3 +430,9 @@ viewport verification, not a quiet side effect of a type cleanup.
 - Touch and gesture design on narrow screens — the responsive layout
   exists but no documented breakpoint map.
 - Print layout beyond forced palette.
+- The mobile nav drawer opens and closes with no transition at all. It is
+  the only navigation on narrow screens and the only overlay in the app
+  that does not use the shared arrival vocabulary.
+- The undo toast overlaps the "Показать ответ" button on the study screen
+  at desktop width. A layout collision rather than a motion one, but it is
+  part of why the toast's arrival is easy to miss.

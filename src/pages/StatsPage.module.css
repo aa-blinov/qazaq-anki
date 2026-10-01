@@ -79,7 +79,7 @@
 .kpiLink {
   text-decoration: none;
   color: inherit;
-  transition: background 0.12s ease;
+  transition: background var(--dur-fast) var(--ease-out);
 }
 .kpiLink:hover {
   background: var(--surface-2);
@@ -90,7 +90,7 @@
   right: 16px;
   color: var(--text-muted);
   opacity: 0;
-  transition: opacity 0.12s ease, color 0.12s ease, transform 0.12s ease;
+  transition: opacity var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
 }
 .kpiLink:hover .kpiCta,
 .kpiLink:focus-visible .kpiCta {
@@ -185,7 +185,7 @@
   justify-content: center;
   color: var(--text-muted);
   margin-left: auto;
-  transition: transform 0.18s ease;
+  transition: transform var(--dur-base) var(--ease-out);
 }
 
 .configCard details[open] .configSummaryHint {
@@ -268,7 +268,7 @@
 .chartBar {
   fill: var(--accent);
   opacity: 0.78;
-  transition: opacity 0.12s ease;
+  transition: opacity var(--dur-fast) var(--ease-out);
 }
 .chartBar:hover { opacity: 1; }
 
@@ -415,7 +415,7 @@
   text-align: left;
   font: inherit;
   color: inherit;
-  transition: background 0.12s ease;
+  transition: background var(--dur-fast) var(--ease-out);
 }
 .topicLevelHead:hover { background: var(--surface-2); }
 
@@ -476,7 +476,7 @@
   background: var(--surface);
   text-decoration: none;
   color: inherit;
-  transition: background 0.12s ease;
+  transition: background var(--dur-fast) var(--ease-out);
 }
 .topicCard:hover { background: var(--surface-2); text-decoration: none; }
 
@@ -527,7 +527,7 @@
   /* Animated with scaleX, not width: width animation forces a
      synchronous layout on every frame, and this bar sits on the
      study loop. The inline style sets transform: scaleX(0..1). */
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform var(--dur-slow) var(--ease-out);
   width: 100%;
   height: 100%;
   transform-origin: left center;
@@ -626,7 +626,7 @@
   padding: 24px;
   background: rgba(31, 30, 27, 0.45);
   backdrop-filter: blur(2px);
-  animation: scrim-in 140ms ease-out;
+  animation: scrim-in var(--dur-fast) var(--ease-out);
 }
 @keyframes scrim-in {
   from { opacity: 0; }
@@ -640,7 +640,7 @@
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
-  animation: dialog-in 160ms ease-out;
+  animation: dialog-in var(--dur-base) var(--ease-out);
 }
 @keyframes dialog-in {
   from { opacity: 0; transform: translateY(8px) scale(0.98); }
@@ -697,7 +697,7 @@
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
   max-width: 420px;
   font: 400 var(--text-meta)/var(--lh-meta) var(--font-sans);
-  animation: toast-in 200ms ease-out;
+  animation: toast-in var(--dur-base) var(--ease-out);
 }
 @keyframes toast-in {
   from { opacity: 0; transform: translateY(8px); }
@@ -915,7 +915,7 @@
   height: 14px;
   border-radius: 3px;
   background: var(--surface-2);
-  transition: background 0.12s ease;
+  transition: background var(--dur-fast) var(--ease-out);
 }
 
 .heatmapCell:hover {
@@ -1027,7 +1027,7 @@
   font-weight: 500;
   color: var(--text-muted);
   cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease;
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
 }
 
 .tabButton:hover:not([aria-selected='true']) {
@@ -1093,7 +1093,7 @@
   font-size: var(--text-small);
   font-weight: 600;
   text-decoration: none;
-  transition: background 0.12s ease;
+  transition: background var(--dur-fast) var(--ease-out);
 }
 
 .emptyCta:hover {
@@ -1104,6 +1104,26 @@
   /* A bar sweeping 0 -> 100% is motion the learner did not ask for. The fill
      still lands on its correct value; only the travel is removed. */
   .topicProgressFill {
+    transition: none;
+  }
+
+  /* The three overlays on this page — scrim, dialog, toast — each rose 8px
+     on the way in and the dialog also scaled to 98%. That travel goes; the
+     opacity stays, because the fade is what says "this has arrived" and it
+     has no spatial component. The scrim was already opacity-only. */
+  .dialogScrim {
+    animation: none;
+  }
+  .dialog {
+    animation-name: var(--anim-arrive);
+  }
+  .toast {
+    animation-name: var(--anim-arrive);
+  }
+
+  /* A half-turn of the chevron beside a <details> summary. The open/closed
+     state is on the element itself, so the chevron can snap. */
+  .configSummaryHint {
     transition: none;
   }
 }
