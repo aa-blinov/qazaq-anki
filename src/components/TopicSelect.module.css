@@ -149,3 +149,12 @@
    * rather than turn. */
   .chev { transition: none; }
 }
+
+/* Touch floor. The trigger was 29px and a menu option 27px. Both are
+   the whole control on this screen — the study filters collapse into
+   a single row on a phone, so when they are open they are the only
+   way to change what is being studied. */
+@media (max-width: 768px), (pointer: coarse) {
+  .trigger { min-height: var(--tap-min); }
+  .item { min-height: var(--tap-min); }
+}

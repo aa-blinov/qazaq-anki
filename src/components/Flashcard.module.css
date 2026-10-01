@@ -308,6 +308,29 @@
   to { transform: rotate(360deg); }
 }
 
+/* Touch floor on the card's two round controls.
+   The 36px speak button and the 22px flip-back button both sit inside
+   the card face with clear space around them, so they keep their
+   visual size and grow a 44px hit area instead. Growing them for real
+   would push the word off centre on a card that is already height-
+   constrained on a 640px phone. */
+@media (max-width: 768px), (pointer: coarse) {
+  .speakBtn,
+  .flipBackBtn {
+    position: relative;
+  }
+  .speakBtn::after,
+  .flipBackBtn::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: var(--tap-min);
+    height: var(--tap-min);
+    transform: translate(-50%, -50%);
+  }
+}
+
 /* The word itself (e.g. "сәлем") gets duplicated into the button
    label for screen readers. Visually we hide it so the icon stays
    clean. */
@@ -410,6 +433,40 @@
   .scene { height: 300px; }
   .face { padding: 26px 24px; }
   .kazakhWord { font-size: 2.2rem; }
+}
+
+/*
+  The card is the one thing on the study screen that must not be
+  squeezed, so it gets the space back from everything above it
+  rather than from itself — but not on a short screen. A 320px
+  card on a 640px-tall phone leaves no room for the answer, which
+  is the one control the whole screen exists to reach.
+
+  `clamp` against the viewport height: 34dvh scales the card with the
+  device, and the 200px floor keeps the word from feeling cramped on
+  the shortest phone in the set. Pointer-fine users keep the fixed
+  320px — there is always height to spare on a desktop, and a card
+  that resized with the browser window would just look broken.
+*/
+@media (max-width: 768px), (pointer: coarse) {
+  .scene {
+    height: clamp(200px, 34dvh, 300px);
+  }
+  /* The source attribution is a real link, not a caption, but it is
+     the last line of the card's back face and the face has no height
+     to spare. A 44px hit area centred on it grows into the face's own
+     26px padding rather than into the translation above it, so the
+     target gets the floor and the card keeps its size. */
+  .sourceLink { position: relative; }
+  .sourceLink::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: var(--tap-min);
+    height: var(--tap-min);
+    transform: translate(-50%, -50%);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -570,3 +570,8 @@
     transition: none;
   }
 }
+
+/* Touch floor for the welcome card's primary action. */
+@media (max-width: 768px), (pointer: coarse) {
+  .welcomeCta { min-height: var(--tap-min); }
+}

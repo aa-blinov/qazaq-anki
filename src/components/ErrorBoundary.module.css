@@ -2,7 +2,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  /* 100vh then 100dvh — see OnboardingModal for why the second line
+     exists. A min-height on the error screen matters more than usual:
+     this is the state a learner meets when something is already wrong,
+     and a page they cannot scroll to the bottom is the last place to
+     find out why. */
   min-height: 100vh;
+  min-height: 100dvh;
   padding: 24px 16px;
   background: var(--bg);
 }

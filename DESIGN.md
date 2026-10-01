@@ -386,13 +386,89 @@ output rather than reaching for a literal. This is recorded as known debt,
 not as a decision; `/impeccable layout` or `/impeccable extract` is the
 right pass to fix it.
 
-**Breakpoints are not unified either** — eight distinct `max-width` values
-are in use: 420, 540, 600, 640, 720, 760, 768, 900px. The 540px one is
-load-bearing (it swaps the inline nav for the burger drawer); the rest are
-local to individual modules. Also known debt.
+**Breakpoints are not unified either** — the `max-width` values in use
+are 420, 600, 640, 720, 760, 768, 900px, plus the height queries below.
+The 760px one is load-bearing (it swaps the inline nav for the burger
+drawer); the rest are local to individual modules. Recorded as known debt
+alongside the missing spacing scale.
 
 Above 900px the study page splits into the card column and a settings rail
 (`min-width: 901px`); below it they stack.
+
+### Touch, safe areas, and the compact layout
+
+Two mobile concerns live together here because they share one gate.
+
+**The touch floor.** `--tap-min: 44px` is the target size. Apple asks for
+44pt, Material for 48dp, WCAG 2.5.5 (AAA) for 44×44. This product
+deliberately runs a dense layout — 15px root, 27px chips, 32px icon
+buttons — and that density is a decision, not an oversight. So every rule
+that consumes `--tap-min` sits behind `@media (max-width: 768px),
+(pointer: coarse)`, and a pointer-fine user never sees the app change. The
+same query is the constant `COMPACT_QUERY` in `StudyPage.tsx`, so the JSX
+and the CSS cannot drift apart.
+
+Two mechanisms, chosen per control by what surrounds it:
+
+- **Real growth** (`min-height: var(--tap-min)`) for controls that are
+  isolated or are text fields, and for anything sitting in a row too tight
+  for a hit area to expand into — browse chips wrap 4px apart, the speed
+  segments 2px apart, the stats tabs 2px apart. An overlay there would
+  steal a neighbour's target.
+- **Hit-area growth** (an `::after` box of `--tap-min` centred on the
+  control) for controls that must stay visually small: the 32px topbar
+  icon buttons, the 36px burger, the 22px flip-back button, the 36px speak
+  button, the 18px source attribution. The topbar is 57px tall, so a
+  44px hit box fits inside it and costs the layout nothing; the card's
+  faces have 26px of padding for the same reason. Two rules that use it
+  had to open a gap first: `.right` went 8 → 12px and the nav 2 → 6px, so
+  neighbouring hit areas touch instead of overlapping.
+
+The floor is applied at the **end** of each stylesheet, not next to the
+token. `.btn { min-height: 38px }` and `.input { padding: 10px 14px }`
+are declared further up; at equal specificity the later rule wins, and a
+block placed near `:root` was silently losing to both.
+
+Inline links inside running text stay under the floor on purpose. WCAG
+2.5.8 exempts targets inline in a sentence; the source attribution on a
+card is not inline, and it does get a hit area.
+
+**Safe areas.** `viewport-fit=cover` in `index.html` is the gate — without
+it `env(safe-area-inset-*)` is always 0 on a notched device no matter how
+much safe-area CSS is written. It deliberately does *not* set
+`maximum-scale` or `user-scalable`; pinch-zoom stays available.
+
+Four tokens in `:root` — `--safe-top/right/bottom/left`, each
+`env(safe-area-inset-*)` with a `0px` fallback. Tokenised rather than
+inlined at each site so the fallback lives in one place. They are applied
+to the shell (horizontal, once, for landscape side cutouts), the topbar
+(top), `.main` (bottom), and all six `position: fixed` surfaces: the
+onboarding overlay, the add-card backdrop, the confirm scrim, the stats
+dialog scrim, the stats toast (right + bottom) and the study undo toast
+(left + right + bottom).
+
+**Height, not width.** The study screen's problem was vertical. The three
+filter pickers cost 187px above the card, and "Показать ответ" landed below
+the fold on every phone measured — 289px past it on a 320×568, 217px on a
+360×640, 13px on a 390×844. Stacking can never work at 390px of landscape
+height, so the compact layout splits the screen into the two things it is:
+controls left, card and answer right (`max-height: 520px` and
+`min-width: 700px`). The card itself scales with `clamp(200px, 34dvh,
+300px)`; a card that resized with a desktop window would read as broken, so
+the clamp is compact-only. Below 600px tall the back link and the level
+switcher stop competing for one line — the pills take `flex-basis: 100%`
+so the back link does not wrap to two words at 320px.
+
+`dvh` replaces `vh` wherever a surface owns the viewport height (the
+onboarding modal, auth, the error boundary), with the `vh` line kept first
+as the fallback. The modal additionally subtracts both safe insets, since
+its flex container centres the panel inside its own padded content box.
+
+**Tap feedback.** `-webkit-tap-highlight-color` is the accent at 18% alpha,
+not `transparent` — it keeps "this is tappable" legible without putting a
+foreign blue on terracotta. `touch-action: manipulation`, not `none`, so
+pinch-zoom survives. Overlays get `overscroll-behavior: contain` so a
+drag that runs out of content does not rubber-band the page underneath.
 
 ### The filter stack is deliberate, not boxy
 
@@ -404,6 +480,15 @@ width "so they read as form fields, not toolbar chips," and a full-width
 field is a stronger control affordance than a narrow chip would be.
 Quieting them would trade usability for a preference. A quieter pass looked
 at this and left it alone; the next one should too.
+
+That reasoning still holds, which is why the three rows are unchanged on
+the desktop layout. What changed is that they are no longer the *only*
+reading. On a compact layout they collapse into one row that names the
+three active values ("Все · Қаз → Рус · Все темы") and opens on tap — same
+three controls, same form-field affordance, 44px of height instead of 187.
+The point is not to make the filters quieter; it is that the study loop is
+a repeated action and re-scrolling past 187px of set-once configuration on
+every card is the real cost.
 
 ## Elevation & Depth
 
@@ -691,6 +776,7 @@ motion to a static fill.
 | LevelMasteryRings | `src/components/LevelMasteryRings.module.css` | Per-CEFR mastery rings. |
 | EaseHistogram | `src/components/EaseHistogram.module.css` | Ease distribution. |
 | MiniHeatmap | `src/components/MiniHeatmap.module.css` | Study heatmap. |
+| Collapsed filter row | `src/pages/StudyPage.module.css` (`.pickerBox`) | Compact-only. One row naming the three active filter values, opens the full three-row stack. `.pickerToggle` / `.pickerSummary` / `.pickerChev`. |
 
 ### Browser surfaces
 
@@ -738,6 +824,12 @@ motion to a static fill.
   re-measured in both themes when the tint was dropped.
 - **Do** use `62ch` for sustained prose and `text-wrap: balance` on
   headings.
+- **Do** gate every touch-only change behind `@media (max-width: 768px),
+  (pointer: coarse)` and verify it with touch emulation. A mouse-driven
+  run measures the desktop layout and passes by testing the wrong thing.
+- **Do** verify mobile work by measurement, not by eye. The study CTA was
+  13px below the fold on a 390×844 — a number no screenshot review
+  reliably catches.
 
 ### Don't
 
@@ -784,7 +876,21 @@ motion to a static fill.
   and stripping them produces a different, less specific product. A pass
   that reduces intensity by removing colour has gone too far.
 - **Don't** flatten the study filter stack to save visual weight. The
-  full-width form-field reading is the affordance.
+  full-width form-field reading is the affordance. Collapsing it on a
+  phone is a height decision, not a quieting one — on a desktop it stays
+  three rows.
+- **Don't** put a touch floor rule next to its token. Put it at the end
+  of the file, or the base rules for the same elements will win on
+  specificity and the floor will silently do nothing.
+- **Don't** set `user-scalable=no` or `maximum-scale` in the viewport
+  meta to "fix" a layout that overflows. Fix the layout.
+- **Don't** resolve a viewport-height surface with bare `vh` on a mobile
+  browser. `100vh` is the URL bar's height, not the screen's; use `dvh`
+  with the `vh` line kept first as the fallback.
+- **Don't** size a study card below the point where its faces clip. The
+  faces are absolutely positioned inside a fixed box, so shrinking the
+  card cuts the translation and the source line rather than reflowing
+  them. Take the height from the gaps.
 
 ## What this file does not cover yet
 
@@ -798,6 +904,13 @@ motion to a static fill.
   toast overlaps the "Показать ответ" button. A layout collision rather
   than a motion one, but it is part of why the toast's arrival is easy to
   miss.
+- **A heading on the study screen.** The main study view renders no
+  `<h1>` at all — only the done state has one. The level switcher carries
+  an `aria-label`, so a screen-reader user lands on `/study` with a
+  labelled tablist and a back link but no page title. Related: the
+  `.studyTitle` class still exists in `StudyPage.module.css` and is
+  rendered by nothing, which is why an early attempt to reclaim height by
+  going compact with it had no visible effect.
 - **Sound design** beyond TTS playback and the two state animations.
 - **Print layout** beyond the forced palette and the stripped chrome.
 
