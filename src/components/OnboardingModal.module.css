@@ -8,7 +8,7 @@
   justify-content: center;
   padding: 20px;
   z-index: 100;
-  animation: fadeIn 0.18s ease;
+  animation: fadeIn var(--dur-base) var(--ease-out);
 }
 
 @keyframes fadeIn {
@@ -27,7 +27,7 @@
   max-height: calc(100vh - 40px);
   overflow-y: auto;
   box-shadow: var(--shadow-lg);
-  animation: slideUp 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: slideUp var(--dur-base) var(--ease-out);
 }
 
 @keyframes slideUp {
@@ -49,7 +49,7 @@
   background: var(--surface);
   color: var(--text-muted);
   cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease;
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
 }
 .closeBtn:hover {
   background: var(--surface-2);
@@ -162,4 +162,12 @@
   .stepBody { font-size: var(--text-meta); }
   .footer { flex-direction: column-reverse; }
   .footer .btn { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Same pair as AddCardModal: the overlay was already opacity-only, the
+   * panel travelled 8px. Keeping the fade means a first-run learner
+   * still sees the card arrive rather than having it simply exist. */
+  .overlay { animation: none; }
+  .modal { animation-name: var(--anim-arrive); }
 }

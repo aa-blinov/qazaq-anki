@@ -141,7 +141,7 @@
   border: 1px solid var(--accent);
   color: var(--text-strong);
   text-decoration: none;
-  transition: background 0.12s ease, transform 0.12s ease;
+  transition: background var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
 }
 .studyCtaLink:hover {
   background: var(--accent-soft);
@@ -154,7 +154,7 @@
 .studyCtaLink svg {
   flex-shrink: 0;
   color: var(--accent);
-  transition: transform 0.12s ease;
+  transition: transform var(--dur-fast) var(--ease-out);
 }
 .studyCtaLabel {
   font-weight: 600;
@@ -222,7 +222,7 @@
   font-weight: 500;
   color: var(--text-muted);
   cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
   font-variant-numeric: tabular-nums;
 }
 .chip:hover { color: var(--text); background: var(--surface-2); }
@@ -265,7 +265,7 @@
   align-items: center;
   background: var(--surface);
   padding: 14px 18px;
-  transition: background 0.12s ease;
+  transition: background var(--dur-fast) var(--ease-out);
   position: relative;
 }
 .row:hover { background: var(--surface-2); }
@@ -283,6 +283,26 @@
   letter-spacing: 0.02em;
 }
 
+/*
+  Row actions — edit and delete on a card the learner added themselves.
+
+  These sit at `opacity: 0` and fade in on row hover, which is the right
+  call for a list of hundreds of rows you mostly read. It was, however,
+  only ever hover. Two paths could not reach the buttons at all:
+
+    Keyboard — a tab stop at `opacity: 0` is still a tab stop, so focus
+    landed on a button with nothing drawn on it. A keyboard user could
+    tab through the word list and never know the actions existed, then
+    hit Enter on a focused-but-invisible delete.
+
+    Touch — `@media (hover: none)` has no hover to fire, so on a phone
+    the only way to edit or delete a card you added was... not there.
+
+  Both are fixed below with the two selectors that already existed
+  elsewhere in the app: the stats KPI tile has had `:focus-visible`
+  alongside `:hover` all along, and it carries a `@media (hover: none)`
+  fallback. This list just never got the same treatment.
+*/
 .deleteBtn {
   position: absolute;
   top: 8px;
@@ -298,9 +318,10 @@
   gap: 2px;
   font-size: var(--text-micro);
   opacity: 0;
-  transition: opacity 120ms ease, background 120ms ease, color 120ms ease;
+  transition: opacity var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
 }
-.row:hover .deleteBtn { opacity: 1; }
+.row:hover .deleteBtn,
+.deleteBtn:focus-visible { opacity: 1; }
 .deleteBtn:hover {
   background: var(--surface-2);
   color: var(--warn);
@@ -320,12 +341,22 @@
   align-items: center;
   font-size: var(--text-micro);
   opacity: 0;
-  transition: opacity 120ms ease, background 120ms ease, color 120ms ease;
+  transition: opacity var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
 }
-.row:hover .editBtn { opacity: 1; }
+.row:hover .editBtn,
+.editBtn:focus-visible { opacity: 1; }
 .editBtn:hover {
   background: var(--surface-2);
   color: var(--accent);
+}
+
+/* No hover to fire, so the actions are always present — quieter than
+   the hovered state but never absent. */
+@media (hover: none) {
+  .editBtn,
+  .deleteBtn {
+    opacity: 0.75;
+  }
 }
 .deleteBtnConfirm {
   opacity: 1;
@@ -463,7 +494,7 @@
   cursor: pointer;
   font-family: inherit;
   font-variant-numeric: tabular-nums;
-  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
 }
 
 .pagerArrow {

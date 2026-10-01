@@ -48,7 +48,7 @@
   font-weight: 500;
   font-size: var(--text-small);
   text-decoration: none;
-  transition: background 0.12s ease, color 0.12s ease;
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -84,7 +84,7 @@
   background: transparent;
   color: var(--text-muted);
   cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
 }
 .iconBtn:hover {
   background: var(--surface-2);
@@ -127,7 +127,7 @@
   font-size: var(--text-micro);
   font-weight: 600;
   letter-spacing: 0.04em;
-  transition: background 0.12s ease, color 0.12s ease;
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
 }
 .langBtn:hover {
   color: var(--text);
@@ -177,7 +177,7 @@
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
   color: var(--text-muted);
-  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+  transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
   cursor: default;
 }
 .userBubble:hover {

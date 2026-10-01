@@ -7,7 +7,7 @@
   justify-content: center;
   padding: 16px;
   z-index: 80;
-  animation: scrimIn 0.12s ease-out;
+  animation: scrimIn var(--dur-fast) var(--ease-out);
 }
 
 @keyframes scrimIn {
@@ -25,7 +25,7 @@
   width: 100%;
   box-shadow: var(--shadow-lg);
   text-align: center;
-  animation: dialogIn 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: dialogIn var(--dur-base) var(--ease-out);
 }
 
 @keyframes dialogIn {
@@ -47,7 +47,7 @@
   color: var(--text-muted);
   cursor: pointer;
   border-radius: var(--radius-md);
-  transition: background 0.12s ease, color 0.12s ease;
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
 }
 .close:hover {
   background: var(--surface-2);

@@ -37,7 +37,7 @@
   letter-spacing: 0.01em;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+  transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
 }
 .trigger:hover {
   background: var(--surface-2);
@@ -58,7 +58,7 @@
 .chev {
   flex-shrink: 0;
   opacity: 0.7;
-  transition: transform 0.12s ease;
+  transition: transform var(--dur-fast) var(--ease-out);
 }
 .trigger[aria-expanded='true'] .chev {
   transform: rotate(180deg);
@@ -105,7 +105,7 @@
   font-weight: 500;
   text-align: left;
   cursor: pointer;
-  transition: background 0.1s ease, color 0.1s ease;
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
 }
 .item:hover {
   background: var(--surface-2);
@@ -140,4 +140,12 @@
   font-variant-numeric: tabular-nums;
   flex-shrink: 0;
   margin-left: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* A 180deg chevron rotation is a half-turn of a moving object in the
+   * corner of the eye. The open/closed state is carried by
+   * [aria-expanded] and by the dropdown itself, so the chevron can snap
+   * rather than turn. */
+  .chev { transition: none; }
 }

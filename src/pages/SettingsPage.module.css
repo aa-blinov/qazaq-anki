@@ -98,7 +98,7 @@
   color: var(--text);
   border-radius: 8px;
   cursor: pointer;
-  transition: background 0.12s ease, border-color 0.12s ease;
+  transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
 }
 
 .stepBtn:hover:not(:disabled) {
@@ -141,7 +141,7 @@
 }
 
 .spinner {
-  animation: spin 0.9s linear infinite;
+  animation: spin 0.9s var(--ease-linear) infinite;
   color: var(--text-muted);
 }
 
@@ -208,7 +208,7 @@
   color: var(--text-muted);
   cursor: pointer;
   font-variant-numeric: tabular-nums;
-  transition: background 0.12s ease, color 0.12s ease;
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
 }
 
 .speedBtn:hover:not([aria-checked='true']) {
@@ -308,4 +308,12 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* An infinite rotation is the one animation with no natural end — the
+   * learner cannot look away from it. The control it belongs to is
+   * disabled for the whole request and names the state in its
+   * aria-label, so a static icon still communicates "working". */
+  .spinner { animation: none; }
 }

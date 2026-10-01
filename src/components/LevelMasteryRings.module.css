@@ -60,7 +60,7 @@
   fill: none;
   stroke: var(--accent);
   stroke-linecap: round;
-  transition: stroke-dashoffset 600ms ease;
+  transition: stroke-dashoffset var(--dur-slow) var(--ease-out);
 }
 
 .trackInner {
@@ -72,7 +72,7 @@
   fill: none;
   stroke: var(--accent-hover, #a8522f);
   stroke-linecap: round;
-  transition: stroke-dashoffset 600ms ease;
+  transition: stroke-dashoffset var(--dur-slow) var(--ease-out);
 }
 
 .center {
@@ -141,4 +141,12 @@
 
 .dotInner {
   background: var(--accent-hover, #a8522f);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* A ring that sweeps 0 -> 100% around its own circumference is pure
+   * travel. The arc still renders at its correct value; only the sweep
+   * is removed. Six rings sweeping at once is exactly the kind of
+   * coordinated peripheral motion this setting exists to stop. */
+  .fill, .fillInner { transition: none; }
 }
