@@ -67,3 +67,6 @@ coverage/
 # Misc
 .cache/
 .vite/
+
+# Impeccable — platform engine binary, re-downloaded on first run by scripts/impeccable
+.github/skills/impeccable/scripts/bin/
