@@ -48,7 +48,7 @@
       }
     }
     if (size !== null) {
-      var scale = { sm: 0.875, md: 1, lg: 1.125, xl: 1.25 }[size];
+      var scale = { sm: 0.92, md: 1, lg: 1.125, xl: 1.25 }[size];
       document.documentElement.style.setProperty('--font-scale', String(scale));
     }
   } catch (e) {
