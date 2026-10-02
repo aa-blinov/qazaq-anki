@@ -3,6 +3,9 @@
   flex-direction: column;
   align-items: center;
   padding: 8px 16px 32px;
+  /* Positioning context for `.undoToast`, which anchors to the bottom
+     of the study content rather than to the viewport. */
+  position: relative;
 }
 
 /*
@@ -644,13 +647,19 @@
    timer fires; the component unmounts so the layout
    reflow doesn't kick the user. */
 .undoToast {
-  position: fixed;
+  /* Anchored to the bottom of the study *content*, not the viewport.
+     A fixed bottom overlay is collidable by construction: whenever the
+     viewport is short enough to put the answer button near the bottom
+     edge, the toast lands on top of it. Measured at 1440×900 the old
+     version covered 22px of the "Показать ответ" button — every other
+     size tested (1280×1000, 1024×768, 768×1024, 390×844, 360×640) was
+     clear, which is exactly the profile of a bug that gets filed once
+     and then believed forever. The CTA is always the last thing in the
+     column, so anchoring below the column cannot collide with it. */
+  position: absolute;
   left: calc(16px + var(--safe-left));
   right: calc(16px + var(--safe-right));
-  /* Clears the home indicator. This toast is also the only
-     acknowledgement the learner gets that their grade was recorded, so
-     it is the last thing that should be sitting under a gesture bar. */
-  bottom: calc(16px + var(--safe-bottom));
+  bottom: 0;
   z-index: 50;
   display: flex;
   align-items: center;

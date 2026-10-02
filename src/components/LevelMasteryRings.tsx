@@ -1,4 +1,5 @@
 import { useLang } from '../contexts/LanguageContext';
+import { Skeleton } from './Skeleton';
 import type { ServerStats } from '../lib/api';
 import styles from './LevelMasteryRings.module.css';
 
@@ -165,6 +166,38 @@ export function LevelMasteryRings({ stats }: { stats: ServerStats }) {
           <span className={`${styles.dot} ${styles.dotInner}`} aria-hidden="true" />
           {t('stats.levels.legendMastered')}
         </span>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Same shape, no data. `/api/stats` lands a beat after first paint,
+ * and this block is ~380px tall on a phone (two columns of 96px rings).
+ * Rendering nothing until the fetch resolves threw everything below
+ * it — the tab bar, the empty-state card — that far down the page,
+ * which measured 0.218 CLS on a 390px viewport and dragged the page's
+ * total into "poor" territory.
+ *
+ * The placeholder reuses this module's own `.wrap` / `.head` / `.row`
+ * and the ring's 96px box, so its height matches the real thing by
+ * construction. A `min-height` guess would drift the next time the
+ * grid columns or the ring size change.
+ */
+export function LevelMasteryRingsSkeleton() {
+  return (
+    <section className={styles.wrap} aria-hidden="true">
+      <header className={styles.head}>
+        <Skeleton variant="title" width="38%" />
+        <Skeleton variant="text" width="72%" />
+      </header>
+      <div className={styles.row}>
+        {['A1', 'A2', 'B1', 'B2', 'C1'].map((lvl) => (
+          <Skeleton key={lvl} variant="block" className={styles.skeletonRing} />
+        ))}
+      </div>
+      <div className={styles.legend}>
+        <Skeleton variant="text" width={148} />
       </div>
     </section>
   );

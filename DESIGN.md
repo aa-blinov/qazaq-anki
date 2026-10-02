@@ -350,8 +350,31 @@ Consolas` — for code and measurement only, never as costume.
 
 **Character:** the contrast between the two is the product's main
 typographic signal. Russian reads neutral and familiar; the Kazakh word
-reads as something worth pausing for. Both load from Google Fonts with
-`display=swap` and four weights each.
+reads as something worth pausing for.
+
+**Hosting:** self-hosted from `public/fonts`, declared in
+`src/styles/fonts.css`. They used to come from `fonts.googleapis.com`,
+which put a third-party request on the critical path of every page load
+and disclosed the learner's IP to a company the product promises never
+touches their data. Both families are OFL. The CSP no longer whitelists
+either Google host, so a regression would be blocked rather than quietly
+reinstated.
+
+**The Display Font is not in effect.** Newsreader's glyph set is "Google
+Fonts Latin Plus" — Latin, Western European, Vietnamese. There is no
+Cyrillic. Every Russian heading and every Kazakh word on the card falls
+through to the fallback stack, so the serif actually on screen is
+Iowan Old Style or Georgia depending on the machine. Inter is unaffected
+and does cover both scripts.
+
+Nothing is broken and nothing looks wrong; the fallback is a decent
+transitional serif and the product reads well. But the *intent* recorded
+in this section — "the Kazakh word reads as something worth pausing for" —
+is being carried by a face nobody chose. Closing that gap means choosing a
+serif with real Cyrillic coverage, and that is a change to the product's
+typographic identity: it needs its own pass with the actual Kazakh and
+Russian copy set in front of it, not a substitution made quietly at the
+end of a hosting fix.
 
 ### The ramp
 
@@ -694,6 +717,18 @@ Both now have the treatment the stats KPI tile already had:
   lose nothing".
 - Never add a blanket reduced-motion rule. It removes feedback, and
   feedback is information.
+- A transient overlay anchors to the **content it belongs to**, not to
+  the viewport. The undo toast was `position: fixed` to the bottom of the
+  window, which is collidable by construction: measured at 1440×900 it
+  covered 22px of the "Показать ответ" button, while 1280×1000,
+  1024×768, 768×1024, 390×844 and 360×640 were all clear. That profile is
+  why it survived — a bug that only appears on one common laptop size
+  reads as a rendering quirk. It now anchors to the bottom of
+  `.study`, where the CTA is by definition the last thing above it, so the
+  collision is structurally impossible rather than measured away. The cost
+  is that on a 900px-tall window the toast sits just below the fold; the
+  trade is deliberate, because the covered control was the one the learner
+  has to press next and the toast self-dismisses in five seconds.
 
 ## Shapes
 
@@ -976,21 +1011,42 @@ from the items inside it.
   Recorded above under Layout.
 - **The mobile nav drawer transition.** The only overlay with no arrival
   animation.
-- **The undo toast overlap.** On the study screen at desktop width the
-  toast overlaps the "Показать ответ" button. A layout collision rather
-  than a motion one, but it is part of why the toast's arrival is easy to
-  miss.
 - **Sound design** beyond TTS playback and the two state animations.
 - **Print layout** beyond the forced palette and the stripped chrome.
+- **The display face does not cover this product's language.** Newsreader
+  ships "Google Fonts Latin Plus" and has no Cyrillic at all. Every Russian
+  heading and every Kazakh word on the card has therefore been rendering
+  in the fallback serif — `'Iowan Old Style', 'Apple Garamond', Georgia` —
+  not in the face this document names as the editorial voice. The product
+  looks the way it looks because the fallback is good, not because the
+  chosen typeface is in effect. This predates the self-hosting pass and
+  was not fixed by it: picking a serif that covers Cyrillic is a design
+  decision about the product's identity, and it belongs in a `typeset`
+  pass, not in a hosting change. See Typography → Display Font.
 
 ## Drift this document now makes visible
 
 Writing the token layer into the frontmatter turned the Impeccable
 detector from blind on this project into an actual check — and it
 immediately found things that were always there and previously
-invisible. `impeccable detect src/` reports **0 anti-patterns and 59
-advisories** (24 off-ramp font sizes, 22 literal colours, 13 radii).
-Nothing regressed; the check simply started working.
+invisible. `impeccable detect src/` reports **3 anti-patterns and 58
+advisories** (24 off-ramp font sizes, 21 literal colours, 13 radii). Nothing
+regressed; the check simply started working.
+
+The three anti-patterns are all the same `overused-font` warning against
+Inter, raised once per `@font-face` block in `src/styles/fonts.css` since
+self-hosting moved the declaration into a file the detector reads. It is
+accepted, and the reason is worth stating: Inter is the *body* voice here,
+chosen for its real Cyrillic coverage and its tabular figures, and the
+product's character comes from the serif standing against it. The warning
+is about interfaces converging on one face for everything; this one uses
+two on purpose. It becomes an interesting finding rather than a false
+alarm the moment the display face is fixed — see Typography, where the
+serif currently in charge is not the one this document names.
+
+`detect landing/` reports 5 for the same reason: 3 from the new
+`landing/fonts.css` plus the 2 it has always had. Same warning, same
+answer.
 
 None of these are fixed here. They are recorded so the next pass can
 decide rather than rediscover.

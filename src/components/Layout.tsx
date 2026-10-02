@@ -23,7 +23,7 @@ import { useOnboarding } from '../contexts/OnboardingContext';
 import styles from './Layout.module.css';
 
 export function Layout() {
-  const { user, logout } = useAuth();
+  const { user, loading: authLoading, logout } = useAuth();
   const { theme, toggle } = useTheme();
   const { fontSize, cycle } = useFontSize();
   const { t } = useLang();
@@ -265,6 +265,15 @@ export function Layout() {
                 <LogOut size={14} />
               </button>
             </>
+          ) : authLoading ? (
+            /* Placeholder while /api/me is in flight.
+               The old `user ? … : <Войти/>` meant a signed-in learner saw
+               a "Войти" link flash on every hard load — the header
+               briefly claimed they were signed out, and the swap
+               reflowed the whole topbar (measured at 0.115 CLS on
+               desktop). An empty box of the right size says nothing
+               and moves nothing. */
+            <div className={styles.userBubblePending} aria-hidden="true" />
           ) : location.pathname !== '/login' && location.pathname !== '/register' ? (
             <Link to="/login" className="btn btn--sm">
               {t('nav.signIn')}

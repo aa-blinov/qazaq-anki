@@ -499,6 +499,15 @@ export function BrowsePage() {
             type="file"
             accept=".apkg,application/zip,application/octet-stream"
             className={styles.hiddenFileInput}
+            /* This input is a proxy, not a control: the button above
+               opens it, carries the label, and handles keyboard
+               activation. Clipped to 1px it still sat in the
+               accessibility tree as an unnamed file field, so a screen
+               reader announced a blank control the learner could do
+               nothing useful with. Take it out of the tab order and
+               out of the tree; the button is the real affordance. */
+            tabIndex={-1}
+            aria-hidden="true"
             onChange={async (e) => {
               const file = e.target.files?.[0];
               // Always reset the input so picking the same file

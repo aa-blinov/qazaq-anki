@@ -33,13 +33,35 @@
     -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self' ws: wss:; base-uri 'self'; form-action 'self';"
+      content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self' ws: wss:; base-uri 'self'; form-action 'self';"
     />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!--
+      Typefaces are self-hosted (src/styles/fonts.css) and were pulled
+      off fonts.googleapis.com in the polish pass. The CSP above used to
+      whitelist both Google hosts; it no longer does, so a stray request
+      to them would now be blocked rather than quietly allowed.
+
+      These two preloads are the first paint's actual type: the Inter
+      latin file for UI and card metadata, and the Newsreader latin file
+      for headings and the word on the card. Both are the smallest of
+      their families and both sit on the critical path, so fetching them
+      alongside the HTML removes the flash of fallback on a cold load.
+      The cyrillic and latin-ext files load on demand, driven by the
+      unicode-range in the @font-face rules.
+    -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      href="/fonts/inter-normal-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/newsreader-normal-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
     />
     <!--
       Set the data-theme attribute on <html> before the first paint.
