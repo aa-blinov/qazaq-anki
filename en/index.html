@@ -8,8 +8,15 @@
 <link rel="icon" href="../favicon.png" />
 <link rel="alternate" hreflang="ru" href="/qazaq-anki/" />
 <link rel="alternate" hreflang="en" href="/qazaq-anki/en/" />
+<!--
+  Same reasoning as the Russian page, one different file. This page's
+  headings and body are English, so Inter is needed in latin here. The
+  hero card is still Kazakh — "арнаулы тілші", the largest element on the
+  screen — so the display face is still needed in Cyrillic. Preloading
+  Newsreader's latin slice 404ed on every load, since that file is gone.
+-->
 <link rel="preload" href="../fonts/inter-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
-<link rel="preload" href="../fonts/newsreader-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="../fonts/sourceserif4-normal-cyrillic.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="stylesheet" href="../fonts.css" />
 <link rel="stylesheet" href="../styles.css" />
 </head>
