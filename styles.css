@@ -17,6 +17,13 @@
   Dark mode is a media query, not a toggle: the landing has no state to
   persist, and a person reading it has not necessarily chosen anything
   about this product yet.
+
+  There is no --text-subtle here, and there is none in the app either. The
+  token carried a third text step that could not clear 4.5:1 on any
+  surface in either theme — on the app's warm ground the step collapses
+  into --text-muted. It was retired rather than retuned, because two
+  tokens three units apart in each channel are one token wearing two
+  names. Captions here take --text-muted.
 */
 
 :root {
@@ -28,7 +35,6 @@
   --text:        #1F1E1B;
   --text-strong: #0E0D0B;
   --text-muted:  #6B6862;
-  --text-subtle: #948F86;
   --border:      #E8E2D2;
   --border-strong: #D7CFBE;
   --accent:      #C96442;
@@ -88,7 +94,6 @@
     --text:        #ECE8DF;
     --text-strong: #FAF7F2;
     --text-muted:  #A8A29A;
-    --text-subtle: #8C877E;
     --border:      #36332F;
     --border-strong: #4A463F;
     --accent:      #E08662;
@@ -247,7 +252,7 @@ code, pre, kbd { font-family: var(--font-mono); font-variant-numeric: tabular-nu
   font-size: var(--text-micro);
   color: var(--text-muted);
 }
-.term-path { color: var(--text-subtle); }
+.term-path { color: var(--text-muted); }
 
 .term pre {
   margin: 0;
@@ -340,7 +345,7 @@ code, pre, kbd { font-family: var(--font-mono); font-variant-numeric: tabular-nu
   font-family: var(--font-display);
   font-style: italic;
   font-size: 1.05rem;
-  color: var(--text-subtle);
+  color: var(--text-muted);
 }
 .meaning { font-size: 1.25rem; font-weight: 600; color: var(--text); margin-top: 8px; }
 
@@ -349,7 +354,7 @@ code, pre, kbd { font-family: var(--font-mono); font-variant-numeric: tabular-nu
   top: 16px; left: 20px;
   font-size: 0.78rem;
   font-weight: 600;
-  color: var(--text-subtle);
+  color: var(--text-muted);
 }
 .card-phase {
   position: absolute;
@@ -424,7 +429,7 @@ code, pre, kbd { font-family: var(--font-mono); font-variant-numeric: tabular-nu
 .caption {
   margin-top: 14px;
   font-size: var(--text-meta);
-  color: var(--text-subtle);
+  color: var(--text-muted);
 }
 
 /* ---------------------------------------------------------------- ladder */
