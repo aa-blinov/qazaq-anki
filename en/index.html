@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Söz — spaced repetition for Kazakh</title>
+<meta name="description" content="3,996 Kazakh words across CEFR A1–C1, the SM-2 algorithm, and audio for every word. One command to run it yourself. No telemetry." />
+<link rel="icon" href="../favicon.png" />
+<link rel="alternate" hreflang="ru" href="/qazaq-anki/" />
+<link rel="alternate" hreflang="en" href="/qazaq-anki/en/" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" />
+<link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+<div class="page">
+
+  <header class="masthead">
+    <a class="wordmark" href="../" aria-label="Söz — home">Söz</a>
+    <nav class="lang" aria-label="Page language">
+      <a href="../" hreflang="ru">RU</a>
+      <a href="./" aria-current="true" hreflang="en">EN</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <section class="hero">
+      <h1><span class="count">3,996</span> Kazakh words that come back on time</h1>
+      <p class="lead">
+        Cards running the SM-2 algorithm: you rate how well you recalled a
+        word, and it returns just as you start to forget it. Five CEFR
+        levels, audio for every word in two voices, and progress broken
+        down by topic. The whole app runs on your own machine and sends
+        not one byte of your data anywhere.
+      </p>
+
+      <div class="install">
+        <div class="term">
+          <div class="term-bar">
+            <span class="term-label">bash</span>
+            <span class="term-path">qazaq-anki</span>
+          </div>
+<pre><code><span class="c"># clone and bring it up</span>
+git clone https://github.com/aa-blinov/qazaq-anki.git
+cd qazaq-anki
+<span class="p">$</span> docker compose up -d --build</code></pre>
+        </div>
+        <p class="opens">
+          Then open <code>http://localhost:8080</code> and make an account —
+          it lives in your database, not on someone else's server.
+        </p>
+        <a class="repo-link" href="https://github.com/aa-blinov/qazaq-anki">
+          Source and full install notes on GitHub
+        </a>
+      </div>
+    </section>
+
+    <section class="specimen">
+      <div class="specimen-head">
+        <h2>This is what a card looks like</h2>
+        <p class="lead" style="font-size:1rem">
+          The word, the transliteration, and after the turn — the meaning
+          and four grades. Real data from the B1 deck.
+        </p>
+      </div>
+
+      <div class="card3d">
+        <div class="flip" id="flip">
+          <div class="face face--front">
+            <span class="card-tag">B1</span>
+            <span class="word" lang="kk">арнаулы тілші</span>
+            <span class="tr" lang="kk-Latn">arnauly tilshi</span>
+            <button class="flip-btn" type="button" data-flip aria-pressed="false">turn it over</button>
+          </div>
+          <div class="face face--back">
+            <span class="card-tag">B1</span>
+            <span class="card-phase">New</span>
+            <span class="word" lang="kk">арнаулы тілші</span>
+            <span class="meaning">specialist</span>
+            <div class="grades" role="img" aria-label="Grades: Again, Hard, Good, Easy — keys 1, 2, 3, 4">
+              <span class="grade" data-g="again">Again<small>1</small></span>
+              <span class="grade" data-g="hard">Hard<small>2</small></span>
+              <span class="grade" data-g="good">Good<small>3</small></span>
+              <span class="grade" data-g="easy">Easy<small>4</small></span>
+            </div>
+            <button class="flip-btn" type="button" data-flip aria-pressed="true">turn it back</button>
+          </div>
+        </div>
+      </div>
+      <p class="caption">Click the card to turn it over.</p>
+    </section>
+
+    <section class="levels">
+      <h2>Five levels, five decks</h2>
+      <p>
+        CEFR is the axis the vocabulary and the statistics are both built
+        on: mastery is counted by level, not by "this week's topic".
+      </p>
+      <div class="ladder">
+        <div class="rung"><b>A1</b><span>712 words</span></div>
+        <div class="rung"><b>A2</b><span>693 words</span></div>
+        <div class="rung"><b>B1</b><span>1,559 words</span></div>
+        <div class="rung"><b>B2</b><span>449 words</span></div>
+        <div class="rung"><b>C1</b><span>583 words</span></div>
+      </div>
+    </section>
+
+    <section class="facts">
+      <h2>What comes up on your machine</h2>
+      <dl class="rows">
+        <div class="row">
+          <dt>The app</dt>
+          <dd>React and TypeScript, built to static files and served by nginx. Study data lives in the browser.</dd>
+        </div>
+        <div class="row">
+          <dt>Accounts</dt>
+          <dd>Node and Express, passwords stored as bcrypt hashes. One username is one data island.</dd>
+        </div>
+        <div class="row">
+          <dt>Audio</dt>
+          <dd>Piper: <code>kk_KZ-issai-high</code> for Kazakh and <code>ru_RU-denis-medium</code> for Russian. The WAV files ship pre-rendered.</dd>
+        </div>
+        <div class="row">
+          <dt>Backups</dt>
+          <dd>An hourly SQLite snapshot on a schedule. In production, Caddy with automatic TLS.</dd>
+        </div>
+      </dl>
+    </section>
+
+    <div class="note">
+      <h2>Why the app itself is not on this page</h2>
+      <p>
+        This page is a static file on GitHub Pages, and it shows only what
+        can honestly be shown without a server. The app itself lives on
+        your machine: accounts and progress are created where you run it,
+        so there is nothing for a link to hand over — and there should not
+        be.
+      </p>
+    </div>
+
+  </main>
+
+  <footer class="foot">
+    <a href="https://github.com/aa-blinov/qazaq-anki">github.com/aa-blinov/qazaq-anki</a>
+    <span>MIT</span>
+    <span>No telemetry</span>
+    <span>Word lists — CC-BY-4.0. A. Baitursynov Institute of Linguistics, Astana, 2017–2018. ISBN 978-601-7311-32-2</span>
+  </footer>
+
+</div>
+
+<script>
+  // The card is a specimen, not a control: it turns so a visitor can see
+  // the reverse of a real card from the B1 deck. One handler, both faces.
+  (function () {
+    var flip = document.getElementById('flip');
+    var btns = document.querySelectorAll('[data-flip]');
+    btns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        var on = flip.classList.toggle('flip--on');
+        btns.forEach(function (x) { x.setAttribute('aria-pressed', String(on)); });
+      });
+    });
+  })();
+</script>
+</body>
+</html>
