@@ -1,0 +1,52 @@
+/* Wordmark — the "Söz" brand mark as plain type.
+ *
+ * This used to be a JSX inline-style blob with a `size?: number` prop
+ * that callers passed pixels into (`<Wordmark size={30} />`). Three
+ * things were wrong with that:
+ *
+ *  1. A px number here cannot follow the reader's text-size setting.
+ *     `html` computes `font-size: calc(15px * var(--font-scale))`, so
+ *     every rem-based role token in the app grows and shrinks with that
+ *     setting — but a hardcoded 29px never moved. The one place the
+ *     product states its name was the one place immune to the
+ *     accessibility control that sizes the rest of the interface.
+ *
+ *  2. 29px is not on the ramp. The topbar nav sits at
+ *     `--text-small` (0.95rem = 14.25px); 29px is 2.03x that, which
+ *     is a logo's ratio, not a heading's. `--text-title` (1.5rem =
+ *     22.5px) is 1.58x nav text — large enough to read as the mark,
+ *     small enough to sit in a 14px-padded topbar without shouting.
+ *     And it is an existing step, so it is a role, not a new number.
+ *
+ *  3. The `padding-top: 0.05em` was tuned against Fredoka's
+ *     cap-height. Fredoka is not in this project and never was; the
+ *     comment above the old code claimed it was. The nudge was
+ *     compensating for a face that was never rendering.
+ *
+ * `md` is the topbar mark, and is the only one with a call site today.
+ * `sm` exists so that the next caller reaches for a role rather than
+ * re-introducing a pixel count — that regression is the one this whole
+ * change is about, and a size prop that only accepted "md" would invite
+ * it. It is written as a real step on the ramp, not a shrunken `md`, so
+ * that when it is used it lands somewhere rather than beside the size
+ * above it. */
+
+.sm,
+.md {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 1;
+  /* Source Serif 4 has open, bookish sidebearings. A hair of negative
+     tracking pulls "Söz" into one word instead of three loose
+     letters, which is what the old comment was reaching for. */
+  letter-spacing: -0.02em;
+  color: var(--text-strong);
+  /* Optical sizing is inherited from `body` (`font-optical-sizing:
+     auto`), so this renders at the display cut of the face rather
+     than its text cut — which is the whole reason the `opsz` axis was
+     left free when the weight axis was pinned. */
+}
+
+.sm { font-size: var(--text-lead); }
+.md { font-size: var(--text-title); }

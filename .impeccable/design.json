@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-02T08:09:32.115Z",
+  "generatedAt": "2026-10-02T14:30:00.000Z",
   "title": "Design System: qazaq-anki",
   "extensions": {
     "colorMeta": {
@@ -672,8 +672,8 @@
     },
     "typographyMeta": {
       "display": {
-        "displayName": "Newsreader",
-        "purpose": "The Kazakh word, and page headings. The only place the product shows a second voice."
+        "displayName": "Source Serif 4",
+        "purpose": "The Kazakh word, and page headings. The only place the product shows a second voice. Chosen over Newsreader, which shipped no Cyrillic and drew 8 of 50 glyphs of a Russian h1 and 0 of 5 of 'Сәлем'. Now draws 50 of 50 and 5 of 5. Weight pinned to 400-700, optical size left free so one face is correct from a 14px transliteration to a 62px landing hero."
       },
       "title": {
         "displayName": "Inter 600",

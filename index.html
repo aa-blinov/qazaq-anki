@@ -41,24 +41,30 @@
       whitelist both Google hosts; it no longer does, so a stray request
       to them would now be blocked rather than quietly allowed.
 
-      These two preloads are the first paint's actual type: the Inter
-      latin file for UI and card metadata, and the Newsreader latin file
-      for headings and the word on the card. Both are the smallest of
-      their families and both sit on the critical path, so fetching them
-      alongside the HTML removes the flash of fallback on a cold load.
-      The cyrillic and latin-ext files load on demand, driven by the
-      unicode-range in the @font-face rules.
+      These two preloads are the first paint's actual type. The document
+      is <html lang="ru"> and the whole interface is Russian, so the first
+      paint is drawn in the *cyrillic* slices — not the latin ones that
+      were preloaded before, which only ever served the wordmark and a
+      few numerals. Preloading a face the first paint does not use costs
+      a request and buys nothing; these are the two files the first
+      screen genuinely asks for: Inter for UI text, Source Serif 4 for
+      the headings.
+
+      latin and cyrillic-ext are not preloaded, and that is deliberate.
+      They only download on a screen that shows a latin-only string
+      (the wordmark) or a Kazakh letter — exactly the gating the
+      unicode-range split is there to provide.
     -->
     <link
       rel="preload"
-      href="/fonts/inter-normal-latin.woff2"
+      href="/fonts/inter-normal-cyrillic.woff2"
       as="font"
       type="font/woff2"
       crossorigin
     />
     <link
       rel="preload"
-      href="/fonts/newsreader-normal-latin.woff2"
+      href="/fonts/sourceserif4-normal-cyrillic.woff2"
       as="font"
       type="font/woff2"
       crossorigin

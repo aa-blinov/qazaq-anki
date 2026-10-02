@@ -85,11 +85,13 @@ export function Layout() {
 
       <header className={styles.header}>
         <Link to="/" className={styles.brand} aria-label={t('nav.homeAria')}>
-          {/* Plain-text "Söz" wordmark in Fredoka — replaces the
-              earlier BrandLockup. The tile icon + duplicated wordmark
-              stopped making sense once the product had a short,
-              ownable name. */}
-          <Wordmark size={30} />
+          {/* Plain-text "Söz" wordmark — replaces the earlier
+              BrandLockup. The tile icon + duplicated wordmark stopped
+              making sense once the product had a short, ownable
+              name. `md` is a role, not a pixel count; the previous
+              `size={30}` was a hardcoded px number that could not
+              follow the reader's text-size setting. */}
+          <Wordmark size="md" />
         </Link>
 
         {user ? (

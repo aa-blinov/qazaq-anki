@@ -34,7 +34,7 @@ test('audit — landing + auth + dashboard + study + browse + stats', async ({ p
   });
 
   // 1) Landing (logged out)
-  await page.goto('http://localhost:5173/');
+  await page.goto('/');
   await page.waitForLoadState('networkidle');
   await expect(page.locator('h1').first()).toContainText('Учите казахский');
   await shot(page, '01-landing-ru');
@@ -52,7 +52,7 @@ test('audit — landing + auth + dashboard + study + browse + stats', async ({ p
   await page.fill('#password', 'audit1234');
   await page.fill('#confirm', 'audit1234');
   await page.click('button[type=submit]');
-  await page.waitForURL('http://localhost:5173/');
+  await page.waitForURL((url) => url.pathname === '/');
 
   // 4) Dashboard
   await page.waitForLoadState('networkidle');
@@ -60,9 +60,11 @@ test('audit — landing + auth + dashboard + study + browse + stats', async ({ p
   await closeOnboardingIfOpen(page);
   await shot(page, '03-dashboard-ru');
 
-  // 5) Study page (A1) — first card
-  await page.click('a[href="/study/a1"]');
-  await page.waitForURL('**/study/a1');
+  // 5) Study page (A1) — first card. The dashboard links to
+  // /study/level/a1; `a[href="/study/a1"]` was the pre-redirect shape
+  // and had been finding nothing for some time.
+  await page.click('a[href="/study/level/a1"]');
+  await page.waitForURL('**/study/level/a1');
   await page.waitForLoadState('networkidle');
   await page.waitForTimeout(300);
   await closeOnboardingIfOpen(page);
@@ -79,21 +81,21 @@ test('audit — landing + auth + dashboard + study + browse + stats', async ({ p
   await shot(page, '06-study-a1-revealed-ru');
 
   // 8) Browse page
-  await page.goto('http://localhost:5173/browse');
+  await page.goto('/browse');
   await page.waitForLoadState('networkidle');
   await page.waitForTimeout(300);
   await closeOnboardingIfOpen(page);
   await shot(page, '07-browse-ru');
 
   // 9) Stats page
-  await page.goto('http://localhost:5173/stats');
+  await page.goto('/stats');
   await page.waitForLoadState('networkidle');
   await page.waitForTimeout(300);
   await closeOnboardingIfOpen(page);
   await shot(page, '08-stats-ru');
 
   // 10) 404
-  await page.goto('http://localhost:5173/this-does-not-exist');
+  await page.goto('/this-does-not-exist');
   await page.waitForLoadState('networkidle');
   await page.waitForTimeout(300);
   await shot(page, '09-notfound-ru');

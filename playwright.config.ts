@@ -63,6 +63,20 @@ export default defineConfig({
         // Keep the dev API free of CORS drama by mirroring the
         // dev config. The test Vite (below) and the test API are
         // both on localhost, so same-origin via the proxy.
+        //
+        // The auth rate limiters, raised for the run. The server
+        // defaults to 5 registrations per 10 minutes and 10 logins
+        // per 5, which is right for a public deploy and fatal for a
+        // suite: every spec registers a fresh user, so the limiter
+        // trips around the sixth one and the rest of the run fails at
+        // `expect(page).toHaveURL(/\/$/)` having never left /register.
+        // This is not a test-only problem — it is why CI has been
+        // green while a local `npm run e2e` was not. .github/workflows/
+        // ci.yml already sets exactly these two values; setting them
+        // here too means a local run and a CI run exercise the same
+        // server. The production defaults are unchanged.
+        RATE_LIMIT_REGISTER: '1000',
+        RATE_LIMIT_LOGIN: '1000',
       },
       reuseExistingServer: false,   // always spin up a clean instance
       timeout: 30_000,

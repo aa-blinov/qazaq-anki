@@ -179,21 +179,6 @@
   color: var(--accent-fg);
 }
 
-.avatar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--accent-solid);
-  color: var(--accent-fg);
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: var(--text-meta);
-  flex-shrink: 0;
-}
-
 .userName {
   font-size: var(--text-meta);
   color: var(--text-muted);

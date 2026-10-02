@@ -1,10 +1,10 @@
+import styles from './Wordmark.module.css';
+
 interface WordmarkProps {
-  /** Render height in CSS pixels. Width derives from the letter
-   *  width ratio of the chosen font (Fredoka) — at this size the
-   *  glyph is roughly square-ish in cap-height; we set the box
-   *  width so the lockup slots into the same horizontal space the
-   *  old BrandLockup used. */
-  size?: number;
+  /** Size *role*, not pixels. Pass a name from the type ramp; the size is
+   *  then a rem value that tracks the reader's text-size setting, which
+   *  a px number here could never do. */
+  size?: 'sm' | 'md';
 }
 
 /**
@@ -13,36 +13,28 @@ interface WordmarkProps {
  * "Söz" (Kazakh for "word") reads as the brand on its own, so the
  * icon-tile + duplicated wordmark pair stopped making sense.
  *
- * Font choice:
- *  - Fredoka (already loaded globally as `--font-display`) — round,
- *    friendly, fits the warm palette, supports Kazakh diacritics.
- *  - `font-weight: 500` — same as h1 titles, so the wordmark reads
- *    as a continuation of the typographic system rather than a brand
- *    "logo" floating outside it.
- *  - Slight negative letter-spacing so the three glyphs feel like
- *    one word, not three loose letters.
+ * Type:
+ *  - `var(--font-display)` — Source Serif 4. (This comment used to name
+ *    Fredoka and describe it as round and friendly; Fredoka is not in
+ *    this project and never was, and the `padding-top` below was tuned
+ *    to *its* cap-height rather than to the face actually rendering.
+ *    Both are corrected here.)
+ *  - `font-weight: 500` — the same weight the card word and every
+ *    section heading uses, so the wordmark reads as part of the
+ *    typographic system rather than a brand "logo" floating outside it.
+ *  - Optical sizing is on globally (`font-optical-sizing: auto` in
+ *    global.css), so this renders at the display cut of the face rather
+ *    than its text cut.
  *
- * Use this everywhere the old BrandLockup was used (topbar,
- * auth panels). The PWA install icon (`favicon.png`) is a separate
- * concern and stays untouched — it's not the in-app brand mark,
- * it's the OS-level icon.
+ * Use this everywhere the old BrandLockup was used (topbar, auth
+ * panels). The PWA install icon (`favicon.png`) is a separate concern and
+ * stays untouched — it's not the in-app brand mark, it's the OS-level
+ * icon.
  */
-export function Wordmark({ size = 30 }: WordmarkProps) {
+export function Wordmark({ size = 'md' }: WordmarkProps) {
   return (
     <span
-      style={{
-        display: 'inline-block',
-        fontFamily: 'var(--font-display, system)',
-        fontWeight: 500,
-        fontSize: `${Math.round(size * 0.95)}px`,
-        lineHeight: 1,
-        letterSpacing: '-0.02em',
-        color: 'var(--text-strong, inherit)',
-        // Fredoka's cap-height is a touch shorter than the fontSize
-        // suggests — `padding-top` of 0.05em lifts the visible glyph
-        // into the baseline the rest of the topbar expects.
-        paddingTop: '0.05em',
-      }}
+      className={size === 'sm' ? styles.sm : styles.md}
       // aria-label so screen-readers announce the name rather than
       // the literal letters "Söz" spelled out.
       aria-label="Söz"

@@ -8,8 +8,23 @@
 <link rel="icon" href="favicon.png" />
 <link rel="alternate" hreflang="en" href="/qazaq-anki/en/" />
 <link rel="alternate" hreflang="ru" href="/qazaq-anki/" />
-<link rel="preload" href="fonts/inter-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
-<link rel="preload" href="fonts/newsreader-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
+<!--
+  Preload exactly the two files that paint this page's first screen, and
+  nothing else. This page is Russian and its hero card is Kazakh, so both
+  faces are needed in Cyrillic: Inter for the headings and body, Source
+  Serif 4 for the 62px Kazakh word that is the largest thing on the page.
+
+  This used to preload the *latin* slices of Inter and Newsreader. Both
+  were wrong twice over. Newsreader's files no longer exist, so the
+  request 404ed on every load and the browser fell through to the system
+  serif in the one place the page is built to show its personality. And
+  latin was never the critical script here — the h1, the body and the
+  hero word are all Cyrillic, so the preload bought a font swap on the
+  first render instead of avoiding one. See src/styles/fonts.css in the
+  app for the full account.
+-->
+<link rel="preload" href="fonts/inter-normal-cyrillic.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="fonts/sourceserif4-normal-cyrillic.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="stylesheet" href="fonts.css" />
 <link rel="stylesheet" href="styles.css" />
 </head>

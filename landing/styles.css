@@ -53,7 +53,15 @@
   --shadow-lg: 0 16px 40px rgba(31, 30, 27, 0.10), 0 2px 6px rgba(31, 30, 27, 0.05);
 
   --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
-  --font-display: 'Newsreader', 'Iowan Old Style', 'Apple Garamond', Georgia, 'Times New Roman', serif;
+  /* Source Serif 4. This was still 'Newsreader' after the display face was
+     swapped in the app, which left the landing asking for a family whose
+     @font-face rules and files no longer exist — so the hero word, the one
+     surface this page is built around, fell through to the OS serif and
+     looked different on macOS and Windows. Nothing errored; a missing
+     webfont never does. `python3 scripts/build_fonts.py --check` now
+     asserts that every family named in a --font-* token has a matching
+     @font-face on disk, which is what catches this class. */
+  --font-display: 'Source Serif 4', 'Iowan Old Style', 'Apple Garamond', Georgia, 'Times New Roman', serif;
   --font-mono:    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 
   --radius-sm: 6px;

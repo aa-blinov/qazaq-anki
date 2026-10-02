@@ -29,13 +29,21 @@ const APP_SHELL = [
   // names are stable (they live in public/, unhashed), so unlike the
   // JS/CSS bundles they can be listed here at all.
   //
-  // Inter is listed for both ranges; Newsreader only for latin. It
-  // ships "Google Fonts Latin Plus" and has no Cyrillic file to
-  // name — and addAll is atomic, so listing a 404 here would fail the
-  // whole install and leave the app with no offline shell at all.
-  '/fonts/inter-normal-latin.woff2',
+  // The Cyrillic slices are the ones that matter, and for a specific
+  // reason: this document is lang="ru" and the content is Kazakh, so the
+  // interface and the card both draw from the Cyrillic range — and the
+  // Kazakh letters Ә Ғ Қ Ң Ө Ұ Ү Һ live in the separate cyrillic-ext
+  // file. Without it an offline study session renders most of the
+  // vocabulary in a system face.
+  //
+  // addAll is atomic: a single 404 here fails the whole install and
+  // leaves the app with no offline shell at all, so every name below is
+  // a file that exists.
   '/fonts/inter-normal-cyrillic.woff2',
-  '/fonts/newsreader-normal-latin.woff2',
+  '/fonts/inter-normal-cyrillic-ext.woff2',
+  '/fonts/sourceserif4-normal-cyrillic.woff2',
+  '/fonts/sourceserif4-normal-cyrillic-ext.woff2',
+  '/fonts/inter-normal-latin.woff2',
 ];
 
 self.addEventListener('install', (event) => {
