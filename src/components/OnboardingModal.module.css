@@ -93,7 +93,7 @@
 
 .title {
   font-family: var(--font-display);
-  font-size: 1.6rem;
+  font-size: var(--text-title);
   font-weight: 500;
   letter-spacing: -0.02em;
   margin: 0;
@@ -177,7 +177,7 @@
      whole declaration and the title never actually shrank on a phone.
      1.6rem → 1.3rem matches what ConfirmDialog's title already is, so
      the two dialogs now land on the same step. */
-  .title { font-size: 1.3rem; }
+  .title { font-size: var(--text-heading); }
   .step { grid-template-columns: 28px 24px 1fr; gap: 10px; padding: 12px 12px; }
   .stepBody { font-size: var(--text-meta); }
   .footer { flex-direction: column-reverse; }

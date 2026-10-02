@@ -33,7 +33,7 @@
 
 .heading h1 {
   font-family: var(--font-display);
-  font-size: 1.75rem;
+  font-size: var(--text-figure);
   font-weight: 500;
   margin: 0 0 6px;
   letter-spacing: -0.02em;

@@ -54,10 +54,8 @@ export const en: Translations = {
   'auth.localNotice':
     'Your account and progress are tied to your username and live on our server. You can sign in from any browser. Use a unique password: we can’t recover it for you.',
   'auth.username': 'Username',
-  'auth.usernameHint': '3–32 chars: a–z, 0–9, dot, dash, underscore',
   'auth.displayName': 'Display name (optional)',
   'auth.password': 'Password',
-  'auth.passwordHint': 'At least 4 characters',
   'auth.recover.link': 'Forgot password?',
   'auth.recover.context':
     'This server has no email, so the recovery code lands in the logs \u2014 ask the operator to read it back and pass it on.',
@@ -68,14 +66,12 @@ export const en: Translations = {
   'auth.recover.newPassword': 'New password',
   'auth.recover.reset': 'Reset password',
   'auth.recover.cancel': 'Cancel',
-  'auth.recover.error.invalidCode': 'Invalid or expired code. Try generating a new one.',
   'auth.confirmPassword': 'Confirm password',
   'auth.signIn': 'Sign in',
   'auth.createAccount': 'Create account',
   'auth.noAccount': 'No account yet?',
   'auth.haveAccount': 'Already have one?',
   'auth.register': 'Register',
-  'auth.errors.required': 'Username and password are required.',
   'auth.errors.generic': 'Could not log in. Please try again.',
   'auth.errors.usernameRequired': 'Please enter a username.',
   'auth.errors.usernameTooShort': 'Username must be at least 3 characters.',
@@ -90,8 +86,12 @@ export const en: Translations = {
   'auth.errors.tooManyAccounts': 'Too many accounts on this device. Reset storage to continue.',
   'auth.errors.invalidUserRecord': 'Could not read your account. Please sign in again.',
   'auth.errors.passwordMismatch': 'Passwords do not match.',
-  'auth.firstRun': 'First time here?',
-  'auth.firstRun.body': 'Create an account to start tracking your study progress. Everything stays on this device.',
+  // Both of these are thrown for real (a fetch that never completed, a
+  // 5xx from the API) and both used to have no string here, so the form
+  // rendered the bare key `auth.errors.serverError` to the learner. Keep
+  // them in step with AuthErrorCode in src/lib/auth.ts.
+  'auth.errors.networkError': 'Could not reach the server. Check your connection and try again.',
+  'auth.errors.serverError': 'The server did not answer properly. Please try again shortly.',
 
   // Landing
   'landing.title': 'Learn Kazakh the way you learned your first language.',
@@ -115,9 +115,6 @@ export const en: Translations = {
     'A local app. Open it, try it, close it. No newsletters, no push notifications.',
   'landing.preview.title': 'Levels',
   'landing.preview.subtitle': 'A1 to C1. Pick your level and go.',
-  'landing.feature.free.title': 'Source code is open',
-  'landing.feature.free.body':
-    'Repository on GitHub. Want your own copy? Run it locally or on your own server.',
 
   // Dashboard
   'dashboard.greeting': 'Сәлем, {name}.',
@@ -163,7 +160,6 @@ export const en: Translations = {
 
   // Levels page
 
-
   // Level tiers (Beginner/Elementary/...)
   'level.tier.beginner': 'Beginner',
   'level.tier.elementary': 'Elementary',
@@ -182,9 +178,6 @@ export const en: Translations = {
     'Can interact fluently with native speakers and understand complex text on concrete and abstract topics.',
   'level.standard.c1':
     'Can express ideas fluently, spontaneously and precisely, and grasp implicit meaning in demanding texts.',
-  'level.cards.one': '{count} card',
-  'level.cards.few': '{count} cards',
-  'level.cards.many': '{count} cards',
 
   // Study page
   'study.pageTitle': 'Study: {level}',
@@ -307,11 +300,6 @@ export const en: Translations = {
   'browse.empty.filtered': 'Nothing matches your filters. Reset them to see every card.',
   'browse.empty.loading': 'Loading the deck…',
   'browse.empty.reset': 'Reset filters',
-  'browse.count.one': 'Showing 1 card',
-  'browse.count.few': 'Showing {count} cards',
-  'browse.count.many': 'Showing {count} cards',
-  'browse.loadMore': 'Show {count} more',
-  'browse.loadMoreHint': 'Showing {shown} of {total}',
   'browse.page.prev': 'Previous page',
   'browse.page.next': 'Next page',
   'browse.page.label': 'Page {current} of {total}',
@@ -328,7 +316,6 @@ export const en: Translations = {
   'stats.topicStatus.percent': '{percent}%',
   'stats.signedInAs': 'Signed in as @{name}. All data is stored locally on this device.',
   'stats.reset': 'Reset progress',
-  'stats.resetConfirm': 'Tap again to confirm',
   'stats.resetDialog.title': 'Reset all progress?',
   'stats.resetDialog.body':
     'This action cannot be undone. Every card schedule and every review in your history will be deleted, and each card will be back to "new".',
@@ -396,7 +383,6 @@ export const en: Translations = {
   'stats.retention.title': 'Daily accuracy',
   'stats.retention.subtitle':
     'Share of correct answers over the last 30 days. 80–95% is the healthy range.',
-  'stats.retention.legend': 'Dashed lines are 80% and 95% reference marks.',
   'stats.levels.title': 'Mastery rings',
   'stats.levels.subtitle':
     'Outer ring: words from this level you have opened at least once. Inner ring: words you have anchored in long-term memory (interval ≥ 21 days).',
@@ -442,7 +428,6 @@ export const en: Translations = {
   // Flashcard
   'card.front.kk': 'What does this mean?',
   'card.front.ru': 'Как это сказать по-казахски?',
-  'card.tapToReveal': 'Tap to reveal',
   'card.aria.revealed': 'Answer shown. Tap to flip back',
   'card.aria.flippedBack': 'Prompt shown. Tap to reveal the answer again',
   'card.aria.hidden': 'Tap or press Space to flip',
@@ -452,11 +437,8 @@ export const en: Translations = {
   'card.phase.relearning': 'Relearning',
   'card.source.label': 'source',
   'card.example.aria': 'Example usage',
-  'card.audio.play': 'Pronounce',
   'card.audio.play.kk': 'Hear in Kazakh',
   'card.audio.play.ru': 'Hear translation in Russian',
-  'card.audio.missing': 'Audio not ready yet',
-  'card.audio.generate': 'Generate audio',
   'card.audio.generating': 'Generating…',
   'card.audio.retry': 'Failed. Try again.',
 
@@ -527,7 +509,6 @@ export const en: Translations = {
   'stats.activity.month.12': 'Dec',
 
   // Errors
-  'error.loading': 'Loading deck…',
   'error.noCards': 'No cards in this level.',
   'error.boundary.title': 'Something broke',
   'error.boundary.body': 'The page could not render. Try reloading or going back to the home page. If the error repeats, open the browser console (F12) and send the stack trace.',
@@ -596,7 +577,6 @@ export const en: Translations = {
   'settings.audio.hint': 'Playback speed for the Kazakh and Russian TTS. The audio itself is pre-generated at build time (Piper), so a change here takes effect on the next word spoken.',
   'settings.audio.speedLabel': 'TTS speed',
   'settings.account.title': 'Account',
-  'settings.account.username': 'Username',
   'settings.account.hint': 'All data is stored locally on this device. Changing the password does not sign you out.',
   'settings.account.passwordOld': 'Current password',
   'settings.account.passwordOld.placeholder': 'enter your current password',

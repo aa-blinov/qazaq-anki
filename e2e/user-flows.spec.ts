@@ -55,6 +55,37 @@ async function pickCards(page: Page, option: string) {
   await page.getByRole('listbox').getByText(option, { exact: true }).click();
 }
 
+/**
+ * Read the study page's queue counts ("Повтор 0", "Новые 711", …) from
+ * the cards picker without selecting anything.
+ *
+ * This is the only honest way to see whether a grade was *stored*. The
+ * `study-counter` pill reports the current queue's length, and the
+ * default queue is "Все" — a graded card stays in "Все" as a non-new
+ * card, so that number never moves and proves nothing. The per-queue
+ * counts in the picker do move: grading a card takes it out of "Новые"
+ * and puts it in "В изучении", and that is what has to be re-read after
+ * a reload to show the grade survived.
+ */
+async function readCardsCounts(page: Page): Promise<Record<string, number>> {
+  const row = page
+    .locator('[class*="pickerRow"]')
+    .filter({ has: page.getByText('Карточки', { exact: true }) })
+    .first();
+  await row.getByRole('button').first().click();
+  const listbox = page.getByRole('listbox');
+  const opts = listbox.getByRole('button');
+  const n = await opts.count();
+  const out: Record<string, number> = {};
+  for (let i = 0; i < n; i++) {
+    const text = (await opts.nth(i).innerText()).replace(/\n/g, ' ');
+    const m = text.match(/^(.*?)\s+(\d[\d\s]*)$/);
+    if (m) out[m[1].trim()] = Number(m[2].replace(/\s/g, ''));
+  }
+  await page.keyboard.press('Escape');
+  return out;
+}
+
 async function register(page: Page, username: string, password = 'correcthorse') {
   await page.goto('/register');
   await expect(page).toHaveTitle(/Qazaq/);
@@ -296,18 +327,22 @@ test.describe('Study flow + progress persistence', () => {
     // Wait for the study page to actually render
     await expect(page.locator('[class*="kazakhWord"]').first()).toBeVisible({ timeout: 10000 });
 
-    // The Семья family chip should be present and selected.
-    // Match by visible text content rather than role to be resilient
-    // to small DOM changes.
-    const familyChip = page.locator('button[role="tab"]').filter({ hasText: /Семья/ });
-    await expect(familyChip).toHaveCount(1);
-    await expect(familyChip).toHaveAttribute('aria-selected', 'true');
+    // The topic is selected through the "Тема" picker, not a row of
+    // `role="tab"` chips: that list was replaced by a PickerSelect, so
+    // `button[role="tab"]` with "Семья" matches nothing. The deep link
+    // is the primary way in, and the picker's current value is the
+    // observable that it took effect.
+    const topic = page
+      .locator('[class*="pickerRow"]')
+      .filter({ has: page.getByText('Тема', { exact: true }) })
+      .first();
+    await expect(topic.getByRole('button').first()).toHaveText(/Семья/);
 
-    // The total count for "New" should be > 0 (real cards in that topic)
-    const newTab = page.getByRole('tab', { name: /^Новые/ });
-    const newText = await newTab.textContent();
-    const n = parseInt(newText?.match(/(\d+)/)?.[1] ?? '0', 10);
-    expect(n).toBeGreaterThan(0);
+    // The queue is non-empty: the Семья family topic has real A1 cards.
+    const total = Number(
+      (await page.getByTestId('study-counter').innerText()).match(/из\s+(\d+)/)![1],
+    );
+    expect(total).toBeGreaterThan(0);
   });
 
   test('Direction toggle switches between Қаз→Рус and Рус→Қаз', async ({ page }) => {
@@ -316,15 +351,19 @@ test.describe('Study flow + progress persistence', () => {
     await page.goto('/study/a1');
     await closeOnboardingIfOpen(page);
 
-    // Default is kk-ru; the chip should be pressed.
-    const kkRuBtn = page.getByRole('button', { name: /Қаз → Рус/ });
-    await expect(kkRuBtn).toHaveAttribute('aria-pressed', 'true');
+    // The direction is a PickerSelect in the "Направление" group, not a
+    // pair of `aria-pressed` segment buttons: one trigger showing the
+    // current value, options in a listbox that opens on click. The
+    // current value on the trigger is therefore the assertion.
+    const direction = page.getByRole('group', { name: 'Направление' });
+    const trigger = direction.getByRole('button').first();
+    await expect(trigger).toHaveText(/Қаз → Рус/);
 
-    // Switch to ru-kk
-    const ruKkBtn = page.getByRole('button', { name: /Рус → Қаз/ });
-    await ruKkBtn.click();
-    await expect(ruKkBtn).toHaveAttribute('aria-pressed', 'true');
-    await expect(kkRuBtn).toHaveAttribute('aria-pressed', 'false');
+    await trigger.click();
+    await page.getByRole('listbox').getByText('Рус → Қаз', { exact: true }).click();
+
+    // Trigger now shows the other direction
+    await expect(trigger).toHaveText(/Рус → Қаз/);
 
     // URL reflects the new direction
     await expect(page).toHaveURL(/dir=ru-kk/);
@@ -378,25 +417,31 @@ test.describe('Study flow + progress persistence', () => {
     await page.goto('/study/a1');
     await closeOnboardingIfOpen(page);
     await expect(page.locator('[class*="kazakhWord"]').first()).toBeVisible();
+
+    // Baseline the queue counts *before* grading. See readCardsCounts():
+    // the `study-counter` pill tracks the current queue, and the default
+    // queue is "Все" — which a graded card stays in — so that number
+    // never moves and cannot show whether anything was stored. The
+    // per-queue counts are the real signal.
+    const before = await readCardsCounts(page);
+    expect(before['Новые']).toBeGreaterThan(0);
+    expect(before['В изучении']).toBe(0);
+
     await page.getByRole('button', { name: /Показать ответ/i }).click();
     await page.keyboard.press('3'); // Good
-    const a1Counter = page.getByTestId('study-counter');
-    await expect(a1Counter).toHaveText(/^2 из \d+$/);
-    const a1Total = Number((await a1Counter.innerText()).match(/из\s+(\d+)/)![1]);
 
-    // Switch to A2 and back to A1
+    // Grade one card on A1, switch to A2, come back.
     await page.goto('/study/a2');
     await expect(page.locator('[class*="kazakhWord"]').first()).toBeVisible();
     await page.goto('/study/a1');
+    await closeOnboardingIfOpen(page);
 
-    // The card we graded should now have a "Due" entry — its next review
-    // is scheduled 1 day out, so it's NOT due right now. But it should
-    // be in the "All" view (as a non-new card). Counter starts at 1,
-    // and the queue is one card shorter than it was before the grade.
-    // That shorter count is the actual proof the grade survived the
-    // level switch; the "1 верно" this used to assert on is gone from
-    // the product.
-    await expect(a1Counter).toHaveText(new RegExp(`^1 из ${a1Total - 1}$`));
+    // The grade survived the level switch: the card left "Новые" and is
+    // now in "В изучении". Re-reading after a fresh load is what makes
+    // this a persistence test rather than a session-state test.
+    const after = await readCardsCounts(page);
+    expect(after['Новые']).toBe(before['Новые'] - 1);
+    expect(after['В изучении']).toBe(1);
   });
 });
 
@@ -470,14 +515,23 @@ test.describe('Browse + level/topic filter', () => {
     await familyChip.click();
     await page.waitForLoadState('networkidle');
 
-    // Result count is positive and matches the topic
-    await expect(page.getByText(/Показано\s+\d+\s+карточек/i)).toBeVisible();
+    // Result count: the page no longer prints a "Показано N карточек"
+    // line. Both strings that could have produced it were dead —
+    // `browse.count.*` ("Показана 1 карточка" / "Показано {count} карточек")
+    // and `browse.loadMoreHint` ("Показано {shown} из {total}") — and were
+    // removed from both dictionaries in this pass rather than left in
+    // place looking like a live assertion. The result size is now
+    // carried by the filter tabs' own counts and by pagination. So
+    // assert on what the test is actually named for: rows exist, and
+    // every one of them belongs to the Семья topic.
+    const rows = page.locator('article[class*="row"]');
+    await expect(rows.first()).toBeVisible();
+    const count = await rows.count();
+    expect(count).toBeGreaterThan(0);
 
     const rowCategories = page.locator(
       'article[class*="row"] > div > span[class*="category"]',
     );
-    const count = await rowCategories.count();
-    expect(count).toBeGreaterThan(0);
     for (let i = 0; i < Math.min(count, 10); i++) {
       await expect(rowCategories.nth(i)).toHaveText(/Семья/);
     }
@@ -516,12 +570,14 @@ test.describe('Browse + level/topic filter', () => {
     // (acquaintance) is the only A1 card with that exact kazakh word.
     const search = page.getByRole('searchbox');
     await search.fill('танысу');
-    // Wait for the table to re-render with the filtered result.
-    // We use a tolerant pattern because the counter label can be
-    // either singular ("1 карточка") or plural ("1 карточек") — the
-    // search filter is a substring match so a small noise margin
-    // keeps the test stable across copy edits.
-    await expect(page.getByText(/Показана?\s+1\s+карточ/i)).toBeVisible();
+    // The old assertion waited for a "Показана 1 карточка" line, which
+    // the page no longer renders (see the browse test above). Assert the
+    // result directly instead: exactly one row survives the filter, and
+    // it is the card we searched for. That is stricter than counting a
+    // label, not looser.
+    const rows = page.locator('article[class*="row"]');
+    await expect(rows).toHaveCount(1);
+    await expect(rows.first()).toContainText('танысу');
   });
 });
 
@@ -539,12 +595,16 @@ test.describe('Stats page', () => {
     // No "Common" anywhere
     await expect(page.getByText(/^Common$/)).toHaveCount(0);
 
-    // Reset progress button works (label is "Сбросить прогресс" →
-    // confirm state shows "Нажмите ещё раз для подтверждения")
+    // Reset progress opens a confirmation modal ("Сбросить весь
+    // прогресс?" → "Да, сбросить"). It used to be an inline two-click
+    // confirm on the button itself, which is why this test was looking
+    // for a button that no longer exists. That string was
+    // `stats.resetConfirm` — "Нажмите ещё раз для подтверждения" — and it
+    // was dead once the modal replaced it, so it went out with the rest
+    // of the unused copy. Nothing is being asserted that the product
+    // stopped rendering and quietly left behind.
     await page.getByRole('button', { name: /Сбросить прогресс/i }).click();
-    await expect(
-      page.getByRole('button', { name: /Нажмите ещё раз/i }),
-    ).toBeVisible();
+    await page.getByRole('button', { name: /^Да, сбросить$/i }).click();
   });
 
   test('by-topic header reports the real topic count (not 0) on a cold visit', async ({ page }) => {
@@ -552,24 +612,52 @@ test.describe('Stats page', () => {
     // so the "By topic" subtitle rendered "0 тем на 5 уровнях" until the
     // user opened a study session. Now the count is derived from the
     // freshly-loaded `loaded` map.
+    //
+    // Two things this test had wrong, both of which made it fail for
+    // reasons unrelated to the bug it guards:
+    //  - the by-topic section lives behind its own tab (`activeTab ===
+    //    'topics'`), and it was never opened, so the subtitle was not in
+    //    the DOM at all;
+    //  - it assumed the section is empty before any study. It is not: a
+    //    fresh user sees every topic listed with zero progress, which is
+    //    precisely the surface the regression was about. "Здесь пока
+    //    пусто" is the *overview* tab's empty state, not this one's.
     const username = uname();
     await register(page, username);
     // Wait for registration to complete (URL changes to /) before we
-    // navigate to /stats — otherwise /stats redirects to /login.
+    // navigate — otherwise /stats redirects to /login.
     await expect(page).toHaveURL(/\/$/);
     await page.goto('/stats');
     await closeOnboardingIfOpen(page);
     await page.waitForLoadState('networkidle');
+    await page.getByRole('tab', { name: /^Темы/ }).click();
 
-    // The subtitle reads e.g. "44 тем на 5 уровнях. …" (Russian-only UI).
-    // Assert the leading number is > 0 (we ship 48 with the unified
-    // taxonomy across A1–C1).
+    // The subtitle reads e.g. "48 тем на 5 уровнях. …" (Russian-only UI).
+    // Assert the leading number is > 0 — the whole point of the
+    // regression, and the comment in StatsPage.tsx next to the very call
+    // this reads spells out the same failure.
     const sub = page.getByText(/(\d+)\s+тем\s+на\s+\d+\s+уров/);
     await expect(sub).toBeVisible();
     const text = (await sub.textContent()) ?? '';
     const m = text.match(/(\d+)\s+тем/);
     expect(m, `subtitle: ${text}`).not.toBeNull();
     expect(Number(m![1])).toBeGreaterThan(0);
+  });
+
+  test('by-topic tab lists every topic for a user with no progress', async ({ page }) => {
+    // Companion: a fresh user still gets the full topic list, each at
+    // zero. If this ever collapses to an empty state, the count above
+    // has nothing to count and the regression is back.
+    const username = uname();
+    await register(page, username);
+    await expect(page).toHaveURL(/\/$/);
+    await page.goto('/stats');
+    await closeOnboardingIfOpen(page);
+    await page.waitForLoadState('networkidle');
+    await page.getByRole('tab', { name: /^Темы/ }).click();
+
+    // Every topic row shows its 0-progress state.
+    await expect(page.getByText(/0\s*\/\s*\d+\s+слов/i).first()).toBeVisible();
   });
 });
 

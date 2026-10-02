@@ -198,7 +198,7 @@
 
 .kazakhWord {
   font-family: var(--font-display);
-  font-size: clamp(2.4rem, 6vw, 3.4rem);
+  font-size: clamp(var(--text-display), 6vw, var(--text-card));
   font-weight: 500;
   color: var(--text-strong);
   line-height: 1.1;
@@ -209,7 +209,7 @@
 
 .kazakhWordSmall {
   font-family: var(--font-display);
-  font-size: 1.6rem;
+  font-size: var(--text-title);
   font-weight: 500;
   color: var(--text-strong);
   margin-bottom: 4px;
@@ -432,7 +432,7 @@
 @media (max-width: 600px) {
   .scene { height: 300px; }
   .face { padding: 26px 24px; }
-  .kazakhWord { font-size: 2.2rem; }
+  .kazakhWord { font-size: var(--text-display); }
 }
 
 /*

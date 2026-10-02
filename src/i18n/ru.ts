@@ -52,10 +52,8 @@ export const ru: Translations = {
   'auth.localNotice':
     'Аккаунт и прогресс привязаны к логину и хранятся на сервере. Войти можно из любого браузера. Используйте уникальный пароль: восстановить его мы не сможем.',
   'auth.username': 'Имя пользователя',
-  'auth.usernameHint': '3–32 символа: a–z, 0–9, точка, тире, подчёркивание',
   'auth.displayName': 'Отображаемое имя (необязательно)',
   'auth.password': 'Пароль',
-  'auth.passwordHint': 'Не менее 4 символов',
   'auth.recover.link': 'Забыли пароль?',
   'auth.recover.context':
     'Сервер без электронной почты, поэтому код восстановления появится в логах. Попросите администратора прочитать его и прислать вам.',
@@ -66,14 +64,12 @@ export const ru: Translations = {
   'auth.recover.newPassword': 'Новый пароль',
   'auth.recover.reset': 'Сбросить пароль',
   'auth.recover.cancel': 'Отмена',
-  'auth.recover.error.invalidCode': 'Неверный или просроченный код. Попробуйте запросить новый.',
   'auth.confirmPassword': 'Подтвердите пароль',
   'auth.signIn': 'Войти',
   'auth.createAccount': 'Создать аккаунт',
   'auth.noAccount': 'Ещё нет аккаунта?',
   'auth.haveAccount': 'Уже есть аккаунт?',
   'auth.register': 'Регистрация',
-  'auth.errors.required': 'Введите имя пользователя и пароль.',
   'auth.errors.generic': 'Не удалось войти. Попробуйте ещё раз.',
   'auth.errors.usernameRequired': 'Введите имя пользователя.',
   'auth.errors.usernameTooShort': 'Имя пользователя должно быть не короче 3 символов.',
@@ -88,9 +84,12 @@ export const ru: Translations = {
   'auth.errors.tooManyAccounts': 'Слишком много аккаунтов на этом устройстве. Очистите хранилище, чтобы продолжить.',
   'auth.errors.invalidUserRecord': 'Не удалось прочитать данные аккаунта. Войдите заново.',
   'auth.errors.passwordMismatch': 'Пароли не совпадают.',
-  'auth.firstRun': 'Впервые здесь?',
-  'auth.firstRun.body':
-    'Создайте аккаунт, чтобы отслеживать прогресс. Все данные хранятся на этом устройстве.',
+  // Both of these are thrown for real (a fetch that never completed, a
+  // 5xx from the API) and both used to have no string here, so the form
+  // rendered the bare key `auth.errors.serverError` to the learner. Keep
+  // them in step with AuthErrorCode in src/lib/auth.ts.
+  'auth.errors.networkError': 'Нет связи с сервером. Проверьте интернет и попробуйте ещё раз.',
+  'auth.errors.serverError': 'Сервер не ответил как надо. Попробуйте чуть позже.',
   'auth.placeholder.name': 'например: learner',
   'auth.placeholder.password': '••••••',
   'auth.placeholder.displayName': 'например: Айгерим',
@@ -122,9 +121,6 @@ export const ru: Translations = {
   'landing.preview.title': 'Уровни',
   'landing.preview.subtitle':
     'От A1 до C1. Выберите свой уровень и начните.',
-  'landing.feature.free.title': 'Исходный код открыт',
-  'landing.feature.free.body':
-    'Репозиторий на GitHub. Хотите свой экземпляр — разверните локально или на своём сервере.',
 
   // Dashboard
   'dashboard.greeting': 'Сәлем, {name}.',
@@ -196,9 +192,6 @@ export const ru: Translations = {
     'Могу свободно общаться с носителями, понимать сложные тексты на конкретные и абстрактные темы.',
   'level.standard.c1':
     'Могу выражать мысли бегло, точно и гибко, понимать длинные сложные тексты со скрытым смыслом.',
-  'level.cards.one': '{count} карточка',
-  'level.cards.few': '{count} карточки',
-  'level.cards.many': '{count} карточек',
 
   // Study page
   'study.pageTitle': 'Учёба: {level}',
@@ -322,11 +315,6 @@ export const ru: Translations = {
   'browse.empty.filtered': 'Под фильтры ничего не подходит. Сбросьте их, чтобы увидеть все карточки.',
   'browse.empty.loading': 'Загружаем колоду…',
   'browse.empty.reset': 'Сбросить фильтры',
-  'browse.count.one': 'Показана 1 карточка',
-  'browse.count.few': 'Показано {count} карточки',
-  'browse.count.many': 'Показано {count} карточек',
-  'browse.loadMore': 'Показать ещё {count}',
-  'browse.loadMoreHint': 'Показано {shown} из {total}',
   'browse.page.prev': 'Предыдущая страница',
   'browse.page.next': 'Следующая страница',
   'browse.page.label': 'Страница {current} из {total}',
@@ -344,7 +332,6 @@ export const ru: Translations = {
   'stats.signedInAs':
     'Вы вошли как @{name}. Все данные хранятся локально на этом устройстве.',
   'stats.reset': 'Сбросить прогресс',
-  'stats.resetConfirm': 'Нажмите ещё раз для подтверждения',
   'stats.resetDialog.title': 'Сбросить весь прогресс?',
   'stats.resetDialog.body':
     'Это действие нельзя отменить. Все расписания карточек и история повторений будут удалены, и каждая карточка снова станет «новой».',
@@ -412,7 +399,6 @@ export const ru: Translations = {
   'stats.retention.title': 'Точность по дням',
   'stats.retention.subtitle':
     'Процент верных ответов за последние 30 дней. Здоровый диапазон: 80–95%.',
-  'stats.retention.legend': 'Пунктирные линии: ориентиры 80% и 95%.',
   'stats.levels.title': 'Уровни по кольцам',
   'stats.levels.subtitle':
     'Внешнее кольцо: сколько слов из уровня вы уже открыли. Внутреннее: сколько закрепили в долгой памяти (интервал ≥ 21 день).',
@@ -459,7 +445,6 @@ export const ru: Translations = {
   // Flashcard
   'card.front.kk': 'Что это значит?',
   'card.front.ru': 'Как это сказать по-казахски?',
-  'card.tapToReveal': 'Нажмите, чтобы перевернуть',
   'card.aria.revealed': 'Ответ показан. Нажмите, чтобы перевернуть обратно',
   'card.aria.flippedBack': 'Слово на лицевой стороне. Нажмите, чтобы снова увидеть ответ',
   'card.aria.hidden': 'Нажмите или нажмите пробел, чтобы перевернуть',
@@ -469,11 +454,8 @@ export const ru: Translations = {
   'card.phase.relearning': 'Переизучается',
   'card.source.label': 'источник',
   'card.example.aria': 'Пример использования',
-  'card.audio.play': 'Произнести',
   'card.audio.play.kk': 'Озвучить по-казахски',
   'card.audio.play.ru': 'Озвучить перевод по-русски',
-  'card.audio.missing': 'Аудио ещё не готово',
-  'card.audio.generate': 'Сгенерировать аудио',
   'card.audio.generating': 'Генерация…',
   'card.audio.retry': 'Не удалось. Попробуйте ещё раз.',
 
@@ -541,7 +523,6 @@ export const ru: Translations = {
   'stats.activity.month.12': 'дек',
 
   // Errors
-  'error.loading': 'Загружаем колоду…',
   'error.noCards': 'В этом уровне пока нет карточек.',
   'error.boundary.title': 'Что-то сломалось',
   'error.boundary.body': 'Страница не смогла отрисоваться. Попробуйте обновить её или вернуться на главную. Если ошибка повторится, откройте консоль браузера (F12) и пришлите стек.',
@@ -610,7 +591,6 @@ export const ru: Translations = {
   'settings.audio.hint': 'Скорость воспроизведения казахского и русского озвучивания. Аудио генерируется при сборке (Piper), поэтому изменение применяется к следующему слову.',
   'settings.audio.speedLabel': 'Скорость озвучки',
   'settings.account.title': 'Аккаунт',
-  'settings.account.username': 'Имя пользователя',
   'settings.account.hint': 'Данные хранятся локально на этом устройстве. Смена пароля не разлогинивает вас.',
   'settings.account.passwordOld': 'Текущий пароль',
   'settings.account.passwordOld.placeholder': 'введите текущий пароль',

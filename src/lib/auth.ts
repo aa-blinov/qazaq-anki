@@ -54,23 +54,33 @@ export interface UserPreferences {
  * Stable error codes that the auth layer throws. The UI maps these to
  * i18n keys (`auth.errors.<code>`) so a single source of truth is used
  * for translation instead of fragile string matching.
+ *
+ * The list is a value, not just a type, so a test can walk it and prove
+ * every code has a string in both dictionaries. Two codes —
+ * `networkError` and `serverError` — are thrown for real but shipped
+ * with no string for a long time, and the form rendered the bare key
+ * `auth.errors.serverError` to the learner instead of a sentence. The
+ * type alone cannot catch that; the array can.
  */
-export type AuthErrorCode =
-  | 'usernameRequired'
-  | 'usernameTooShort'
-  | 'usernameTooLong'
-  | 'usernameInvalid'
-  | 'passwordRequired'
-  | 'passwordTooShort'
-  | 'passwordTooLong'
-  | 'noSuchUser'
-  | 'wrongPassword'
-  | 'usernameTaken'
-  | 'tooManyAccounts'
-  | 'invalidUserRecord'
-  | 'networkError'
-  | 'serverError'
-  | 'generic';
+export const AUTH_ERROR_CODES = [
+  'usernameRequired',
+  'usernameTooShort',
+  'usernameTooLong',
+  'usernameInvalid',
+  'passwordRequired',
+  'passwordTooShort',
+  'passwordTooLong',
+  'noSuchUser',
+  'wrongPassword',
+  'usernameTaken',
+  'tooManyAccounts',
+  'invalidUserRecord',
+  'networkError',
+  'serverError',
+  'generic',
+] as const;
+
+export type AuthErrorCode = (typeof AUTH_ERROR_CODES)[number];
 
 export class AuthError extends Error {
   readonly code: AuthErrorCode;
