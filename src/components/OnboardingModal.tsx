@@ -14,7 +14,7 @@
  * on the next boot, so the first paint after login has the
  * correct answer and the modal doesn't flash open.
  */
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   X,
   ArrowRight,
@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { useLang } from '../contexts/LanguageContext';
 import { useOnboarding, type TourScreen } from '../contexts/OnboardingContext';
+import { useModalFocus } from '../lib/useModalFocus';
 import styles from './OnboardingModal.module.css';
 
 export type { TourScreen };
@@ -123,6 +124,7 @@ export function OnboardingModal({
   forceOpen = false,
   onClose,
 }: OnboardingModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null);
   const { t } = useLang();
   const { isSeen, markSeen } = useOnboarding();
   // `open` is the only thing the render actually depends on. We
@@ -157,6 +159,26 @@ export function OnboardingModal({
     setOpen(!isSeen(screen));
   }, [screen, forceOpen, isSeen]);
 
+  const dismiss = (commit: boolean) => {
+    // `screen` is nullable now that this runs before the early return
+    // below, so the guard moves here.
+    if (commit && screen) {
+      void markSeen(screen);
+    }
+    setOpen(false);
+    onClose?.();
+  };
+
+  // Focus in on open, Tab stays inside, Escape closes, and the (i)
+  // button that opened the tour gets the focus back. None of that
+  // existed before: the dialog announced itself and then behaved like
+  // a static panel.
+  useModalFocus({
+    open: !!screen && open,
+    containerRef: modalRef,
+    onClose: () => dismiss(false),
+  });
+
   if (!screen || !open) return null;
 
   const content = SCREEN_CONTENT[screen];
@@ -176,24 +198,23 @@ export function OnboardingModal({
   //                     show the tour unless they also clear the
   //                     server-side flag (e.g. via a "reset
   //                     onboarding" admin tool — out of scope).
-  const dismiss = (commit: boolean) => {
-    if (commit) {
-      void markSeen(screen);
-    }
-    setOpen(false);
-    onClose?.();
-  };
-
   return (
+    // The dialog role belongs on the dialog, not on the scrim. It used
+    // to sit on the overlay, which made the dialog's accessible subtree
+    // the entire backdrop — everything behind the modal, included.
     <div
       className={styles.overlay}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="onboarding-title"
       // Backdrop click just closes; does NOT mark as seen.
       onClick={() => dismiss(false)}
     >
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <div
+        ref={modalRef}
+        className={styles.modal}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="onboarding-title"
+      >
         <button
           type="button"
           className={styles.closeBtn}

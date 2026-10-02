@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { focusListboxSelection, moveListboxFocus } from '../lib/listboxKeys';
 import { useLang } from '../contexts/LanguageContext';
 import styles from './TopicSelect.module.css';
 
@@ -64,6 +65,8 @@ export function TopicSelect({
   const { t, tTopic } = useLang();
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const listRef = useRef<HTMLUListElement | null>(null);
 
   // Close on outside click. Listening on the document is fine here —
   // the dropdown is the only "menu" in the meta corner, no
@@ -81,14 +84,32 @@ export function TopicSelect({
   }, [open]);
 
   // Close on Escape — keyboard users still get out.
+  // Same listbox contract as PickerSelect, from the same helper: Escape
+  // closes and returns the focus, arrows and Home/End move between the
+  // options, and opening lands on the active topic.
   useEffect(() => {
     if (!open) return;
     function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') setOpen(false);
+      const list = listRef.current;
+      if (!list) return;
+      if (
+        moveListboxFocus(e, list, () => {
+          setOpen(false);
+          triggerRef.current?.focus();
+        })
+      ) {
+        return;
+      }
     }
     document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [open]);
+    const raf = requestAnimationFrame(() => {
+      if (listRef.current) focusListboxSelection(listRef.current, activeTopic);
+    });
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      cancelAnimationFrame(raf);
+    };
+  }, [open, activeTopic]);
 
   // Sort the options by their localized name (so the menu reads in
   // the user's language, not the slug order). Use a stable sort
@@ -103,6 +124,7 @@ export function TopicSelect({
   return (
     <div className={`${styles.wrap} ${fullWidth ? styles.wrapFull : ''}`} ref={wrapRef}>
       <button
+        ref={triggerRef}
         type="button"
         className={styles.trigger}
         onClick={(e) => {
@@ -117,11 +139,20 @@ export function TopicSelect({
         <ChevronDown size={11} className={styles.chev} aria-hidden="true" />
       </button>
       {open ? (
-        <ul className={styles.menu} role="listbox">
+        <ul
+          ref={listRef}
+          className={styles.menu}
+          role="listbox"
+          aria-label={t('study.topic.label', { topic: tTopic(current) })}
+        >
           {onClear ? (
             <li>
               <button
                 type="button"
+                role="option"
+                aria-selected={activeTopic === 'all'}
+                data-value="all"
+                tabIndex={activeTopic === 'all' ? 0 : -1}
                 className={`${styles.item} ${
                   activeTopic === 'all' ? styles.itemActive : ''
                 }`}
@@ -129,6 +160,7 @@ export function TopicSelect({
                   e.stopPropagation();
                   onClear();
                   setOpen(false);
+                  triggerRef.current?.focus();
                 }}
               >
                 <span className={styles.itemLabel}>{t('study.topic.all')}</span>
@@ -142,11 +174,16 @@ export function TopicSelect({
             <li key={slug}>
               <button
                 type="button"
+                role="option"
+                aria-selected={isActive(slug)}
+                data-value={slug}
+                tabIndex={isActive(slug) ? 0 : -1}
                 className={`${styles.item} ${isActive(slug) ? styles.itemActive : ''}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   onTopicChange(slug);
                   setOpen(false);
+                  triggerRef.current?.focus();
                 }}
                 title={isCurrent(slug) ? t('study.topic.current') : undefined}
               >

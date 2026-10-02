@@ -1,8 +1,9 @@
-import { useState, type FormEvent } from 'react';
+import { useRef, useState, type FormEvent } from 'react';
 import { Plus, X } from 'lucide-react';
 import { LEVELS } from '../data/decks';
 import { useUserCards } from '../contexts/UserCardsContext';
 import { useLang } from '../contexts/LanguageContext';
+import { useModalFocus } from '../lib/useModalFocus';
 import type { NewCardInput, UserCard } from '../lib/api';
 import styles from './AddCardModal.module.css';
 
@@ -47,6 +48,25 @@ const EMPTY: NewCardInput = {
 export function AddCardModal({ initial, editing, onClose }: AddCardModalProps) {
   const { create, update } = useUserCards();
   const { t } = useLang();
+  const modalRef = useRef<HTMLDivElement>(null);
+  // Focus the first field, not the close button that happens to come
+  // first in the DOM: a form dialog should let you start typing.
+  const firstFieldRef = useRef<HTMLSelectElement>(null);
+
+  // This dialog used to declare `role="dialog" aria-modal="true"` and
+  // then do nothing at all: no focus moved in, no Escape, no Tab wrap,
+  // no focus returned. Measured, opening it left the caret on the
+  // "Добавить карточку" button *behind* the scrim, so a keyboard user
+  // was typing into a dialog they could not reach and could not leave.
+  // `lockBodyScroll: false` — a long form that the user needs to be
+  // able to scroll, unlike a confirmation.
+  useModalFocus({
+    open: true,
+    containerRef: modalRef,
+    initialFocusRef: firstFieldRef,
+    onClose,
+    lockBodyScroll: false,
+  });
   // Pre-fill from either `initial` (sparse) or `editing` (a full
   // UserCard). When editing, the form opens with all the
   // existing values already in place; the user just changes
@@ -137,6 +157,7 @@ export function AddCardModal({ initial, editing, onClose }: AddCardModalProps) {
   return (
     <div className={styles.backdrop} onClick={onClose} role="presentation">
       <div
+        ref={modalRef}
         className={styles.modal}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
@@ -164,7 +185,10 @@ export function AddCardModal({ initial, editing, onClose }: AddCardModalProps) {
               {t('cards.form.level')}
             </label>
             <select
+              ref={firstFieldRef}
               id="card-level"
+              aria-invalid={errors.level ? true : undefined}
+              aria-describedby={errors.level ? "card-err-level" : undefined}
               className={`input ${errors.level ? styles.inputError : ''}`}
               value={values.level}
               onChange={(e) => set('level', e.target.value as NewCardInput['level'])}
@@ -175,7 +199,11 @@ export function AddCardModal({ initial, editing, onClose }: AddCardModalProps) {
                 </option>
               ))}
             </select>
-            {errors.level ? <p className={styles.error}>{errors.level}</p> : null}
+            {errors.level ? (
+              <p id="card-err-level" className={styles.error}>
+                {errors.level}
+              </p>
+            ) : null}
           </div>
 
           <div className={styles.row}>
@@ -184,6 +212,8 @@ export function AddCardModal({ initial, editing, onClose }: AddCardModalProps) {
             </label>
             <input
               id="card-category"
+              aria-invalid={errors.category ? true : undefined}
+              aria-describedby={errors.category ? "card-err-category" : undefined}
               className={`input ${errors.category ? styles.inputError : ''}`}
               type="text"
               maxLength={64}
@@ -191,7 +221,11 @@ export function AddCardModal({ initial, editing, onClose }: AddCardModalProps) {
               onChange={(e) => set('category', e.target.value)}
               placeholder={t('cards.form.categoryPlaceholder')}
             />
-            {errors.category ? <p className={styles.error}>{errors.category}</p> : null}
+            {errors.category ? (
+              <p id="card-err-category" className={styles.error}>
+                {errors.category}
+              </p>
+            ) : null}
           </div>
 
           <div className={styles.row}>
@@ -200,6 +234,8 @@ export function AddCardModal({ initial, editing, onClose }: AddCardModalProps) {
             </label>
             <input
               id="card-kazakh"
+              aria-invalid={errors.kazakh ? true : undefined}
+              aria-describedby={errors.kazakh ? "card-err-kazakh" : undefined}
               className={`input ${errors.kazakh ? styles.inputError : ''}`}
               type="text"
               maxLength={200}
@@ -207,7 +243,11 @@ export function AddCardModal({ initial, editing, onClose }: AddCardModalProps) {
               onChange={(e) => set('kazakh', e.target.value)}
               placeholder={t('cards.form.kazakhPlaceholder')}
             />
-            {errors.kazakh ? <p className={styles.error}>{errors.kazakh}</p> : null}
+            {errors.kazakh ? (
+              <p id="card-err-kazakh" className={styles.error}>
+                {errors.kazakh}
+              </p>
+            ) : null}
           </div>
 
           <div className={styles.row}>
@@ -231,6 +271,8 @@ export function AddCardModal({ initial, editing, onClose }: AddCardModalProps) {
             </label>
             <input
               id="card-ru"
+              aria-invalid={errors.translationRu ? true : undefined}
+              aria-describedby={errors.translationRu ? "card-err-translationRu" : undefined}
               className={`input ${errors.translationRu ? styles.inputError : ''}`}
               type="text"
               maxLength={400}
@@ -238,7 +280,11 @@ export function AddCardModal({ initial, editing, onClose }: AddCardModalProps) {
               onChange={(e) => set('translationRu', e.target.value)}
               placeholder={t('cards.form.translationRuPlaceholder')}
             />
-            {errors.translationRu ? <p className={styles.error}>{errors.translationRu}</p> : null}
+            {errors.translationRu ? (
+              <p id="card-err-translationRu" className={styles.error}>
+                {errors.translationRu}
+              </p>
+            ) : null}
           </div>
 
           <div className={styles.row}>
@@ -294,6 +340,8 @@ export function AddCardModal({ initial, editing, onClose }: AddCardModalProps) {
                 </label>
                 <input
                   id="card-source-url"
+                  aria-invalid={errors.sourceUrl ? true : undefined}
+                  aria-describedby={errors.sourceUrl ? "card-err-sourceUrl" : undefined}
                   className={`input ${errors.sourceUrl ? styles.inputError : ''}`}
                   type="url"
                   maxLength={512}
@@ -301,7 +349,11 @@ export function AddCardModal({ initial, editing, onClose }: AddCardModalProps) {
                   onChange={(e) => set('sourceUrl', e.target.value)}
                   placeholder="https://..."
                 />
-                {errors.sourceUrl ? <p className={styles.error}>{errors.sourceUrl}</p> : null}
+                {errors.sourceUrl ? (
+              <p id="card-err-sourceUrl" className={styles.error}>
+                {errors.sourceUrl}
+              </p>
+            ) : null}
               </div>
               <div className={styles.row}>
                 <label className="label" htmlFor="card-license">
@@ -320,7 +372,11 @@ export function AddCardModal({ initial, editing, onClose }: AddCardModalProps) {
             </div>
           </details>
 
-          {errors._form ? <p className={styles.formError}>{errors._form}</p> : null}
+          {errors._form ? (
+            <p id="card-err-form" className={styles.formError} role="alert">
+              {errors._form}
+            </p>
+          ) : null}
 
           <div className={styles.actions}>
             <button

@@ -401,26 +401,20 @@ html, body, #root { height: 100%; margin: 0; }
   visible focus state at all, which left keyboard users
   stranded.
 
-  We override the inputs' own `:focus` rule (which set
-  `outline: none`) by giving them the same ring via
-  `:focus-visible` below. Mouse-focus still shows the
-  border-only highlight from `.input:focus`.
+  Inputs have their own `:focus` rule further down this file that sets
+  `outline: none`, so they need an explicit `:focus-visible` block after
+  it — see the note there, which explains why that block's position is
+  load-bearing. Mouse-focus still shows the border-and-glow highlight
+  from `.input:focus`.
 */
 :focus-visible {
+  /* No `border-radius` here on purpose: that property belongs to the
+     element, not to the ring, so declaring it made a control change shape
+     while focused — but only for controls that declare no radius of their
+     own, which is worse than inconsistent: it looked like a focus state. */
   outline: 2px solid var(--accent);
   outline-offset: 2px;
-  border-radius: 4px;
 }
-.input:focus-visible {
-  /* Inputs already draw a soft ring via box-shadow on `:focus`.
-     Use the accent ring here too so keyboard users see the
-     same affordance as on buttons. */
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 3px var(--accent-soft);
-}
-/* Buttons that already paint their own hover/active bg keep
-   the ring; the rest pick it up automatically. */
 
 /*
   Skip-link. Hidden until focused, then snaps into the top-left
@@ -708,6 +702,26 @@ label {
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
 /*
+  Keyboard focus on an input. This block used to sit far above, in the
+  global focus-ring section — where it was dead code. `:focus` and
+  `:focus-visible` have identical specificity here, and `.input:focus`
+  comes later in this file, so its `outline: none` silently cancelled
+  the outline this rule set. It is here, after that rule, on purpose;
+  moving it back up above the focus-ring section reinstates the bug.
+
+  The outline is kept, not deleted, because the box-shadow ring alone is
+  `--accent-soft` (#F4E4D6 on white, #3A2A20 on the dark surface) — a
+  pale tint that is barely separable from the field it surrounds. The
+  solid 2px `--accent` outline is what puts an input on equal footing
+  with a button. It only matches `:focus-visible`, so a mouse click
+  still gets the softer border-and-glow treatment from `:focus`.
+*/
+.input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+/*
   Invalid input — used by the auth forms (and any future
   form) when a field-level error needs to be visible.
   Sets the danger border + soft glow so the input matches
@@ -868,7 +882,7 @@ label {
     OnboardingModal   panel arrival
     ConfirmDialog     scrim + panel arrival
     StatsPage         scrim, dialog, toast, ring sweep, progress bar
-    StudyPage         progress bar, undo toast
+    StudyPage         progress bar, undo toast, filter chevron
     HomePage          progress bar
     EaseHistogram     bar sweep
     LevelMasteryRings ring sweep

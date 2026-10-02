@@ -24,6 +24,7 @@ import {
   type Grade,
 } from '../lib/sm2';
 import { makeProgressKey, reverseDirection } from '../lib/progress';
+import { isInteractiveTarget } from '../lib/isInteractiveTarget';
 import { SCHEDULER_DEFAULTS, resolvePrefInt } from '../lib/scheduler-config';
 import { api, type DailyCounter } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
@@ -629,11 +630,13 @@ export function StudyPage() {
       // prompt without losing the rating row. 1/2/3/4 always
       // grade, regardless of which side is currently visible.
       if (e.key === ' ' || e.key === 'Enter') {
-        const tag = (e.target as HTMLElement | null)?.tagName;
-        // Don't hijack space/enter from text inputs (search,
-        // email fields, etc.) — they're rare on this page but
-        // the guard is cheap.
-        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        // Don't hijack space/enter from anything the user can activate.
+        // The old guard only excluded INPUT and TEXTAREA, which left
+        // every button on the page — the rating row, sign-out, the
+        // burger, the direction and topic pickers — with a key that
+        // flipped the card instead of pressing the button. The card
+        // itself is unaffected: it has its own keydown handler.
+        if (isInteractiveTarget(e.target)) return;
         e.preventDefault();
         handleFlip();
         return;

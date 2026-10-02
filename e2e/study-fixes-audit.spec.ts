@@ -52,8 +52,11 @@ test('study: per-screen onboarding + transliteration only for kazakh + i-icon in
   await directionGroup.getByRole('button', { name: /Қаз → Рус/i }).click();
   await page.screenshot({ path: join(OUT, '13-study-kk-ru.png'), fullPage: true });
 
-  // Switch to ru-kk — front shows Russian only, no transliteration
-  await page.getByRole('button', { name: /Рус → Қаз/i }).click();
+  // Switch to ru-kk — front shows Russian only, no transliteration.
+  // The choice is an `option` inside the listbox, not a button: the
+  // trigger is the only button in that group, and the menu keeps the
+  // contract `role="listbox"` promises. See e2e/a11y.spec.ts.
+  await page.getByRole('option', { name: /Рус → Қаз/i }).click();
   await page.waitForTimeout(300);
   await page.screenshot({ path: join(OUT, '14-study-ru-kk.png'), fullPage: true });
 

@@ -1,6 +1,7 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useRef, type ReactNode } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 import { useLang } from '../contexts/LanguageContext';
+import { useModalFocus } from '../lib/useModalFocus';
 import styles from './ConfirmDialog.module.css';
 
 interface ConfirmDialogProps {
@@ -53,36 +54,19 @@ export function ConfirmDialog({
 }: ConfirmDialogProps) {
   const { t } = useLang();
   const cancelRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
-  // Move focus to the cancel button on open, and restore it on
-  // close. Lock body scroll so the page behind doesn't bounce.
-  useEffect(() => {
-    if (!open) return;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    // Defer focus to the next frame so the modal has time to
-    // mount. requestAnimationFrame is enough — the cancel
-    // button is already in the DOM by the time React commits.
-    const raf = requestAnimationFrame(() => cancelRef.current?.focus());
-    return () => {
-      cancelAnimationFrame(raf);
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [open]);
-
-  // Escape closes (= cancel). Bind on the document so the user
-  // doesn't have to focus the dialog first.
-  useEffect(() => {
-    if (!open) return;
-    function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onCancel();
-      }
-    }
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [open, onCancel]);
+  // Focus in on the cancel button, Tab stays inside, Escape cancels, and
+  // the trigger gets the focus back on close. The previous hand-rolled
+  // version did the first and the last (claimed) but not the middle two:
+  // Tab walked straight out into the page behind a dialog that
+  // aria-modal had already told the screen reader was inert.
+  useModalFocus({
+    open,
+    containerRef: dialogRef,
+    initialFocusRef: cancelRef,
+    onClose: onCancel,
+  });
 
   if (!open) return null;
 
@@ -97,6 +81,7 @@ export function ConfirmDialog({
       }}
     >
       <div
+        ref={dialogRef}
         className={styles.dialog}
         role="alertdialog"
         aria-modal="true"
