@@ -63,8 +63,8 @@ cd qazaq-anki
 <span class="p">$</span> docker compose up -d --build</code></pre>
         </div>
         <p class="opens">
-          Дальше откройте <code>http://localhost:8080</code> и заведите аккаунт —
-          он живёт в вашей базе, а не на чужом сервере.
+          Дальше откройте <code>http://localhost:8080</code> и заведите аккаунт.
+          Он живёт в вашей базе, а не на чужом сервере.
         </p>
         <a class="repo-link" href="https://github.com/aa-blinov/qazaq-anki">
           Исходный код и разбор установки на GitHub
@@ -76,7 +76,7 @@ cd qazaq-anki
       <div class="specimen-head">
         <h2>Так выглядит карточка</h2>
         <p class="lead" style="font-size:1rem">
-          Слово, транскрипция, а после переворота — перевод и четыре оценки.
+          Слово, транскрипция, а после переворота перевод и четыре оценки.
           Настоящие данные из колоды B1.
         </p>
       </div>
@@ -94,7 +94,7 @@ cd qazaq-anki
             <span class="card-phase">Новая</span>
             <span class="word" lang="kk">арнаулы тілші</span>
             <span class="meaning">специальный</span>
-            <div class="grades" role="img" aria-label="Оценки: снова, сложно, хорошо, легко — клавиши 1, 2, 3, 4">
+            <div class="grades" role="img" aria-label="Оценки: снова, сложно, хорошо, легко. Клавиши 1, 2, 3, 4">
               <span class="grade" data-g="again">Снова<small>1</small></span>
               <span class="grade" data-g="hard">Сложно<small>2</small></span>
               <span class="grade" data-g="good">Хорошо<small>3</small></span>
@@ -110,7 +110,7 @@ cd qazaq-anki
     <section class="levels">
       <h2>Пять уровней, пять колод</h2>
       <p>
-        CEFR — ось, вокруг которой построен и словарь, и статистика:
+        CEFR служит осью, вокруг которой построены и словарь, и статистика:
         освоенное считается по уровням, а не «по теме недели».
       </p>
       <div class="ladder">
@@ -139,7 +139,7 @@ cd qazaq-anki
         </div>
         <div class="row">
           <dt>Резервные копии</dt>
-          <dd>Ежечасный снимок SQLite по расписанию. В проде — Caddy с автоматическим TLS.</dd>
+          <dd>Ежечасный снимок SQLite по расписанию. В проде стоит Caddy с автоматическим TLS.</dd>
         </div>
       </dl>
     </section>
@@ -147,11 +147,10 @@ cd qazaq-anki
     <div class="note">
       <h2>Почему на этой странице нет самой программы</h2>
       <p>
-        Эта страница — статический файл на GitHub Pages, и она честно
+        Эта страница, статический файл на GitHub Pages, честно
         показывает только то, что можно показать без сервера. Само
         приложение живёт у вас: аккаунты и прогресс создаются на вашей
-        машине, поэтому по ссылке их и не отдать — это и не должно быть
-        возможным.
+        машине, поэтому по ссылке их отдать нельзя. Так и должно быть.
       </p>
     </div>
 
@@ -161,7 +160,7 @@ cd qazaq-anki
     <a href="https://github.com/aa-blinov/qazaq-anki">github.com/aa-blinov/qazaq-anki</a>
     <span>MIT</span>
     <span>Телеметрии нет</span>
-    <span>Словари — CC-BY-4.0. Ахмет Байтұрсынұлы атындағы Тіл білімі институты, Астана, 2017–2018. ISBN 978-601-7311-32-2</span>
+    <span>Словари: CC-BY-4.0. Ахмет Байтұрсынұлы атындағы Тіл білімі институты, Астана, 2017–2018. ISBN 978-601-7311-32-2</span>
   </footer>
 
 </div>
