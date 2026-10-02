@@ -64,6 +64,15 @@ typography:
     lineHeight: 1.35
     fontWeight: 500
     letterSpacing: "0.02em"
+  # Mono is a real role in this system, not a costume: it carries the
+  # install commands on the landing, the keyboard-shortcut chips, and
+  # the `--font-mono` token the app uses for code and measurement. It
+  # was missing here, so the detector flagged every legitimate use.
+  mono:
+    fontFamily: "ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace"
+    fontSize: "0.92rem"
+    lineHeight: 1.6
+    fontWeight: 400
 rounded:
   sm: "6px"
   md: "8px"

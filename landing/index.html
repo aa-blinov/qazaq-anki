@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Söz — интервальные повторения для казахского языка</title>
+<meta name="description" content="3 996 казахских слова по уровням A1–C1, алгоритм SM-2, озвучка каждого слова. Ставится у себя одной командой, телеметрии нет." />
+<link rel="icon" href="favicon.png" />
+<link rel="alternate" hreflang="en" href="/qazaq-anki/en/" />
+<link rel="alternate" hreflang="ru" href="/qazaq-anki/" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="page">
+
+  <header class="masthead">
+    <a class="wordmark" href="./" aria-label="Söz — на главную">Söz</a>
+    <nav class="lang" aria-label="Язык страницы">
+      <a href="./" aria-current="true" hreflang="ru">RU</a>
+      <a href="./en/" hreflang="en">EN</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <section class="hero">
+      <h1><span class="count">3 996</span> казахских слова, которые возвращаются вовремя</h1>
+      <p class="lead">
+        Карточки с алгоритмом SM-2: вы оцениваете, насколько вспомнили слово,
+        и оно возвращается именно тогда, когда начинает забываться. Пять уровней
+        CEFR, озвучка каждого слова двумя голосами, статистика по темам.
+        Всё приложение ставится у вас на машине и не отправляет никуда ни одного
+        байта ваших данных.
+      </p>
+
+      <div class="install">
+        <div class="term">
+          <div class="term-bar">
+            <span class="term-label">bash</span>
+            <span class="term-path">qazaq-anki</span>
+          </div>
+<pre><code><span class="c"># клонируем и поднимаем</span>
+git clone https://github.com/aa-blinov/qazaq-anki.git
+cd qazaq-anki
+<span class="p">$</span> docker compose up -d --build</code></pre>
+        </div>
+        <p class="opens">
+          Дальше откройте <code>http://localhost:8080</code> и заведите аккаунт —
+          он живёт в вашей базе, а не на чужом сервере.
+        </p>
+        <a class="repo-link" href="https://github.com/aa-blinov/qazaq-anki">
+          Исходный код и разбор установки на GitHub
+        </a>
+      </div>
+    </section>
+
+    <section class="specimen">
+      <div class="specimen-head">
+        <h2>Так выглядит карточка</h2>
+        <p class="lead" style="font-size:1rem">
+          Слово, транскрипция, а после переворота — перевод и четыре оценки.
+          Настоящие данные из колоды B1.
+        </p>
+      </div>
+
+      <div class="card3d">
+        <div class="flip" id="flip">
+          <div class="face face--front">
+            <span class="card-tag">B1</span>
+            <span class="word" lang="kk">арнаулы тілші</span>
+            <span class="tr" lang="kk-Latn">arnauly tilshi</span>
+            <button class="flip-btn" type="button" data-flip aria-pressed="false">перевернуть</button>
+          </div>
+          <div class="face face--back">
+            <span class="card-tag">B1</span>
+            <span class="card-phase">Новая</span>
+            <span class="word" lang="kk">арнаулы тілші</span>
+            <span class="meaning">специальный</span>
+            <div class="grades" role="img" aria-label="Оценки: снова, сложно, хорошо, легко — клавиши 1, 2, 3, 4">
+              <span class="grade" data-g="again">Снова<small>1</small></span>
+              <span class="grade" data-g="hard">Сложно<small>2</small></span>
+              <span class="grade" data-g="good">Хорошо<small>3</small></span>
+              <span class="grade" data-g="easy">Легко<small>4</small></span>
+            </div>
+            <button class="flip-btn" type="button" data-flip aria-pressed="true">вернуть</button>
+          </div>
+        </div>
+      </div>
+      <p class="caption">Нажмите на карточку, чтобы перевернуть её.</p>
+    </section>
+
+    <section class="levels">
+      <h2>Пять уровней, пять колод</h2>
+      <p>
+        CEFR — ось, вокруг которой построен и словарь, и статистика:
+        освоенное считается по уровням, а не «по теме недели».
+      </p>
+      <div class="ladder">
+        <div class="rung"><b>A1</b><span>712 слов</span></div>
+        <div class="rung"><b>A2</b><span>693 слова</span></div>
+        <div class="rung"><b>B1</b><span>1 559 слов</span></div>
+        <div class="rung"><b>B2</b><span>449 слов</span></div>
+        <div class="rung"><b>C1</b><span>583 слова</span></div>
+      </div>
+    </section>
+
+    <section class="facts">
+      <h2>Что поднимается у вас на машине</h2>
+      <dl class="rows">
+        <div class="row">
+          <dt>Приложение</dt>
+          <dd>React и TypeScript, собранные в статические файлы и отданные nginx. Данные учёбы лежат в браузере.</dd>
+        </div>
+        <div class="row">
+          <dt>Аккаунты</dt>
+          <dd>Node и Express, пароли хранятся в виде bcrypt-хешей. Один пользователь — один остров данных.</dd>
+        </div>
+        <div class="row">
+          <dt>Озвучка</dt>
+          <dd>Piper: <code>kk_KZ-issai-high</code> для казахского и <code>ru_RU-denis-medium</code> для русского. WAV-файлы уже собраны.</dd>
+        </div>
+        <div class="row">
+          <dt>Резервные копии</dt>
+          <dd>Ежечасный снимок SQLite по расписанию. В проде — Caddy с автоматическим TLS.</dd>
+        </div>
+      </dl>
+    </section>
+
+    <div class="note">
+      <h2>Почему на этой странице нет самой программы</h2>
+      <p>
+        Эта страница — статический файл на GitHub Pages, и она честно
+        показывает только то, что можно показать без сервера. Само
+        приложение живёт у вас: аккаунты и прогресс создаются на вашей
+        машине, поэтому по ссылке их и не отдать — это и не должно быть
+        возможным.
+      </p>
+    </div>
+
+  </main>
+
+  <footer class="foot">
+    <a href="https://github.com/aa-blinov/qazaq-anki">github.com/aa-blinov/qazaq-anki</a>
+    <span>MIT</span>
+    <span>Телеметрии нет</span>
+    <span>Словари — CC-BY-4.0. Ахмет Байтұрсынұлы атындағы Тіл білімі институты, Астана, 2017–2018. ISBN 978-601-7311-32-2</span>
+  </footer>
+
+</div>
+<script>
+  // The card is a specimen, not a control: it turns so a visitor can see
+  // the reverse of a real card from the B1 deck. One handler, both faces.
+  (function () {
+    var flip = document.getElementById('flip');
+    var btns = document.querySelectorAll('[data-flip]');
+    btns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        var on = flip.classList.toggle('flip--on');
+        btns.forEach(function (x) { x.setAttribute('aria-pressed', String(on)); });
+      });
+    });
+  })();
+</script>
+</body>
+</html>

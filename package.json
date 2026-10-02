@@ -10,14 +10,15 @@
     "build:quick": "vite build",
     "preview": "vite preview --host 0.0.0.0",
     "build:pages": "VITE_BASE=/qazaq-anki/ npm run build",
-    "deploy": "npm run build:pages && npx gh-pages -d dist",
+    "deploy": "npx gh-pages -d landing -m \"deploy: landing\"",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "e2e": "playwright test",
     "e2e:install": "playwright install chromium",
     "server": "node --watch server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "deploy:app": "npm run build:pages && npx gh-pages -d dist"
   },
   "dependencies": {
     "adm-zip": "^0.5.18",
