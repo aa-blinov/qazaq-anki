@@ -392,7 +392,18 @@ export function BrowsePage() {
       },
       { replace: true },
     );
-    listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // This is the largest single piece of motion in the app, and it is the
+    // one piece no stylesheet can reach: `behavior` is an argument to a JS
+    // method, not a CSS declaration, so an
+    // `@media (prefers-reduced-motion: reduce)` block cannot override it.
+    // The query has to be read here, and the behaviour passed explicitly.
+    // `'auto'` jumps to the new slice instead of travelling to it — the list
+    // still lands at the top, the learner just doesn't watch 40 cards slide.
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    listRef.current?.scrollIntoView({
+      behavior: reducedMotion ? 'auto' : 'smooth',
+      block: 'start',
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 

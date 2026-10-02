@@ -4,6 +4,7 @@
 // without the TopicSelect slug-only coupling.
 import { useEffect, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { focusListboxSelection, moveListboxFocus } from '../lib/listboxKeys';
 import styles from './TopicSelect.module.css';
 
 export interface PickerOption {
@@ -45,6 +46,8 @@ export function PickerSelect({
 }: PickerSelectProps) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const listRef = useRef<HTMLUListElement | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -58,14 +61,34 @@ export function PickerSelect({
     return () => document.removeEventListener('mousedown', onDocClick);
   }, [open]);
 
+  // The listbox keyboard contract. Escape closes AND puts the focus back
+  // on the trigger — closing a popup and stranding the focus on <body>
+  // loses the user's place entirely, which on a filter row means
+  // re-tabbing through the whole study page.
   useEffect(() => {
     if (!open) return;
     function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') setOpen(false);
+      const list = listRef.current;
+      if (!list) return;
+      if (
+        moveListboxFocus(e, list, () => {
+          setOpen(false);
+          triggerRef.current?.focus();
+        })
+      ) {
+        return;
+      }
     }
     document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [open]);
+    // Land on the selected option, not wherever the caret happened to be.
+    const raf = requestAnimationFrame(() => {
+      if (listRef.current) focusListboxSelection(listRef.current, value);
+    });
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      cancelAnimationFrame(raf);
+    };
+  }, [open, value]);
 
   const current = options.find((o) => o.value === value);
   const triggerLabel = current?.label ?? placeholder ?? value;
@@ -73,6 +96,7 @@ export function PickerSelect({
   return (
     <div className={`${styles.wrap} ${fullWidth ? styles.wrapFull : ''}`} ref={wrapRef}>
       <button
+        ref={triggerRef}
         type="button"
         className={styles.trigger}
         onClick={(e) => {
@@ -86,11 +110,18 @@ export function PickerSelect({
         <ChevronDown size={11} className={styles.chev} aria-hidden="true" />
       </button>
       {open ? (
-        <ul className={styles.menu} role="listbox">
+        <ul ref={listRef} className={styles.menu} role="listbox" aria-label={triggerLabel}>
           {onClear ? (
             <li>
               <button
                 type="button"
+                role="option"
+                aria-selected={value === 'all'}
+                data-value="all"
+                // Roving tabindex: one option is in the tab order, the
+                // rest are reached with the arrow keys. Without it a
+                // listbox is announced as a row of N tab stops.
+                tabIndex={value === 'all' ? 0 : -1}
                 className={`${styles.item} ${
                   value === 'all' ? styles.itemActive : ''
                 }`}
@@ -98,6 +129,7 @@ export function PickerSelect({
                   e.stopPropagation();
                   onClear();
                   setOpen(false);
+                  triggerRef.current?.focus();
                 }}
               >
                 <span className={styles.itemLabel}>{clearLabel}</span>
@@ -111,11 +143,16 @@ export function PickerSelect({
             <li key={opt.value}>
               <button
                 type="button"
+                role="option"
+                aria-selected={value === opt.value}
+                data-value={opt.value}
+                tabIndex={value === opt.value ? 0 : -1}
                 className={`${styles.item} ${value === opt.value ? styles.itemActive : ''}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   onChange(opt.value);
                   setOpen(false);
+                  triggerRef.current?.focus();
                 }}
               >
                 <span className={styles.itemLabel}>{opt.label}</span>

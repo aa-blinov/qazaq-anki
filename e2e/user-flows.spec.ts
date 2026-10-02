@@ -74,7 +74,10 @@ async function readCardsCounts(page: Page): Promise<Record<string, number>> {
     .first();
   await row.getByRole('button').first().click();
   const listbox = page.getByRole('listbox');
-  const opts = listbox.getByRole('button');
+  // The options are `role="option"` now, not plain buttons: the menu
+  // declares a listbox, so it has to keep the contract. See
+  // e2e/a11y.spec.ts.
+  const opts = listbox.getByRole('option');
   const n = await opts.count();
   const out: Record<string, number> = {};
   for (let i = 0; i < n; i++) {
@@ -382,10 +385,13 @@ test.describe('Study flow + progress persistence', () => {
     const counter = page.getByTestId('study-counter');
     await expect(counter).toHaveText(/^2 из \d+$/);
 
-    // Switch to ru-kk. The direction is a PickerSelect, so the option
-    // only exists once the listbox is open.
+    // Switch to ru-kk. The direction is a PickerSelect: the trigger is a
+    // button showing the current value, and the choices only exist once
+    // the listbox is open — where they are `option`s, not buttons,
+    // because that is the contract `role="listbox"` promises. See
+    // e2e/a11y.spec.ts.
     await page.getByRole('button', { name: /Қаз → Рус/ }).click();
-    await page.getByRole('button', { name: /Рус → Қаз/ }).click();
+    await page.getByRole('option', { name: /Рус → Қаз/ }).click();
 
     // We should see the same first card fresh — no carry-over of the
     // kk-ru review state, so the session counter resets and we're back

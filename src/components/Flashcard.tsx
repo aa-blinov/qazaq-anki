@@ -144,14 +144,32 @@ function Flashcard({
           onFlip();
         }
       }}
+      // The accessible name used to be a bare instruction — "нажмите
+      // пробел, чтобы перевернуть" — and because `aria-label` on a
+      // role="button" overrides the subtree, that instruction was the
+      // ONLY thing a screen reader said about the card. The Kazakh word
+      // being tested and the translation being recalled were never
+      // announced, in either direction: the app's core loop was silent.
+      //
+      // So the name now carries the content of the face that is showing,
+      // and the *answer* is spoken by the live region below rather than
+      // repeated here, so a flip announces the new content once.
       aria-label={
         revealed
-          ? t('card.aria.revealed')
+          ? t('card.aria.answer', { word: frontMain, translation: backMain })
           : hasRevealed
-            ? t('card.aria.flippedBack')
-            : t('card.aria.hidden')
+            ? t('card.aria.seenAgain', { word: frontMain })
+            : t('card.aria.prompt', { word: frontMain })
       }
     >
+      {/* Announced when the card is flipped. `aria-live="polite"` so it
+          waits for a pause in speech instead of interrupting. Kept
+          mounted and only its text swapped: a live region that appears
+          already filled in is one NVDA and JAWS frequently never read,
+          which is the failure mode the old markup had. */}
+      <span className="srOnly" role="status" aria-live="polite">
+        {revealed ? t('card.aria.spoken', { word: frontMain, translation: backMain }) : ''}
+      </span>
       <div className={styles.cardInner} key={instanceId}>
         {/* FRONT — the prompt */}
         <div className={`${styles.face} ${styles.front}`}>

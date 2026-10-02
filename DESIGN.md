@@ -1178,6 +1178,87 @@ first tab. A screen reader announced the group as a member of the group. It
 is now labelled «Уровень», and the group name no longer has to be guessed
 from the items inside it.
 
+## Accessibility
+
+Material Design and WCAG 2.2 are the standard here, but only for the
+things they actually govern: ergonomics, keyboard operation, assistive
+technology. They are **not** the visual language. This file is. The
+contrast, the palette, the type ramp and the motion all stay as written
+above; what follows is the behavioural half.
+
+**Measured before changing anything.** A first pass assumed a long list
+of defects and found almost none of them. Touch targets: every
+interactive element on all five pages has a real hit area of at least
+44px — the four header controls draw a 32px box and expand it to
+`--tap-min` with a `::after`, which is why a naive read of the box sizes
+makes them look 12px short. Icon-only buttons: every one already had an
+`aria-label`. Disabled controls: all twenty use the real `disabled`
+attribute. The global `:focus-visible` ring reaches every focusable
+element, and tabbing twelve stops around the home page found a 2px accent
+ring on all twelve.
+
+Material says 48dp; the app says 44px. 44 is WCAG 2.2 AAA-clean and
+Apple's number, the controls are already sized to it, and moving to 48
+would resize the header and every button row for no measured gain. The
+floor stays 44 and `mobile-measure` still fails loudly below it.
+
+**What was actually broken, and is now fixed:**
+
+- **The flashcard was silent.** The card is `role="button"` with an
+  `aria-label` of "нажмите пробел, чтобы перевернуть" — and an
+  `aria-label` on a button overrides its subtree, so that instruction was
+  the *only* thing announced. The Kazakh word under test and the
+  translation being recalled were never spoken, in either direction: the
+  core learning loop was inaudible. The name now carries the face that is
+  showing, and a `role="status"` region — mounted before the flip and
+  only re-text after it, because a live region that appears already
+  filled is one NVDA and JAWS routinely skip — announces the answer.
+- **Three of four overlays lied about `aria-modal`.** The attribute tells
+  assistive tech the rest of the page is inert. `AddCardModal` moved
+  focus nowhere and its Escape did nothing; `ConfirmDialog` let Tab walk
+  out into the page behind and never returned the focus, though its own
+  comment claimed it did; `OnboardingModal` did the same *and* put the
+  dialog role on the backdrop, so its accessible subtree was the whole
+  overlay including everything behind it. All four now run
+  `useModalFocus` (src/lib/useModalFocus.ts): focus in, Tab wraps, Escape
+  closes, focus returns to the trigger, body scroll locks.
+- **Space and Enter did not reach buttons on the study screen.** The page
+  binds both to flip the card, behind a guard that excluded only `INPUT`
+  and `TEXTAREA`. Every other focusable thing lost them — the rating row,
+  sign-out, the burger, the level pills, the direction and topic
+  pickers. Tab to a button, press its key, and the card flipped instead.
+  That is WCAG 2.1.1, and worse than a lost shortcut: the control looks
+  focusable, is focusable, and does something else. The shortcut itself
+  is untouched — it fires when focus is on the card, the page, or nothing.
+- **The two filter pickers announced a listbox they did not implement.**
+  `role="listbox"` around plain buttons: no `role="option"`, no
+  `aria-selected`, every option in the tab order, no focus moved into the
+  menu on open, and Escape closed it and stranded the focus on `<body>`.
+  They now keep the contract, and share one implementation
+  (src/lib/listboxKeys.ts) rather than two.
+
+**Left alone on purpose:**
+
+- The global `:focus-visible` no longer sets `border-radius`. It did, and
+  that changed the *control's* shape while focused — but only for controls
+  declaring no radius of their own, which is worse than inconsistent: it
+  looked like a focus state.
+- `.input:focus-visible` was dead code. It sat above `.input:focus`, same
+  specificity, so the later `outline: none` cancelled it. It is moved
+  below rather than deleted, because the box-shadow ring alone is
+  `--accent-soft` (#F4E4D6 on white) — a pale tint, barely separable from
+  the field. The solid accent outline is what puts an input on equal
+  footing with a button, and DESIGN.md already promised it.
+- The heatmap's `role="grid"` is still wrong: it promises keyboard
+  navigation over cells that have none, and only respond to hover. The
+  honest fix is roving tabindex with arrow keys over 91 cells, or dropping
+  the role and summarising the grid as an image. Neither is a targeted
+  fix, so it is recorded here rather than half-done.
+- About 25 controls have a `:hover` style and no `:active`, so on a
+  touch screen they have no feedback until the navigation lands. Worth
+  doing, but it is a sweep across eight stylesheets and belongs in a pass
+  of its own.
+
 ## What this file does not cover yet
 
 - **Spacing tokens.** There is no `--space-*` scale; 25 distinct px values

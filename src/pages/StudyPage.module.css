@@ -729,6 +729,14 @@
   .undoToast {
     animation-name: var(--anim-arrive);
   }
+
+  /* A 180deg half-turn of the chevron on the collapsed filter row. The
+   * open/closed state is carried by aria-expanded on the toggle and by the
+   * filter stack itself, so the chevron can snap rather than turn. Same
+   * reasoning as the TopicSelect and StatsPage chevrons. */
+  .pickerChev {
+    transition: none;
+  }
 }
 
 /* ------------------------------- Compact layout ------------------------------

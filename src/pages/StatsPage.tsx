@@ -4,6 +4,7 @@ import { Layers, ChevronDown, ChevronRight, Calendar, Download, Upload, X, Alert
 import { useAuth } from '../contexts/AuthContext';
 import { useProgress } from '../contexts/ProgressContext';
 import { useLang } from '../contexts/LanguageContext';
+import { useModalFocus } from '../lib/useModalFocus';
 import {
   LEVELS,
   getTotalCards,
@@ -1003,7 +1004,7 @@ export function StatsPage() {
             type="button"
             className={styles.toastClose}
             onClick={() => setImportError(null)}
-            aria-label="Закрыть"
+            aria-label={t('stats.importError.close')}
           >
             <X size={14} />
           </button>
@@ -1072,6 +1073,14 @@ function ImportConfirmDialog({
   onCancel: () => void;
   t: (key: string, vars?: Record<string, string | number>) => string;
 }) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Fourth overlay in the app to owe the same focus lifecycle as the
+  // other three. This one was the least broken — it just had none of
+  // it, and `aria-modal` told the screen reader the rest of the page
+  // was inert while Tab walked straight through it.
+  useModalFocus({ open: true, containerRef: dialogRef, onClose: onCancel });
+
   // Format the exported-at date in the user's locale, falling back
   // to ISO if Intl.DateTimeFormat fails for some reason.
   const dateLabel = useMemo(() => {
@@ -1091,6 +1100,7 @@ function ImportConfirmDialog({
   return (
     <div className={styles.dialogScrim} role="presentation" onClick={onCancel}>
       <div
+        ref={dialogRef}
         className={styles.dialog}
         role="dialog"
         aria-modal="true"
