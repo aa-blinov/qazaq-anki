@@ -8,6 +8,13 @@ colors:
   # resolve. Descriptive names for each live in .impeccable/design.json
   # under extensions.colorMeta.<key>.displayName. Values are the LIGHT theme,
   # which is the default; dark values are in the same file under colorMeta.
+  #
+  # 35 entries, and that count is the contract: every one of them is
+  # referenced by at least one `var()` in src/ or landing/. A token defined
+  # in global.css but referenced nowhere does NOT belong here — an agent
+  # that "discovers" it would emit a live-looking variable with no contract
+  # behind it. (--surface-hover is currently in exactly that position; see
+  # the Drift section at the foot of this file.)
   bg: "#FAF7F2"
   surface: "#FFFFFF"
   surface-2: "#F2EEE6"
@@ -23,18 +30,38 @@ colors:
   accent-soft: "#F4E4D6"
   accent-ink: "#5B2A14"
   accent-fg: "#FAF7F2"
+  # A second accent surface for callers that need the clay fill without the
+  # ink pairing — the hero CTA and the "due now" stat tile. It is a lighter
+  # clay than --accent-solid, so it is a surface, never a text background.
+  accent-strong: "#A8522F"
   ok: "#5A7D3F"
   warn: "#B68A1B"
   warn-text: "#7A5E10"
+  # The soft amber wash behind a warning callout, and the ink that sits on
+  # it. Split like --accent-solid/--accent-fg: the wash is a surface, the
+  # fg is the only colour text on it may use.
+  warn-soft: "#F4EAC7"
+  warn-fg: "#1F1E1B"
   danger: "#B54141"
+  # The wash behind a destructive callout, an error field glow, and the
+  # error-boundary panel.
+  danger-soft: "#F5DDDD"
+  # The four grade inks. Each is the foreground for its grade's *pressed*
+  # fill, and each inverts in dark mode because the pressed fill inverts
+  # with the theme. A grade button at rest is never tinted — see the
+  # Commitment Rule in Colors.
   again-text: "#A03333"
   again-fill: "#B54141"
+  again-ink: "#FFFFFF"
   hard-text: "#7A5E10"
   hard-fill: "#B68A1B"
+  hard-ink: "#1F1E1B"
   good-text: "#4E6E36"
   good-fill: "#5A7D3F"
+  good-ink: "#FFFFFF"
   easy-text: "#96492A"
   easy-fill: "#A8522F"
+  easy-ink: "#FAF7F2"
 typography:
   display:
     fontFamily: "'Newsreader', 'Iowan Old Style', 'Apple Garamond', Georgia, 'Times New Roman', serif"
@@ -57,6 +84,21 @@ typography:
     fontSize: "1rem"
     lineHeight: 1.55
     fontWeight: 400
+  # The ramp has seven steps, and body/label alone skipped two of them:
+  # --text-small (0.95rem) and --text-meta (0.85rem) are the most-used sizes
+  # in the product — every button, nav link, level pill, stat caption and
+  # card sub-line resolves to one of the two. Leaving them out of the
+  # frontmatter made a documented role look like a hardcoded size.
+  small:
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif"
+    fontSize: "0.95rem"
+    lineHeight: 1.5
+    fontWeight: 500
+  meta:
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif"
+    fontSize: "0.85rem"
+    lineHeight: 1.45
+    fontWeight: 500
   label:
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif"
     fontSize: "0.78rem"
@@ -453,7 +495,7 @@ Content is a single centred column. The study card is capped at 640px and
 table fills the viewport with pagination at 50 rows.
 
 **Spacing is not tokenized.** There is no `--space-*` scale in this codebase
-— 27 distinct `px` values appear in `padding`/`margin` alone. The observed
+— 25 distinct `px` values appear in `padding`/`margin` alone. The observed
 rhythm is a loose 2px step with a 4px preference, clustering on 4, 6, 8,
 10, 12, 14, 16, 20, 24, 32px. Read the computed margins in the rendered
 output rather than reaching for a literal. This is recorded as known debt,
@@ -461,10 +503,10 @@ not as a decision; `/impeccable layout` or `/impeccable extract` is the
 right pass to fix it.
 
 **Breakpoints are not unified either** — the `max-width` values in use
-are 420, 600, 640, 720, 760, 768, 900px, plus the height queries below.
-The 760px one is load-bearing (it swaps the inline nav for the burger
-drawer); the rest are local to individual modules. Recorded as known debt
-alongside the missing spacing scale.
+are 420, 540, 600, 640, 720, 760, 768, 900, 1000px, plus the height
+queries below. The 760px one is load-bearing (it swaps the inline nav for the
+burger drawer); 768px is the touch gate; the rest are local to individual
+modules. Recorded as known debt alongside the missing spacing scale.
 
 Above 900px the study page splits into the card column and a settings rail
 (`min-width: 901px`); below it they stack.
@@ -1005,9 +1047,9 @@ from the items inside it.
 
 ## What this file does not cover yet
 
-- **Spacing tokens.** There is no `--space-*` scale; 27 distinct px values
+- **Spacing tokens.** There is no `--space-*` scale; 25 distinct px values
   are in use. Recorded above under Layout.
-- **A unified breakpoint map.** Eight distinct `max-width` values.
+- **A unified breakpoint map.** Nine distinct `max-width` values.
   Recorded above under Layout.
 - **The mobile nav drawer transition.** The only overlay with no arrival
   animation.
@@ -1029,9 +1071,12 @@ from the items inside it.
 Writing the token layer into the frontmatter turned the Impeccable
 detector from blind on this project into an actual check — and it
 immediately found things that were always there and previously
-invisible. `impeccable detect src/` reports **3 anti-patterns and 58
-advisories** (24 off-ramp font sizes, 21 literal colours, 13 radii). Nothing
-regressed; the check simply started working.
+invisible. `impeccable detect src/` reports **3 anti-patterns and 56
+advisories** (22 off-ramp font sizes, 21 literal colours, 13 radii). Nothing
+regressed; the check simply started working. The count fell from 58 when
+`--text-meta` and `--text-small` were added to the frontmatter: two advisories
+were the detector correctly reporting that the product's two most-used font
+sizes were not in the token contract at all.
 
 The three anti-patterns are all the same `overused-font` warning against
 Inter, raised once per `@font-face` block in `src/styles/fonts.css` since
@@ -1067,16 +1112,37 @@ decide rather than rediscover.
    there — declaring the role made the check pass, not the code. Worth
    replacing with the token on the next pass through this file.
 
-3. **Twenty-four off-ramp `rem` font sizes** — 1.1, 1.2, 1.3, 1.35, 1.6,
+3. **Twenty-two off-ramp `rem` font sizes** — 1.1, 1.2, 1.3, 1.35, 1.6,
    1.7rem, plus `1.5rem` written literally where
    `--text-title` already means the same thing. These are *not* the
    scale-breaking `px` bug the Never-px Rule exists for; they still track
    `--font-scale` correctly. They are an un-collapsed tail of the type
    ramp.
 
-4. **Twenty-two undocumented literal colours**, almost all
+4. **Twenty-one undocumented literal colours**, almost all
    `rgba(0, 0, 0, 0.08–0.45)` modal scrims and overlay chips. These are
    legitimate — a scrim is a fixed dim, not a palette colour — but they
    are invisible convention rather than a token, which is how they drift.
    Either document them as a named role or give them a `--scrim` token.
+
+5. **`.btn--danger:hover` paints a literal.** `src/styles/global.css:615`
+   sets `background: #963434` — a raw hex, with no `--danger-hover` token in
+   either theme. Every other hover in the system is a token pair, so this one
+   is invisible to a search for `var(--…)` and invisible to the dark theme:
+   the dark `--danger` is `#DA7474`, and this hover darkens toward a brown
+   that appears nowhere in the dark palette. Deleting the line restores the
+   base `--danger` on hover, which is the correct behaviour for a destructive
+   ghost-adjacent button; the alternative is a real `--danger-hover` token
+   with a value per theme. Tracked here rather than fixed, because choosing
+   the second option is a decision and the first is a deletion that belongs
+   to whoever is next in this file.
+
+6. **One defined, never-referenced token.** `--surface-hover: #F2EEE6` is
+   declared in `:root` and read by nothing in `src/` or `landing/`. It is
+   also never overridden in `[data-theme='dark']`, so it is a light value
+   sitting in a token set that a dark-theme caller would resolve to a pale
+   beige. That is exactly why it is absent from the frontmatter `colors:`
+   block: the block is a contract, and a contract entry has to promise that
+   using the variable works. It is recorded here so the omission reads as a
+   decision rather than an oversight. Resolution is a one-line delete.
 
