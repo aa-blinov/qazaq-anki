@@ -52,7 +52,68 @@ npm run deploy     # build + push dist/ to gh-pages branch
 
 ## Deploying to GitHub Pages
 
-The repo is wired for a project-page deploy at `https://<user>.github.io/anki-qazaq/`.
+**GitHub Pages hosts the landing page, not the app.** The two are
+different surfaces and only one of them is static.
+
+The app needs an API: accounts are created through Express, and progress
+lives server-side behind that account. A static host can serve the
+bundle but not the server it calls, so a Pages deploy of `dist/` is a
+site where registration simply does not work. The landing in `landing/`
+is a static page that says so and gives you the two commands that bring
+the real thing up on your own machine.
+
+| Command | Publishes | Use it for |
+|---|---|---|
+| `npm run deploy` | `landing/` → `gh-pages` | the default — the landing page |
+| `npm run deploy:app` | `dist/` → `gh-pages` | only if you host an API and want the bundle in front of it |
+
+Both need the `gh-pages` branch flow:
+
+1. Push this repo to GitHub (default branch: `main`).
+2. In your repo settings → **Pages** → Source: the **`gh-pages` branch**
+   (created by whichever command you run).
+3. Deploy:
+
+   ```bash
+   npm run deploy
+   ```
+
+To run the app itself, see **[DEPLOY.md](DEPLOY.md)** — `docker compose up`
+brings up the API, the web container, TTS and backups together.
+
+<details>
+<summary>GitHub Actions alternative</summary>
+
+If you deploy the landing through **GitHub Actions** instead, the workflow
+needs no build step at all — `landing/` is already the published output:
+
+```yaml
+name: Deploy landing to GitHub Pages
+on:
+  push:
+    branches: [main]
+    paths: ['landing/**']
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: landing
+```
+
+</details>
+
+<details>
+<summary>Old: deploying the app bundle to Pages (only if you also host an API)</summary>
 
 1. Push this repo to GitHub (default branch: `main` or `master`).
 2. In your repo settings → **Pages** → Source: **GitHub Actions** (recommended) or the **`gh-pages` branch** (created by `npm run deploy`).
