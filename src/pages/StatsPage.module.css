@@ -287,7 +287,7 @@
   height: 16px;
   margin-top: 6px;
   font-size: var(--text-micro);
-  color: var(--text-subtle);
+  color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
 
@@ -424,7 +424,7 @@
   align-items: center;
   justify-content: center;
   width: 20px;
-  color: var(--text-subtle);
+  color: var(--text-muted);
   flex-shrink: 0;
 }
 
@@ -537,7 +537,7 @@
 
 .topicMeta {
   font-size: var(--text-micro);
-  color: var(--text-subtle);
+  color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
 

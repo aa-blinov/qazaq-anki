@@ -131,7 +131,6 @@ export const ru: Translations = {
     'Репозиторий на GitHub. Хотите свой экземпляр — разверните локально или на своём сервере.',
 
   // Dashboard
-  'dashboard.welcome': 'С возвращением',
   'dashboard.greeting': 'Сәлем, {name}.',
   'dashboard.subtitleDue.one':
     '1 карточка ждёт повторения. Можно не торопиться.',

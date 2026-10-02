@@ -105,7 +105,7 @@
   left: 12px;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--text-subtle);
+  color: var(--text-muted);
   pointer-events: none;
 }
 
@@ -236,7 +236,7 @@
 .chipMeta {
   font-size: var(--text-micro);
   font-weight: 500;
-  color: var(--text-subtle);
+  color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
 .chipActive .chipMeta { color: var(--text-muted); }
@@ -408,7 +408,7 @@
 
 .category {
   font-size: var(--text-micro);
-  color: var(--text-subtle);
+  color: var(--text-muted);
 }
 
 .kazakhBlock {
@@ -483,11 +483,18 @@
   padding: 18px 12px 22px;
   margin-top: 8px;
   border-top: 1px solid var(--border);
+  /* The pager is nested inside .table, whose background is --border —
+     the grid gap paints the hairlines between rows. So the pager was
+     inheriting a hairline colour as its own ground, and anything drawn
+     on it had to clear 4.5:1 against --border (2.49:1 for the old
+     secondary text). It is navigation, not a row: it gets the page
+     ground and stops borrowing the table's. */
+  background: var(--bg);
 }
 
 .pagerSummary {
   font-size: var(--text-micro);
-  color: var(--text-subtle);
+  color: var(--text-muted);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.01em;
 }
@@ -566,7 +573,7 @@
   justify-content: center;
   width: 24px;
   height: 32px;
-  color: var(--text-subtle);
+  color: var(--text-muted);
   font-variant-numeric: tabular-nums;
   user-select: none;
 }

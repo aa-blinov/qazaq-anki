@@ -23,7 +23,6 @@
   --text:        #1F1E1B;
   --text-strong: #0E0D0B;
   --text-muted:  #6B6862;
-  --text-subtle: #948F86;
 
   --border:        #E8E2D2;
   --border-strong: #D7CFBE;
@@ -288,9 +287,6 @@
   --tooltip-muted: rgba(250, 247, 242, 0.72);
   --tooltip-ring:  rgba(255, 255, 255, 0.08);
   --text-muted:  #A8A29A;
-  --text-subtle: #8C877E;  /* 4.92:1 on --bg; the old #7A766E sat at 3.89:1 and carried
-                       every timestamp, which is exactly the text a learner
-                       scans to judge when they last studied something. */
 
   --border:        #36332F;
   --border-strong: #4A463F;
@@ -674,7 +670,7 @@ label {
 }
 
 .muted { color: var(--text-muted); }
-.subtle { color: var(--text-subtle); }
+.subtle { color: var(--text-muted); }
 
 .divider { height: 1px; background: var(--border); margin: 16px 0; }
 
@@ -702,7 +698,6 @@ label {
     --text: #000000;
     --text-strong: #000000;
     --text-muted: #444444;
-    --text-subtle: #777777;
     --border: #cccccc;
     --border-strong: #999999;
     --accent: #000000;

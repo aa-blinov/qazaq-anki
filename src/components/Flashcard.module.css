@@ -134,7 +134,7 @@
 .levelTag {
   font-size: var(--text-micro);
   font-weight: 600;
-  color: var(--text-subtle);
+  color: var(--text-muted);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.04em;
 }
@@ -360,7 +360,7 @@
   left: 0;
   right: 0;
   font-size: var(--text-micro);
-  color: var(--text-subtle);
+  color: var(--text-muted);
   letter-spacing: 0.02em;
 }
 
@@ -404,7 +404,7 @@
   gap: 8px;
   margin-top: 14px;
   font-size: var(--text-micro);
-  color: var(--text-subtle);
+  color: var(--text-muted);
   flex-wrap: wrap;
 }
 .sourceLink,
@@ -425,7 +425,7 @@
 }
 .sourceLicense {
   font-size: var(--text-micro);
-  color: var(--text-subtle);
+  color: var(--text-muted);
   opacity: 0.85;
 }
 
