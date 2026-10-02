@@ -140,8 +140,11 @@
 
   /* Line height per role, not one universal ratio. Small type needs more
      leading than large type to stay readable, and a display heading needs
-     almost none. The dark theme gets a touch more — light text on a dark
-     surface spreads optically and reads airier at the same ratio. */
+     almost none. These are declared once and are NOT overridden in the
+     dark theme — the principle that light text on a dark surface wants a
+     touch more leading is real, and it is also unimplemented, which this
+     comment used to assert as fact. It is recorded as a known gap in
+     DESIGN.md rather than quietly claimed here. */
   --lh-micro:   1.35;
   --lh-meta:    1.45;
   --lh-small:   1.5;
@@ -156,7 +159,16 @@
 
   /* Typography */
   --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
-  --font-display: 'Newsreader', 'Iowan Old Style', 'Apple Garamond', Georgia, 'Times New Roman', serif;
+  /* Source Serif 4, not Newsreader. Newsreader ships no Cyrillic at all,
+     and this product's interface is Russian while its content is Kazakh,
+     so it was asked for glyphs it did not have on essentially every
+     screen. Measured: 8 of 50 glyphs of a Russian h1 and 0 of 5 of the
+     Kazakh word "Сәлем" were actually drawn in Newsreader; the rest came
+     from the OS serif, so the product looked different on macOS and
+     Windows in the one place it reserves a second voice. See
+     src/styles/fonts.css. The fallback stack below is now a genuine
+     fallback rather than the thing that renders by default. */
+  --font-display: 'Source Serif 4', 'Iowan Old Style', 'Apple Garamond', Georgia, 'Times New Roman', serif;
   --font-mono:    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 
   /* Geometry — subtle, not chunky */
@@ -455,9 +467,12 @@ svg.lucide {
 
   Base = 15px so that the rest of the design (which was tuned
   around 15px body text) keeps its proportions at scale 1.
-  The scale is `sm: 0.875` / `md: 1` / `lg: 1.125` / `xl: 1.25`,
+  The scale is `sm: 0.92` / `md: 1` / `lg: 1.125` / `xl: 1.25`,
   applied via `--font-scale` set by theme-init.js and by
-  FontSizeProvider on first paint.
+  FontSizeProvider on first paint. (This comment said `sm: 0.875`
+  for a long time; the code has always been 0.92, in both places
+  that set it. The tables in DESIGN.md were computed from 0.92,
+  so the comment was the odd one out.)
 */
 html {
   font-size: calc(15px * var(--font-scale));
@@ -473,6 +488,14 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  /* Source Serif 4 carries an `opsz` axis and this role runs from a 14px
+     transliteration to a 51px card word. `auto` lets the browser pick the
+     optical design to match the rendered size, which is the whole reason
+     to keep that axis: the same face is drawn with sturdier, more open
+     forms at 14px and with finer hairlines and higher contrast at 51px.
+     Without it the browser renders every size at the default optical
+     design, which is right for neither end. */
+  font-optical-sizing: auto;
   transition: background-color var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
 }
 

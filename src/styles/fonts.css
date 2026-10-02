@@ -14,26 +14,81 @@
  *     reader and the thing that makes the product look like itself.
  *
  * Both families are SIL Open Font License, which permits self-hosting.
- * The files are Google's own woff2 subsets, trimmed to the ranges this
- * interface renders: latin, latin-ext, and cyrillic. latin-ext is
- * kept on purpose — usernames and imported Anki decks are user-supplied
- * text, and a silently substituted glyph in someone's own name reads as
- * broken.
  *
- * One file per family, style and subset; these are variable fonts,
- * declared across the family's full weight range.
+ * WHY THE DISPLAY FACE IS SOURCE SERIF 4 AND NOT NEWSREADER
  *
- * KNOWN GAP — see DESIGN.md → Typography. Newsreader ships "Google
- * Fonts Latin Plus" and has no Cyrillic at all, which is why there is
- * no newsreader-*-cyrillic file here. Every Russian heading and every
- * Kazakh word on the card has therefore been rendering in the fallback
- * serif, not this one. That predates this pass and is not fixed by it:
- * choosing a face that covers the language is a design decision, not a
- * hosting one.
+ * Newsreader was the display face until this pass, and it was never
+ * actually in effect. It ships "Google Fonts Latin Plus" — Latin,
+ * Western European, Vietnamese — and has no Cyrillic at all. This
+ * product's entire interface is Russian and its entire content is
+ * Kazakh, so almost every glyph it asked Newsreader for was missing and
+ * fell through to the OS serif.
  *
- * Generated from the files actually present in public/fonts — see the
- * note in the tooling. Do not hand-add a face whose file is missing.
+ * Measured with CDP's CSS.getPlatformFontsForNode, which reports the
+ * font that really drew the node rather than the declared stack:
+ *
+ *   home h1, Russian            8 glyphs Newsreader, 42 in the fallback
+ *   demo card, "Сәлем"          0 glyphs Newsreader, 5 in the fallback
+ *
+ * So the 129 KB latin file shipped, was preloaded on every page, and
+ * drew almost nothing; the product looked like Iowan Old Style on macOS
+ * and Georgia on Windows, in the one place the design system reserves a
+ * second voice. Six candidates were vetted by cmap against the real
+ * character inventory (scripts/fetch_display_candidates.py) and set in a
+ * specimen with the real copy at the real sizes
+ * (scripts/build_type_specimen.py) before the choice was made.
+ *
+ * Source Serif 4 covers the Kazakh alphabet — including Ә Ғ Қ Ң Ө Ұ Ү Һ
+ * in the Cyrillic Supplement block, which is the thing Newsreader, Inter
+ * as shipped, and most serifs do not have — and it carries two axes:
+ * wght, pinned to 400–700 because that is the only range the display
+ * role uses, and opsz, left free because this role runs from 14px
+ * transliteration to 51px card word and optical sizing is what makes one
+ * face correct at both ends.
+ *
+ * Italic exists for one thing: the transliteration line under the Kazakh
+ * word. The deck's 1,559 B1 transliterations contain zero Cyrillic, so
+ * the italic faces ship latin only and the browser synthesises an oblique
+ * for anything else rather than paying for a file nothing reaches.
+ *
+ * THE FILES
+ *
+ * This file is hand-maintained — the reasoning above cannot be generated,
+ * and a generator would overwrite it on the next build. What replaces the
+ * usual "do not hand-edit" warning is a check that runs in both
+ * directions: `python3 scripts/build_fonts.py --check` fails if a rule
+ * here points at a file that is not on disk, and also if a .woff2 is on
+ * disk that no rule here declares. Either mistake otherwise fails
+ * silently — a 404 nobody sees, the browser quietly falling through to
+ * the OS serif, the page still looking like a page.
+ *
+ * The check is not ceremony; it guards a real bug that already happened
+ * twice. The set had no cyrillic-ext file, so Inter fell back to a system
+ * face for Ә Ғ Қ Ң Ө Ұ Ү Һ, which appear in 2,761 of the deck's 3,996
+ * Kazakh headwords (69%). And the display face that was in effect,
+ * Newsreader, has no Cyrillic at all, so the role that exists precisely
+ * to give the product a second voice was rendering the system serif on
+ * every screen. Neither bug was visible in a screenshot; both were only
+ * findable by reading a cmap — which is why the check measures per family
+ * and per style rather than as one union. A union check passes as long as
+ * some file somewhere has the glyph, which is exactly the failure mode.
+ *
+ * The four Inter files are Google's own slices of Inter 4.001
+ * (git 66647c0bb), deliberately not re-subset locally: one build for all
+ * of them, so a Latin letter and a Kazakh letter are guaranteed to be the
+ * same design. They also gate the expensive slice — cyrillic-ext only
+ * downloads on a screen that actually shows a Kazakh letter, the same way
+ * latin-ext waits for a username.
  */
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-normal-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
 
 @font-face {
   font-family: 'Inter';
@@ -63,37 +118,55 @@
 }
 
 @font-face {
-  font-family: 'Newsreader';
-  font-style: italic;
-  font-weight: 200 800;
+  font-family: 'Source Serif 4';
+  font-style: normal;
+  font-weight: 400 700;
   font-display: swap;
-  src: url('/fonts/newsreader-italic-latin-ext.woff2') format('woff2');
+  src: url('/fonts/sourceserif4-normal-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+
+@font-face {
+  font-family: 'Source Serif 4';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/sourceserif4-normal-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+@font-face {
+  font-family: 'Source Serif 4';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/sourceserif4-normal-latin-ext.woff2') format('woff2');
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
 @font-face {
-  font-family: 'Newsreader';
-  font-style: italic;
-  font-weight: 200 800;
+  font-family: 'Source Serif 4';
+  font-style: normal;
+  font-weight: 400 700;
   font-display: swap;
-  src: url('/fonts/newsreader-italic-latin.woff2') format('woff2');
+  src: url('/fonts/sourceserif4-normal-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-  font-family: 'Newsreader';
-  font-style: normal;
-  font-weight: 200 800;
+  font-family: 'Source Serif 4';
+  font-style: italic;
+  font-weight: 400 700;
   font-display: swap;
-  src: url('/fonts/newsreader-normal-latin-ext.woff2') format('woff2');
+  src: url('/fonts/sourceserif4-italic-latin-ext.woff2') format('woff2');
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
 @font-face {
-  font-family: 'Newsreader';
-  font-style: normal;
-  font-weight: 200 800;
+  font-family: 'Source Serif 4';
+  font-style: italic;
+  font-weight: 400 700;
   font-display: swap;
-  src: url('/fonts/newsreader-normal-latin.woff2') format('woff2');
+  src: url('/fonts/sourceserif4-italic-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }

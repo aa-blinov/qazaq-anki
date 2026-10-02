@@ -1,6 +1,6 @@
 ---
 name: qazaq-anki
-description: Warm paper-and-clay system. Editorial serif (Newsreader) for Kazakh content, neutral sans (Inter) for everything else; one terracotta accent; one warm ground.
+description: Warm paper-and-clay system. Editorial serif (Source Serif 4) for Kazakh content, neutral sans (Inter) for everything else; one terracotta accent; one warm ground.
 source: src/styles/global.css
 colors:
   # Keys are the real custom property names in src/styles/global.css, not
@@ -64,7 +64,7 @@ colors:
   easy-ink: "#FAF7F2"
 typography:
   display:
-    fontFamily: "'Newsreader', 'Iowan Old Style', 'Apple Garamond', Georgia, 'Times New Roman', serif"
+    fontFamily: "'Source Serif 4', 'Iowan Old Style', 'Apple Garamond', Georgia, 'Times New Roman', serif"
     fontSize: "2.4rem"
     fontWeight: 400
     lineHeight: 1.12
@@ -190,7 +190,7 @@ learning.
 Russian is the interface language and Kazakh is the study content, and the
 type system makes that difference felt rather than stated: Russian reads
 neutral and familiar in Inter, the Kazakh word reads as something worth
-pausing for in Newsreader.
+pausing for in Source Serif 4.
 
 **Key Characteristics:**
 
@@ -383,8 +383,8 @@ can actually be studied.
 
 ## Typography
 
-**Display Font:** Newsreader (`'Iowan Old Style', 'Apple Garamond', Georgia,
-'Times New Roman', serif` as fallbacks)
+**Display Font:** Source Serif 4 (`'Iowan Old Style', 'Apple Garamond',
+Georgia, 'Times New Roman', serif` as fallbacks)
 **Body Font:** Inter (`-apple-system, BlinkMacSystemFont, 'Segoe UI',
 Roboto, system-ui, sans-serif` as fallbacks)
 **Label/Mono Font:** `ui-monospace, SFMono-Regular, 'SF Mono', Menlo,
@@ -402,21 +402,105 @@ touches their data. Both families are OFL. The CSP no longer whitelists
 either Google host, so a regression would be blocked rather than quietly
 reinstated.
 
-**The Display Font is not in effect.** Newsreader's glyph set is "Google
-Fonts Latin Plus" — Latin, Western European, Vietnamese. There is no
-Cyrillic. Every Russian heading and every Kazakh word on the card falls
-through to the fallback stack, so the serif actually on screen is
-Iowan Old Style or Georgia depending on the machine. Inter is unaffected
-and does cover both scripts.
+### The display face was a face nobody chose
 
-Nothing is broken and nothing looks wrong; the fallback is a decent
-transitional serif and the product reads well. But the *intent* recorded
-in this section — "the Kazakh word reads as something worth pausing for" —
-is being carried by a face nobody chose. Closing that gap means choosing a
-serif with real Cyrillic coverage, and that is a change to the product's
-typographic identity: it needs its own pass with the actual Kazakh and
-Russian copy set in front of it, not a substitution made quietly at the
-end of a hosting fix.
+The display font used to be Newsreader, and it was never actually in
+effect. Newsreader ships "Google Fonts Latin Plus" — Latin, Western
+European, Vietnamese — and has no Cyrillic at all. This product's entire
+interface is Russian and its entire content is Kazakh, so the one role
+that exists to give the product a second voice was drawing almost nothing.
+
+Measured with CDP's `CSS.getPlatformFontsForNode`, which reports the font
+that really drew a node rather than the stack it was asked for:
+
+| node | Newsreader | fallback |
+|---|---|---|
+| home h1, Russian | 8 glyphs | 42 |
+| demo card, "Сәлем" | 0 glyphs | 5 |
+
+So 129 KB of latin was preloaded on every page and drew almost nothing,
+and the serif on screen was Iowan Old Style on macOS or Georgia on
+Windows. Nothing looked wrong — the fallback is a decent transitional
+serif — which is exactly why it survived: the failure was invisible in a
+screenshot and invisible in the CSS. Only reading the cmap found it.
+
+The replacement is **Source Serif 4**, chosen from a rendered specimen
+rather than by name. Ten candidates were vetted against the product's
+real character inventory; six had full coverage (Source Serif 4, Alegreya,
+Literata, Vollkorn, Lora, Bitter), and Petrona, Faustina and Eczar do not
+have the Kazakh letters at all. The choice was made from the specimen
+built out of the actual Russian and Kazakh copy at the actual sizes.
+
+After the swap, the same measurement reads:
+
+| node | Source Serif 4 |
+|---|---|
+| home h1, Russian, 39.75px | 50 of 50 glyphs |
+| h2, 21px | 18 of 18 |
+| demo card "Сәлем", 36px | 5 of 5 |
+| topbar wordmark "Söz", 22.5px | 3 of 3 |
+| landing hero "арнаулы тілші", 62.4px | 13 of 13 |
+
+The control matters as much as the numbers: stripping `--font-display`
+drops Source Serif 4 to 0 of 50 and 0 of 5, so the measurement is
+reading the CSS rather than agreeing with itself.
+
+**Two axes, one pinned.** Source Serif 4 carries `wght` and `opsz`.
+Weight is pinned to 400–700 because that is the only range the display
+role asks for — headings are 600, the wordmark and card word are 500.
+Optical size is deliberately left free: this role runs from a 14px
+transliteration to a 62px landing hero, and pinning `opsz` would have
+cost 61% of the file to discard the one axis that lets a single face be
+correct at both ends. `font-optical-sizing: auto` is set on `body`, so
+it inherits everywhere.
+
+**Italic is latin-only, on purpose.** It exists for exactly one thing:
+the transliteration under the Kazakh word. The deck's 1,559 B1
+transliterations contain zero Cyrillic, so an italic Cyrillic file would
+never be requested by anything. The browser synthesises an oblique
+instead, which is the right trade for a glyph set nothing reaches.
+
+**On Inter being an overused face.** The detector flags Inter by name
+(`overused-font`, 4 hits — one per `@font-face` rule), and it is right:
+Inter is on a great many sites and reads as the default. It is kept
+anyway, as a considered trade rather than an oversight. Inter is the
+*neutral* half of the system — its whole job is that a Russian speaker
+does not notice the interface typeface while they concentrate on the
+Kazakh word, and the personality is carried by the display role, which
+now uses a face with genuine Cyrillic coverage and its own optical
+axis. Swapping Inter to win a detector rule would spend the one property
+this product needs most. The rule is advisory and the count is
+pre-existing; nothing about the typeset pass added to it.
+
+**The guard.** `python3 scripts/build_fonts.py --check` measures coverage
+*per family and per style*, never as one union — a union check passes as
+long as some file somewhere has the glyph, which is exactly the failure
+above. It also checks both directions of the CSS↔disk relationship, that
+every `--font-*` token has a real `@font-face`, and that every font
+preload resolves. Those last two are not hypothetical: the landing site
+went on requesting `'Newsreader'` after the face was replaced, so its
+hero rendered in the system serif, and both landing pages preloaded a
+Newsreader file that no longer existed. A missing webfont never raises —
+the browser walks to the next family and the page still looks like a
+page.
+
+**The four scripts, and what each is for.** They answer different
+questions and none of them is a duplicate:
+
+| Script | Question |
+|---|---|
+| `build_fonts.py --check` | Does what we *shipped* hold together? The guard. |
+| `build_fonts.py --display-roman` | Rebuild the display family from a pinned source. |
+| `fetch_display_candidates.py` | Which candidate faces are worth looking at? |
+| `check_font_coverage.py` | Can a given face actually draw the Kazakh alphabet? |
+| `build_type_specimen.py` | How do they look on *our* copy at *our* sizes? |
+
+`check_font_coverage.py` loads a family slice's siblings automatically
+and reports the union, because that is what a browser renders; pass
+`--no-siblings` to audit one file alone. Measuring a single slice and
+believing the number is the trap this tool is most likely to set — the
+Kazakh letters are all in `cyrillic-ext`, so asking the `cyrillic` slice
+about them reports 74 missing glyphs that nobody has ever seen missing.
 
 ### The ramp
 
@@ -1055,16 +1139,31 @@ from the items inside it.
   animation.
 - **Sound design** beyond TTS playback and the two state animations.
 - **Print layout** beyond the forced palette and the stripped chrome.
-- **The display face does not cover this product's language.** Newsreader
-  ships "Google Fonts Latin Plus" and has no Cyrillic at all. Every Russian
-  heading and every Kazakh word on the card has therefore been rendering
-  in the fallback serif — `'Iowan Old Style', 'Apple Garamond', Georgia` —
-  not in the face this document names as the editorial voice. The product
-  looks the way it looks because the fallback is good, not because the
-  chosen typeface is in effect. This predates the self-hosting pass and
-  was not fixed by it: picking a serif that covers Cyrillic is a design
-  decision about the product's identity, and it belongs in a `typeset`
-  pass, not in a hosting change. See Typography → Display Font.
+- **The dark theme does not get more leading.** The line-height tokens
+  are declared once and never overridden under `[data-theme='dark']`,
+  although the reasoning for doing so — light text on a dark surface
+  spreads optically and reads airier at the same ratio — is sound and was
+  previously recorded as if it had been done. It has not been
+  implemented, and it is not a small change: it alters leading on every
+  screen in the product and needs its own pass with real copy in front of
+  it, the same reasoning that applied to the root-size question. The
+  comment in `global.css` now says so rather than claiming otherwise.
+- **The wordmark is one role, not a lockup.** It is set in the display
+  face at `--text-title` and nothing else in the system has to agree with
+  it. If the product ever grows a second mark — an icon-tile lockup for
+  the PWA splash, say — the two will need to be drawn from the same
+  optical size to look related, and that constraint does not exist yet.
+- **Fourteen off-ramp `font-size` literals** are still written as bare
+  numbers across the component stylesheets (`1.1` in EaseHistogram, `1.2`
+  in AddCardModal and LevelMasteryRings and StatsPage, `1.3` in
+  ConfirmDialog and StatsPage, `1.35`, three `1.4`s in HomePage, `1.6` in
+  Flashcard and Onboarding, `1.7` in BrowsePage and StatsPage, `1.75` in
+  StudyPage and Auth, `1.85`, two `2`s in HomePage and NotFoundPage, `2.2`
+  in Flashcard, `2.4` in DemoCard, plus two `clamp()` calls). The ramp has
+  seven roles; these are all decorative multiples of it. None of them is a
+  bug and none is unreadable, which is why they were left — but a reader
+  cannot tell from the stylesheet which of them are doing real work, and
+  that is the thing the ramp exists to make obvious.
 
 ## Drift this document now makes visible
 
@@ -1148,9 +1247,14 @@ decide rather than rediscover.
 
 7. **The two heaviest assets on a cold load are not visual.** The largest
    single response is not a component or an image — it is
-   `newsreader-normal-latin.woff2` at 129 KB, followed by the app bundle
-   at 145 KB gzipped. Both sit on the critical path and both are
+   `sourceserif4-normal-cyrillic.woff2` at 62 KB, followed by the app
+   bundle at 148 KB gzipped. Both sit on the critical path and both are
    preloaded or discovered from the HTML, so they are *deliberate*. The
+   display face used to be `newsreader-normal-latin.woff2` at 129 KB, and
+   the replacement came out both smaller and actually used, because
+   Newsreader had no Cyrillic and the critical path is entirely Cyrillic.
+   Font payload fell from 952 KB to 574 KB across the two families while
+   the display role went from drawing 8 of 50 glyphs to 50 of 50. The
    avoidable weight was elsewhere and has been removed: see the note on
    audio and deck loading under Motion. What remains is honest — a
    dictionary app that self-hosts its own type and ships 3 996 words is

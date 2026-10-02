@@ -28,6 +28,33 @@ test.beforeEach(async ({ page }) => {
   await page.waitForLoadState('networkidle');
 });
 
+/**
+ * Choose an option in the study page's "Карточки" (cards) picker.
+ *
+ * The seven filter chips this used to be a `role="tab"` row became a
+ * PickerSelect — the component's own comment says "Same seven options
+ * the previous chip row had" — so an option exists in the DOM only
+ * while the listbox is open. Two traps this avoids: the row is matched
+ * by its "Карточки" *label* rather than its text (the collapsed filter
+ * summary also contains that word, which is what made a plain
+ * `hasText` filter resolve to two rows and trip strict mode), and the
+ * option is then taken from the single open `listbox` rather than from
+ * inside the row.
+ */
+async function pickCards(page: Page, option: string) {
+  const row = page
+    .locator('[class*="pickerRow"]')
+    .filter({ has: page.getByText('Карточки', { exact: true }) })
+    .first();
+  await row.getByRole('button').first().click();
+  // Match the option's own label span exactly, not the button by regex:
+  // /^Повтор/ also matches "Повторить всё" (the cram option), which is
+  // how this tripped strict mode. The button's accessible name also
+  // carries the count ("Повтор 0"), so exact-text on the label span is
+  // what actually identifies one row.
+  await page.getByRole('listbox').getByText(option, { exact: true }).click();
+}
+
 async function register(page: Page, username: string, password = 'correcthorse') {
   await page.goto('/register');
   await expect(page).toHaveTitle(/Qazaq/);
@@ -69,11 +96,18 @@ test.describe('Auth + onboarding', () => {
   test('UI is Russian-only (no English fallback)', async ({ page }) => {
     const username = uname();
     await register(page, username);
-    // Dashboard heading is in Russian regardless of any previous localStorage.
-    await expect(page.getByText(/С возвращением/i)).toBeVisible();
+    // The dashboard heading, in Russian, whatever localStorage held. This
+    // used to assert "С возвращением" — but that was the small-caps
+    // eyebrow above the greeting, and an earlier design pass deleted it
+    // on purpose (an eyebrow above a heading is a category default, and
+    // it measured 3.9:1 on white). The greeting that replaced it is
+    // `Сәлем, {name}.` with the display name the register helper set.
+    await expect(page.getByRole('heading', { name: /Сәлем, Tester\./ })).toBeVisible();
     await expect(
       page.getByRole('heading', { name: /Ваши уровни/i }),
     ).toBeVisible();
+    // The point of the test: nothing renders in English.
+    await expect(page.locator('body')).not.toContainText(/Welcome|Dashboard|Your levels/i);
   });
 
   test('logout from header and re-login with same credentials', async ({ page }) => {
@@ -164,8 +198,8 @@ test.describe('Study flow + progress persistence', () => {
 
     // Click the A1 row in the dashboard — find by URL to avoid matching the
     // badge "A1" alone which isn't a link.
-    await page.locator('a[href="/study/a1"]').first().click();
-    await expect(page).toHaveURL(/\/study\/a1/);
+    await page.locator('a[href="/study/level/a1"]').first().click();
+    await expect(page).toHaveURL(/\/study\/level\/a1/);
 
     // Dismiss the per-screen onboarding tour that opens on /study.
     await closeOnboardingIfOpen(page);
@@ -173,6 +207,25 @@ test.describe('Study flow + progress persistence', () => {
     // Wait for the first card to render before grading.
     const kazakhEl = page.locator('[class*="kazakhWord"]').first();
     await expect(kazakhEl).toBeVisible();
+
+    // Queue size before grading, read from the one counter this page has.
+    // This test used to assert a "3 верно" tally here and a "0 верно"
+    // after reload; that tally no longer exists anywhere in the app — the
+    // area it lived in was rebuilt into the `study-counter` pill
+    // ("N из M") with an accuracy percentage. The queue length is the
+    // observable that remains.
+    //
+    // Note which queue this is. The study page now defaults to the "Все"
+    // (all) phase, not "Новые", so grading three cards does NOT shrink
+    // this number — a graded card leaves "Новые" but stays in "Все" as a
+    // non-new card. The "three grades removed three cards" check
+    // therefore has to be made against the "Новые" queue below, which is
+    // where the test's own comment already said the default was.
+    const counter = page.getByTestId('study-counter');
+    const totalBefore = Number(
+      (await counter.innerText()).match(/из\s+(\d+)/)?.[1],
+    );
+    expect(totalBefore).toBeGreaterThan(3);
 
     // Grade three cards as Good
     for (let i = 0; i < 3; i++) {
@@ -189,15 +242,25 @@ test.describe('Study flow + progress persistence', () => {
       ).toBeVisible({ timeout: 3000 });
     }
 
-    // Verify in-progress counter shows 3 correct
-    await expect(page.getByText(/3 верно/)).toBeVisible();
-
     // Reload the page — progress must persist
     await page.reload();
 
-    // After reload, the smart-default tab is still "New"; counter at "1 из N"
-    await expect(page.getByText(/^1 из \d+$/)).toBeVisible();
-    await expect(page.getByText(/0\s+верно/)).toBeVisible();
+    // The session position resets to 1 and the "Все" queue is still the
+    // full set: the three graded cards are there, they are simply no
+    // longer new. Combined with the per-grade position assertions above,
+    // that is the part of "progress persisted" this test can assert on
+    // UI that actually exists.
+    //
+    // It used to also assert a "3 верно" tally and then, after reload, a
+    // "0 верно" — a session counter that no longer exists anywhere in the
+    // app. A first attempt replaced those with "the Новые queue must be
+    // three shorter", but that number is not the New-queue size this
+    // route produces (A1 "Новые" is 712 on a fresh account and the
+    // post-grade figure is 19, not 709), so it would have been a
+    // fabricated expectation. Left out rather than guessed at; pinning
+    // down what the queue actually counts here is product work, not test
+    // hygiene.
+    await expect(counter).toHaveText(new RegExp(`^1 из ${totalBefore}$`));
   });
 
   test('Switch to New button works when Due tab is empty', async ({ page }) => {
@@ -207,7 +270,7 @@ test.describe('Study flow + progress persistence', () => {
     // Force the Due tab to be active
     await page.goto('/study/a1');
     await closeOnboardingIfOpen(page);
-    await page.getByRole('tab', { name: /^Повтор/ }).click();
+    await pickCards(page, 'Повтор');
 
     // The "Due" queue is empty for a fresh user, so we should see the
     // empty state with a "Switch to New" button.
@@ -277,15 +340,20 @@ test.describe('Study flow + progress persistence', () => {
     await expect(page.locator('[class*="kazakhWord"]').first()).toBeVisible();
     await page.getByRole('button', { name: /Показать ответ/i }).click();
     await page.keyboard.press('3');
-    await expect(page.getByText(/1 верно/)).toBeVisible();
+    const counter = page.getByTestId('study-counter');
+    await expect(counter).toHaveText(/^2 из \d+$/);
 
-    // Switch to ru-kk
+    // Switch to ru-kk. The direction is a PickerSelect, so the option
+    // only exists once the listbox is open.
+    await page.getByRole('button', { name: /Қаз → Рус/ }).click();
     await page.getByRole('button', { name: /Рус → Қаз/ }).click();
 
     // We should see the same first card fresh — no carry-over of the
-    // kk-ru review state, so the counter resets and we're back in
-    // "New" mode.
-    await expect(page.getByText(/0 верно/)).toBeVisible();
+    // kk-ru review state, so the session counter resets and we're back
+    // in "New" mode. The "N верно" tally this used to assert on was
+    // removed from the product (the area now shows an accuracy
+    // percentage); the queue counter is the observable that remains.
+    await expect(counter).toHaveText(/^1 из \d+$/);
   });
 
   test('all five CEFR levels are reachable from the dashboard', async ({ page }) => {
@@ -293,8 +361,8 @@ test.describe('Study flow + progress persistence', () => {
     await register(page, username);
 
     for (const lvl of ['a1', 'a2', 'b1', 'b2', 'c1']) {
-      await page.locator(`a[href="/study/${lvl}"]`).first().click();
-      await expect(page).toHaveURL(new RegExp(`/study/${lvl}`));
+      await page.locator(`a[href="/study/level/${lvl}"]`).first().click();
+      await expect(page).toHaveURL(new RegExp(`/study/level/${lvl}`));
       await closeOnboardingIfOpen(page);
       const kazakhEl = page.locator('[class*="kazakhWord"]').first();
       await expect(kazakhEl).toBeVisible();
@@ -312,7 +380,9 @@ test.describe('Study flow + progress persistence', () => {
     await expect(page.locator('[class*="kazakhWord"]').first()).toBeVisible();
     await page.getByRole('button', { name: /Показать ответ/i }).click();
     await page.keyboard.press('3'); // Good
-    await expect(page.getByText(/1 верно/)).toBeVisible();
+    const a1Counter = page.getByTestId('study-counter');
+    await expect(a1Counter).toHaveText(/^2 из \d+$/);
+    const a1Total = Number((await a1Counter.innerText()).match(/из\s+(\d+)/)![1]);
 
     // Switch to A2 and back to A1
     await page.goto('/study/a2');
@@ -321,8 +391,12 @@ test.describe('Study flow + progress persistence', () => {
 
     // The card we graded should now have a "Due" entry — its next review
     // is scheduled 1 day out, so it's NOT due right now. But it should
-    // be in the "All" view (as a non-new card). Counter starts at 1.
-    await expect(page.getByText(/^1 из \d+$/)).toBeVisible();
+    // be in the "All" view (as a non-new card). Counter starts at 1,
+    // and the queue is one card shorter than it was before the grade.
+    // That shorter count is the actual proof the grade survived the
+    // level switch; the "1 верно" this used to assert on is gone from
+    // the product.
+    await expect(a1Counter).toHaveText(new RegExp(`^1 из ${a1Total - 1}$`));
   });
 });
 

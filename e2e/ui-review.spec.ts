@@ -3,14 +3,19 @@ import { mkdirSync } from 'node:fs';
 
 const OUT = '/tmp/ui-review';
 mkdirSync(OUT, { recursive: true });
-const BASE = 'http://localhost:8080';
+// Relative — resolved against the config's `baseURL`, the isolated test
+// Vite on :5174. This was hardcoded to http://localhost:8080, the
+// docker-compose port from the README, so the spec only ever passed on
+// a machine that happened to be running the published stack, and never
+// in CI (which has no :8080). It now captures the same screens from the
+// same build the rest of the suite tests.
+const BASE = '';
 
 /**
- * UI review against the live docker-compose stack on :8080
- * (qazaq-api + qazaq-web via nginx). Captures one screen per
- * main route at desktop + mobile. Pure documentation — no
- * assertions. Tests can run before/after a fix and the diff is
- * the review.
+ * UI review against the isolated test stack (Vite on :5174, API on
+ * :3011). Captures one screen per main route at desktop + mobile.
+ * Pure documentation — no assertions. Tests can run before/after a fix
+ * and the diff is the review.
  */
 test.describe.configure({ mode: 'serial' });
 

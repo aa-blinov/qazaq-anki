@@ -59,6 +59,13 @@
 .translit {
   font-size: var(--text-small);
   font-style: italic;
+  /* The display face, matching Flashcard's .transliteration. This was
+     missing here, so the demo inherited Inter and set a synthesised
+     oblique while the real card set a true italic — which made the hero
+     shot a lie in exactly the way the comment above says it must not
+     be. The italic faces of the display family exist for this one line
+     and nothing else. */
+  font-family: var(--font-display);
   color: var(--text-muted);
   text-align: center;
   margin-bottom: 4px;
