@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -17,7 +16,6 @@ import { BrowsePage } from './pages/BrowsePage';
 import { StatsPage } from './pages/StatsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
-import { loadAudioManifest } from './lib/tts';
 
 /**
  * Back-compat shim for the old /study/:levelId URL.
@@ -44,17 +42,6 @@ function RedirectLegacyStudy() {
 }
 
 export default function App() {
-  // Kick off the TTS manifest fetch as soon as the app mounts.
-  // Both languages are loaded in parallel; each call is idempotent
-  // (singleton promise) and the file is small (~70 KB) so the
-  // combined cost is negligible. The Flashcard uses the populated
-  // sets to decide whether to show the speak button on either
-  // side of the card.
-  useEffect(() => {
-    void loadAudioManifest('kk');
-    void loadAudioManifest('ru');
-  }, []);
-
   return (
     <ThemeProvider>
       <FontSizeProvider>

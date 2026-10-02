@@ -2,7 +2,7 @@
 
 A free, local-first web app for learning **Қазақ тілі** (Kazakh) with **Anki-style spaced repetition**. 3,996 words across the five CEFR levels A1, A2, B1, B2, C1.
 
-> Modern TypeScript stack · React 19 · Vite 6 · SM-2 algorithm · bcrypt auth · localStorage · 110 KB gzipped.
+> Modern TypeScript stack · React 19 · Vite 6 · SM-2 algorithm · bcrypt auth · localStorage · **163 KB gzipped** for the first screenful (HTML + JS + CSS, measured against the production build). Type is self-hosted and costs a further 176 KB for the two faces on the critical path; 7,473 pronunciation clips ship as lossless FLAC — 168 MB, down from 300 MB as WAV, with the audio fetched one word at a time.
 
 ---
 

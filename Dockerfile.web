@@ -12,7 +12,7 @@
 # lives in the `qazaq-audio` named volume, populated by the
 # `qazaq-tts` service (see docker-compose.yml). The web container
 # mounts the volume at /usr/share/nginx/html/audio, so the URLs
-# /audio/kk/<hash>.wav resolve directly. Running `docker compose
+# /audio/kk/<hash>.flac resolve directly. Running `docker compose
 # run --rm qazaq-tts` once after a fresh checkout is enough — the
 # generator is incremental, so a re-run only pays for new words.
 

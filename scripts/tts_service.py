@@ -6,7 +6,7 @@ Used by the qazaq-tts-service Docker container. Exposes a single
 endpoint:
 
     POST /synthesize   body: {"text": "сәлем"}
-    → 200 {"hash": "de73...", "url": "/audio/kk/de73....wav",
+    → 200 {"hash": "de73...", "url": "/audio/kk/de73....flac",
            "cached": true, "latency_ms": 12}
     → 400 on empty/oversized text
     → 422 on Piper synthesis failure
@@ -34,7 +34,10 @@ import hashlib
 import json
 import logging
 import os
+import shutil
+import subprocess
 import sys
+import tempfile
 import time
 import wave
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -56,6 +59,14 @@ except ImportError:
 # kept for local dev runs (no Docker, models vendored under the
 # repo's `models/` symlink).
 _MODELS_DIR = os.environ.get("TTS_MODELS_DIR", "/app/models")
+
+# Container every clip ships in, and the floor below which a file is
+# treated as a truncated write rather than a usable clip. Must match
+# generate_tts.py — the two have to agree or a runtime-synthesised word
+# would land next to build-time ones in a different container.
+AUDIO_EXT = "flac"
+MIN_CLIP_BYTES = 2_000
+
 LANGUAGES = {
     "kk": {"model": f"{_MODELS_DIR}/kk/kk_KZ-issai-high.onnx",      "subdir": "kk"},
     "ru": {"model": f"{_MODELS_DIR}/ru/ru_RU-denis-medium.onnx",   "subdir": "ru"},
@@ -74,10 +85,17 @@ def word_hash(word: str) -> str:
 
 
 def synth_one(voice: PiperVoice, text: str, out: Path) -> None:
-    """Synthesize a single utterance to a 22 kHz mono 16-bit WAV.
+    """Synthesize a single utterance to a 22 kHz mono 16-bit FLAC.
 
-    Mirrors scripts/generate_tts.py#synth_one so a service-generated
-    WAV is byte-identical to a build-time one.
+    Mirrors scripts/generate_tts.py#synth_one, so a clip synthesised at
+    runtime is encoded exactly the way a build-time one is — same
+    reference encoder, same settings, same lossless result.
+
+    Piper emits raw PCM, so the samples go to a temporary WAV in the
+    destination directory and are then encoded with the `flac` binary
+    and renamed into place. The temp file is always cleaned up, so a
+    failed synthesis cannot leave a stray .wav in the audio dir where a
+    later manifest rebuild would pick it up.
     """
     out.parent.mkdir(parents=True, exist_ok=True)
     # PiperVoice.synthesize is a generator of AudioChunk objects
@@ -86,12 +104,51 @@ def synth_one(voice: PiperVoice, text: str, out: Path) -> None:
     chunks = list(voice.synthesize(text))
     if not chunks:
         raise RuntimeError("piper returned no audio chunks")
-    with wave.open(str(out), "wb") as wf:
-        wf.setnchannels(1)
-        wf.setsampwidth(2)
-        wf.setframerate(voice.config.sample_rate)
-        for chunk in chunks:
-            wf.writeframes(chunk.audio_int16_bytes)
+
+    flac_bin = shutil.which("flac")
+    if not flac_bin:
+        raise RuntimeError(
+            "the `flac` encoder is not on PATH — the TTS image must "
+            "install the `flac` package (see tts/Dockerfile)"
+        )
+
+    fd, tmp_name = tempfile.mkstemp(dir=str(out.parent), suffix=".wav")
+    os.close(fd)
+    tmp_wav = Path(tmp_name)
+    staged = out.with_suffix(".flac.part")
+    try:
+        with wave.open(str(tmp_wav), "wb") as wf:
+            wf.setnchannels(1)
+            wf.setsampwidth(2)
+            wf.setframerate(voice.config.sample_rate)
+            for chunk in chunks:
+                wf.writeframes(chunk.audio_int16_bytes)
+        subprocess.run(
+            [flac_bin, "--silent", "--force", "--no-padding", "-8",
+             "-o", str(staged), str(tmp_wav)],
+            check=True,
+        )
+        staged.replace(out)
+    finally:
+        tmp_wav.unlink(missing_ok=True)
+        staged.unlink(missing_ok=True)
+
+
+def is_complete_clip(path: Path) -> bool:
+    """Is this a real, playable clip rather than a truncated write?
+
+    Size alone is not enough: a FLAC that was cut short still starts
+    with the "fLaC" magic, and a leftover WAV from an older install is
+    comfortably over the floor. Check both, so a cache hit is only
+    reported when the browser would actually be able to play the file.
+    """
+    try:
+        if path.stat().st_size < MIN_CLIP_BYTES:
+            return False
+        with path.open("rb") as fh:
+            return fh.read(4) == b"fLaC"
+    except OSError:
+        return False
 
 
 class TTSHandler(BaseHTTPRequestHandler):
@@ -155,14 +212,13 @@ class TTSHandler(BaseHTTPRequestHandler):
         voice = self.voices[lang]
         audio_dir = self.audio_dirs[lang]
         h = word_hash(text)
-        out = audio_dir / f"{h}.wav"
+        out = audio_dir / f"{h}.{AUDIO_EXT}"
 
         stats = _stats[lang]
-        # A real WAV from Piper is ≥ 10 KB at 22 kHz mono. Anything
-        # smaller is a truncated artifact from a previous failed run
-        # — overwrite it instead of returning a broken file as a
-        # cache hit.
-        cached = out.exists() and out.stat().st_size >= 10_000
+        # A truncated file from a previous failed run (or a WAV left
+        # behind by an older install) is overwritten rather than
+        # returned as a cache hit — see is_complete_clip.
+        cached = is_complete_clip(out)
         if cached:
             stats["hits"] += 1
         else:
@@ -183,7 +239,7 @@ class TTSHandler(BaseHTTPRequestHandler):
         self._log("OK", lang, h, text, cached, latency_ms)
         self._send_json(200, {
             "hash": h,
-            "url": f"/audio/{lang}/{h}.wav",
+            "url": f"/audio/{lang}/{h}.{AUDIO_EXT}",
             "lang": lang,
             "cached": cached,
             "latency_ms": latency_ms,

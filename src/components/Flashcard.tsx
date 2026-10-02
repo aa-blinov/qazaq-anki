@@ -123,16 +123,14 @@ function Flashcard({
   const backTtsText = backMain;
   const backTtsLang: AudioLang = isKkRu ? 'ru' : 'kk';
 
-  // Defensive: ensure the manifest is loaded even if the top-level
-  // effect in App.tsx hasn't fired yet (e.g. card shown before App
-  // effect runs on first paint). Idempotent — already-resolved
-  // promise is returned as-is. Both languages are kicked off in
-  // parallel so the back of the card is ready to show its speak
-  // button without an extra round trip.
-  useEffect(() => {
-    void loadAudioManifest('kk');
-    void loadAudioManifest('ru');
-  }, []);
+  // The audio manifest is NOT fetched here. Each TtsButton below owns
+  // one for its own language and loads it on mount, and the back of
+  // the card mounts its button in the same pass as the front, so both
+  // manifests are already in flight before this card can be flipped.
+  // Prefetching both from here as well was pure duplication — and
+  // this component also runs on screens whose neighbours (the home
+  // page's static DemoCard) never render a speak button at all, so
+  // the eager call cost ~75 KB on pages that have no use for it.
 
   return (
     <div
