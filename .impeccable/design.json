@@ -137,25 +137,6 @@
           "#f2eee7"
         ]
       },
-      "text-subtle": {
-        "role": "neutral",
-        "displayName": "Ink Subtle",
-        "canonical": "oklch(65.2% 0.0144 82.4)",
-        "light": "#948F86",
-        "dark": "#8C877E",
-        "darkOklch": "oklch(62.5% 0.0145 82.4)",
-        "purpose": "Captions, timestamps, helper text. 4.92:1 on --bg.",
-        "tonalRamp": [
-          "#0e0b05",
-          "#2a261f",
-          "#49443c",
-          "#6a655d",
-          "#8d8880",
-          "#b2ada4",
-          "#d9d4ca",
-          "#f3eee4"
-        ]
-      },
       "border": {
         "role": "neutral",
         "displayName": "Rule",

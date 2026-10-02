@@ -5,7 +5,6 @@ import {
   BookMarked,
   NotebookPen,
   ArrowRight,
-  Sparkles,
   type LucideIcon,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -315,10 +314,12 @@ function Dashboard({
   return (
     <div className={styles.dashboard}>
       <section className={styles.welcomeCard}>
-        <span className={styles.welcomeKicker}>
-          <Sparkles size={14} strokeWidth={1.8} />
-          {t('dashboard.welcome')}
-        </span>
+        {/* The kicker that used to sit here — an icon and "С возвращением"
+            in small caps above the greeting — is gone. An eyebrow above a
+            heading is a category default the craft floor bans outright, and
+            this one also measured 3.9:1: --accent on white. The greeting
+            carries its own weight. A `typeset` pass removed a different
+            eyebrow in this codebase; this instance was missed. */}
         <h1 className={styles.welcomeTitle}>
           {t('dashboard.greeting', { name: user.displayName })}
         </h1>

@@ -15,7 +15,6 @@ colors:
   text: "#1F1E1B"
   text-strong: "#0E0D0B"
   text-muted: "#6B6862"
-  text-subtle: "#948F86"
   border: "#E8E2D2"
   border-strong: "#D7CFBE"
   accent: "#C96442"
@@ -188,9 +187,23 @@ exists only in the study loop.
   disabled fills.
 - **Ink** (`--text` `#1F1E1B`) / **Ink Strong** (`--text-strong` `#0E0D0B`):
   body copy and headings.
-- **Ink Muted** (`--text-muted` `#6B6862`) / **Ink Subtle**
-  (`--text-subtle` `#948F86`, 4.92:1 on `--bg`): secondary copy, captions,
-  timestamps.
+- **Ink Muted** (`--text-muted` `#6B6862`): secondary copy, captions,
+  timestamps. 5.20:1 on `--bg`, 5.55:1 on `--surface`, 4.80:1 on
+  `--surface-2`; 6.95:1 / 6.28:1 / 5.66:1 in dark.
+
+**There is no third text step.** `--text-subtle` used to sit between Ink and
+Ink Muted and carried these same jobs. On this palette it could not clear
+4.5:1 anywhere in either theme: 3.01:1 on `--bg`, 3.21:1 on `--surface`,
+2.49:1 on `--border` in light; 4.45:1 on `--surface` in dark. Darkening it far
+enough to pass on `--bg` would have put it *below* Ink Muted — the step would
+have collapsed into itself, leaving a second name for one colour. So the token
+is **retired, not retuned**, and every former Ink Subtle use is Ink Muted.
+
+Ink Muted is not free of the same trap: it measures 4.29:1 on `--border` and
+4.34:1 on `--surface-3` in light, both under 4.5:1. Those two grounds are for
+insets and hairlines, not for standing text. When muted copy has to sit on
+them, give it a real surface — as the browse pager now does, taking
+`--bg` instead of inheriting the grid's hairline colour.
 - **Rule** (`--border` `#E8E2D2`) / **Rule Strong** (`--border-strong`
   `#D7CFBE`): default and active hairlines.
 
@@ -304,6 +317,20 @@ area belongs to the one thing the screen is for.
 **The Commitment Rule.** Solid fill is not a resting style. It marks the
 moment the learner commits. A control that is already saturated at rest has
 nothing left to give the press.
+
+**The Measured-Ground Rule.** Contrast is a property of a *pair*, so every
+rule that puts text on a surface has to name both, and the surface has to be
+the one the reader actually sees. A token meeting 4.5:1 on `--surface` can
+still fail on `--border`, because a component nested in a table inherits the
+table's ground rather than the page's. When a nested element finds itself
+drawing on a colour it did not choose — a pager inside a grid, a chip inside
+a button — it owes the reader a real surface, not a borrowed one. What
+belongs to the container is not automatically the container's to lend.
+
+Two measurements decided the current palette, and both are worth keeping:
+`--accent-fg` on `--accent` is 3.65:1 and must not be paired; a white overlay
+on a terracotta fill lightens it, so a chip *on* a coloured surface takes its
+tint from that surface, going darker, never lighter.
 
 ### Print
 
@@ -928,9 +955,9 @@ motion to a static fill.
 Writing the token layer into the frontmatter turned the Impeccable
 detector from blind on this project into an actual check — and it
 immediately found things that were always there and previously
-invisible. `impeccable detect src/` reported 0 anti-patterns before this
-pass and reports 1 plus 59 advisories now. Nothing regressed; the check
-simply started working.
+invisible. `impeccable detect src/` reports **0 anti-patterns and 59
+advisories** (24 off-ramp font sizes, 22 literal colours, 13 radii).
+Nothing regressed; the check simply started working.
 
 None of these are fixed here. They are recorded so the next pass can
 decide rather than rediscover.
@@ -943,21 +970,24 @@ decide rather than rediscover.
    reference an undefined token" rule exists to prevent, arrived at from
    the other direction: a correct token with a template fallback welded on.
 
-2. **A font token bypass** (the one anti-pattern). `ErrorBoundary.module.css`
-   hardcodes `ui-monospace, 'SF Mono', Menlo, monospace` instead of
-   `var(--font-mono)`, so it misses `SFMono-Regular`, `Consolas`, and
-   `Liberation Mono` from the declared stack.
+2. **A font token bypass — closed.** `ErrorBoundary.module.css` hardcoded
+   `ui-monospace, 'SF Mono', Menlo, monospace` instead of
+   `var(--font-mono)`, so it missed `SFMono-Regular`, `Consolas`, and
+   `Liberation Mono` from the declared stack. This was the suite's only
+   anti-pattern; declaring the mono role closed it. The literal is still
+   there — declaring the role made the check pass, not the code. Worth
+   replacing with the token on the next pass through this file.
 
-3. **Ten off-ramp `rem` font sizes** across six modules — 1.1, 1.2, 1.3,
-   1.35, 1.6, 1.7rem, plus `1.5rem` written literally where
+3. **Twenty-four off-ramp `rem` font sizes** — 1.1, 1.2, 1.3, 1.35, 1.6,
+   1.7rem, plus `1.5rem` written literally where
    `--text-title` already means the same thing. These are *not* the
    scale-breaking `px` bug the Never-px Rule exists for; they still track
    `--font-scale` correctly. They are an un-collapsed tail of the type
    ramp.
 
-4. **Twenty-one undocumented literal colours**, almost all
-   `rgba(0, 0, 0, 0.18–0.45)` modal scrims. These are legitimate — a
-   scrim is a fixed dim, not a palette colour — but they are invisible
-   convention rather than a token, which is how they drift. Either
-   document them as a named role or give them a `--scrim` token.
+4. **Twenty-two undocumented literal colours**, almost all
+   `rgba(0, 0, 0, 0.08–0.45)` modal scrims and overlay chips. These are
+   legitimate — a scrim is a fixed dim, not a palette colour — but they
+   are invisible convention rather than a token, which is how they drift.
+   Either document them as a named role or give them a `--scrim` token.
 

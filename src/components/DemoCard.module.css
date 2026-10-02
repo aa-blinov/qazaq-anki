@@ -81,7 +81,7 @@
   font-size: var(--text-micro);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--text-subtle, var(--text-muted));
+  color: var(--text-muted);
 }
 
 .answerText {

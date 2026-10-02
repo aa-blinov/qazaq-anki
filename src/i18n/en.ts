@@ -124,7 +124,6 @@ export const en: Translations = {
     'Repository on GitHub. Want your own copy? Run it locally or on your own server.',
 
   // Dashboard
-  'dashboard.welcome': 'Welcome back',
   'dashboard.greeting': 'Сәлем, {name}.',
   'dashboard.subtitleDue.one': 'You have 1 card due for review. Take your time.',
   'dashboard.subtitleDue.few': 'You have {count} cards due for review. Take your time.',
