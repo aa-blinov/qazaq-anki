@@ -949,11 +949,16 @@ export function StudyPage() {
   }
 
   if (!currentCard) {
+    // A terminal state the user can genuinely land in and stay on, so it
+    // carries the same <h1> every other state of this screen does. The
+    // button used to read "Назад" while the identical link on the done
+    // state reads "К уровням" — one destination, two names, and neither
+    // said where it went.
     return (
       <div className={styles.empty}>
-        <p>{t('error.noCards')}</p>
+        <h1 className={styles.emptyTitle}>{t('error.noCards')}</h1>
         <button className="btn" onClick={() => navigate('/')}>
-          {t('error.back')}
+          {t('study.empty.back')}
         </button>
       </div>
     );
@@ -962,6 +967,20 @@ export function StudyPage() {
   return (
     <div className={styles.study}>
       <div className={styles.studyColumn}>
+        {/* The page heading, and the only one this screen has while
+            there is still work to do. The done state renders its own
+            <h1> ("Сессия завершена"), which meant the heading chain was
+            empty for the entire session and appeared only at the moment
+            it mattered least — a screen-reader user landed on /study
+            with a back link, a tablist and a card, and nothing naming
+            the screen or the level they were in.
+
+            It is sr-only on purpose. The level is already stated by the
+            active pill in the header, and this is the tightest screen
+            in the product — a visible heading would repeat what the eye
+            has read and spend height the study card needs. The heading
+            exists for the outline, not for the layout. */}
+        <h1 className="srOnly">{t('study.pageTitle', { level: levelName ?? t('study.allLevels') })}</h1>
         <header className={styles.studyHeader}>
           <div className={styles.studyHeaderLeft}>
             <Link to="/" className={styles.backLink}>
@@ -976,7 +995,11 @@ export function StudyPage() {
                 "Все" queue) without leaving the page. The current
                 level is filled in the accent colour, the others
                 are bordered so they read as actionable. */}
-            <div className={styles.levelSwitcher} role="tablist" aria-label={t('study.allLevels')}>
+            <div
+              className={styles.levelSwitcher}
+              role="tablist"
+              aria-label={t('study.levelSwitcherAria')}
+            >
               <NavLink
                 to="/study"
                 end

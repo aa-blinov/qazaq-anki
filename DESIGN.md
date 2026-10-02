@@ -395,6 +395,21 @@ role below ~10.8px. Raising the root to 16px is a whole-product proportion
 change and needs its own pass with viewport verification, not a quiet side
 effect of a type cleanup.
 
+**The Heading Rule.** Every screen has exactly one `<h1>`, in every state it
+can be in — not only in the empty or finished one. A screen whose heading
+appears only when the work is over has no heading while the work is
+happening, which is backwards: a screen-reader user arrives with no idea
+where they are, and a sighted user is left reading a card under a toolbar.
+
+That rule is about the *document*, not about pixels. Where the visible
+design already states the heading — the study screen's active level is
+already a filled pill in its header — the `<h1>` is `srOnly` and repeats
+that label for the outline. It was measured, not assumed: adding it moved
+`cardWrap`, the answer button and the counter by exactly 0px at 1280×1000,
+390×844 and 360×640. Study is the tightest screen in the product, and the
+card is the one thing that should hold its area. A heading that only
+restates what the eye already read is not hierarchy; it is a second copy.
+
 ### Russian specifics
 
 - Headings use `text-wrap: balance`. Russian wraps unpredictably, and a
@@ -928,6 +943,31 @@ motion to a static fill.
   card cuts the translation and the source line rather than reflowing
   them. Take the height from the gaps.
 
+## Terminology
+
+The interface is Russian-only by design — the learner is a Russian speaker
+meeting Kazakh, so the scaffolding around the words has to be native. That
+cuts both ways: a Russian label containing an English noun is a leak, and
+the same concept wearing two Russian names is worse, because the learner
+has to work out whether they are the same thing.
+
+| Concept | Say this | Not this |
+|---|---|---|
+| A card failed 8+ times in either direction | «проклятые карточки» | «личи», «лич», "leech" |
+| The queue of cards due today | «Повтор» | «due» |
+| Where a screen's queue is scoped | «Уровень» as the group, the level name as the item | using a tab's own name as the group's label |
+
+This table started with three names in the first row alone. The banner in
+`StudyPage` said «проклятые», the stats page said «Проклятые карточки», and
+the settings explainer said «Личи (трудные карточки)» while its own body
+text said «становится «личом»». One idea, one name.
+
+The level switcher had the same defect in a different register: the tablist
+was labelled `study.allLevels` — "Все уровни" — which is the name of its own
+first tab. A screen reader announced the group as a member of the group. It
+is now labelled «Уровень», and the group name no longer has to be guessed
+from the items inside it.
+
 ## What this file does not cover yet
 
 - **Spacing tokens.** There is no `--space-*` scale; 27 distinct px values
@@ -940,13 +980,6 @@ motion to a static fill.
   toast overlaps the "Показать ответ" button. A layout collision rather
   than a motion one, but it is part of why the toast's arrival is easy to
   miss.
-- **A heading on the study screen.** The main study view renders no
-  `<h1>` at all — only the done state has one. The level switcher carries
-  an `aria-label`, so a screen-reader user lands on `/study` with a
-  labelled tablist and a back link but no page title. Related: the
-  `.studyTitle` class still exists in `StudyPage.module.css` and is
-  rendered by nothing, which is why an early attempt to reclaim height by
-  going compact with it had no visible effect.
 - **Sound design** beyond TTS playback and the two state animations.
 - **Print layout** beyond the forced palette and the stripped chrome.
 

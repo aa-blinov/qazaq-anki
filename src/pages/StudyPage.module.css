@@ -104,15 +104,6 @@
   font-weight: 600;
 }
 
-.studyTitle {
-  font-family: var(--font-display);
-  font-size: 1.6rem;
-  font-weight: 500;
-  letter-spacing: -0.015em;
-  margin: 0;
-  line-height: 1.1;
-}
-
 .headerRight {
   display: flex;
   flex-direction: column;
@@ -537,6 +528,23 @@
   text-align: center;
   padding: 60px 20px;
   color: var(--text-muted);
+}
+
+/* The no-cards state is the only place this screen renders a heading
+   outside the done card, and it is centered on an empty ground rather
+   than sitting above a card. Same face as the done title, a step down
+   in weight: this is a dead end, not a result — --text-lead is the
+   ramp step that says "more than body" without reaching for --text-title
+   and competing with the done state it shares a screen with. */
+.emptyTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-lead);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: var(--tracking-display);
+  color: var(--text);
+  margin: 0 0 20px;
+  text-wrap: balance;
 }
 
 /* Daily goal ring + leech notice. Both sit on a single compact
