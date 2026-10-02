@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-01T18:38:50.207Z",
+  "generatedAt": "2026-10-02T07:47:07.668Z",
   "title": "Design System: qazaq-anki",
   "extensions": {
     "colorMeta": {
@@ -289,6 +289,25 @@
           "#f1eee9"
         ]
       },
+      "accent-strong": {
+        "role": "primary",
+        "displayName": "Clay Raise",
+        "canonical": "oklch(53.8% 0.1233 41.8)",
+        "light": "#A8522F",
+        "dark": "#EFA079",
+        "darkOklch": "oklch(77.5% 0.1083 46.9)",
+        "purpose": "A clay fill with no ink pairing — the hero CTA and the 'due now' stat tile. Same value as Clay Solid in light, lighter clay in dark. Never a text background; use --accent-solid + --accent-fg for that.",
+        "tonalRamp": [
+          "#1d0200",
+          "#461300",
+          "#772800",
+          "#9f4a26",
+          "#c66d4a",
+          "#ef926e",
+          "#ffc5af",
+          "#ffe9e1"
+        ]
+      },
       "ok": {
         "role": "secondary",
         "displayName": "Moss",
@@ -346,6 +365,44 @@
           "#ffedc4"
         ]
       },
+      "warn-soft": {
+        "role": "secondary",
+        "displayName": "Amber Wash",
+        "canonical": "oklch(93.6% 0.0471 93.9)",
+        "light": "#F4EAC7",
+        "dark": "#3A3220",
+        "darkOklch": "oklch(32.0% 0.0317 86.6)",
+        "purpose": "The ground behind a warning callout — the browse 'nothing here yet' band and the card's warning note. A surface: text on it uses --warn-fg, never --warn-text.",
+        "tonalRamp": [
+          "#100a00",
+          "#2e2607",
+          "#4d4527",
+          "#6f6647",
+          "#928969",
+          "#b8ae8d",
+          "#ded4b2",
+          "#f9efcc"
+        ]
+      },
+      "warn-fg": {
+        "role": "secondary",
+        "displayName": "Amber Ink",
+        "canonical": "oklch(23.5% 0.0058 91.6)",
+        "light": "#1F1E1B",
+        "dark": "#1A1916",
+        "darkOklch": "oklch(21.3% 0.0060 91.6)",
+        "purpose": "The only text colour permitted on Amber Wash. Near-black rather than a tinted brown so the callout reads as an ink label, not as more warning colour.",
+        "tonalRamp": [
+          "#0c0b08",
+          "#272623",
+          "#464542",
+          "#676662",
+          "#8a8985",
+          "#afaeaa",
+          "#d5d4d0",
+          "#f0eeea"
+        ]
+      },
       "danger": {
         "role": "secondary",
         "displayName": "Brick",
@@ -363,6 +420,25 @@
           "#ff847f",
           "#ffc3be",
           "#ffe8e6"
+        ]
+      },
+      "danger-soft": {
+        "role": "secondary",
+        "displayName": "Brick Wash",
+        "canonical": "oklch(91.7% 0.0265 17.6)",
+        "light": "#F5DDDD",
+        "dark": "#3A2424",
+        "darkOklch": "oklch(28.8% 0.0338 19.3)",
+        "purpose": "The ground behind anything destructive or failed: the invalid-input glow, the error-boundary panel, the delete confirmation, the auth error banner. Doubles as the --input--error focus ring, so the field and its message below it match.",
+        "tonalRamp": [
+          "#150707",
+          "#322122",
+          "#523f40",
+          "#756060",
+          "#998383",
+          "#bea8a8",
+          "#e5cece",
+          "#ffe8e8"
         ]
       },
       "again-text": {
@@ -403,6 +479,25 @@
           "#ffe8e6"
         ]
       },
+      "again-ink": {
+        "role": "secondary",
+        "displayName": "Grade Red Ink",
+        "canonical": "oklch(100.0% 0.0000 89.9)",
+        "light": "#FFFFFF",
+        "dark": "#1A1916",
+        "darkOklch": "oklch(21.3% 0.0060 91.6)",
+        "purpose": "The label and shortcut-digit colour on the pressed Снова fill. It inverts with the theme: white on the light brick, near-black on the dark brick. One of four; see The Commitment Rule.",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#262626",
+          "#454545",
+          "#666666",
+          "#898989",
+          "#aeaeae",
+          "#d4d4d4",
+          "#eeeeee"
+        ]
+      },
       "hard-text": {
         "role": "secondary",
         "displayName": "Grade Amber",
@@ -439,6 +534,25 @@
           "#d4a741",
           "#fbcd6b",
           "#ffecc7"
+        ]
+      },
+      "hard-ink": {
+        "role": "secondary",
+        "displayName": "Grade Amber Ink",
+        "canonical": "oklch(23.5% 0.0058 91.6)",
+        "light": "#1F1E1B",
+        "dark": "#1A1916",
+        "darkOklch": "oklch(21.3% 0.0060 91.6)",
+        "purpose": "The label and shortcut-digit colour on the pressed Трудно fill. Near-black in both themes: #B68A1B is light enough in light mode and dark enough in dark mode that white would fail one of them.",
+        "tonalRamp": [
+          "#0c0b08",
+          "#272623",
+          "#464542",
+          "#676662",
+          "#8a8985",
+          "#afaeaa",
+          "#d5d4d0",
+          "#f0eeea"
         ]
       },
       "good-text": {
@@ -479,6 +593,25 @@
           "#d5fdb9"
         ]
       },
+      "good-ink": {
+        "role": "secondary",
+        "displayName": "Grade Green Ink",
+        "canonical": "oklch(100.0% 0.0000 89.9)",
+        "light": "#FFFFFF",
+        "dark": "#1A1916",
+        "darkOklch": "oklch(21.3% 0.0060 91.6)",
+        "purpose": "The label and shortcut-digit colour on the pressed Хорошо fill. Inverts with the theme alongside the fill.",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#262626",
+          "#454545",
+          "#666666",
+          "#898989",
+          "#aeaeae",
+          "#d4d4d4",
+          "#eeeeee"
+        ]
+      },
       "easy-text": {
         "role": "secondary",
         "displayName": "Grade Clay",
@@ -516,6 +649,25 @@
           "#ffc5af",
           "#ffe9e1"
         ]
+      },
+      "easy-ink": {
+        "role": "secondary",
+        "displayName": "Grade Clay Ink",
+        "canonical": "oklch(97.7% 0.0074 80.7)",
+        "light": "#FAF7F2",
+        "dark": "#1A1916",
+        "darkOklch": "oklch(21.3% 0.0060 91.6)",
+        "purpose": "The label and shortcut-digit colour on the pressed Легко fill. The one grade ink that is warm paper rather than pure white, so the clay fill does not read as a chip mixed with pure black.",
+        "tonalRamp": [
+          "#0d0b08",
+          "#282622",
+          "#474541",
+          "#686661",
+          "#8b8984",
+          "#b0ada9",
+          "#d7d4cf",
+          "#f1eee9"
+        ]
       }
     },
     "typographyMeta": {
@@ -535,73 +687,93 @@
         "displayName": "Inter 400",
         "purpose": "Default reading and interface size."
       },
+      "small": {
+        "displayName": "Inter 500",
+        "purpose": "The most-used step in the product, and the one the token layer was missing. Every primary button, topbar nav link, level pill and browse row resolves to 0.95rem. Set at 500 because that is how it is used in UI; prose at this size inherits 400.",
+        "token": "--text-small"
+      },
+      "meta": {
+        "displayName": "Inter 500",
+        "purpose": "Captions, timestamps, helper text, the small button variant and the level pill on compact screens. 0.85rem — the step between --text-small and --text-micro, and the second most-used size after --text-small.",
+        "token": "--text-meta"
+      },
       "label": {
         "displayName": "Inter 500",
         "purpose": "Shortcut chips, captions, micro labels."
+      },
+      "mono": {
+        "displayName": "System Mono",
+        "purpose": "Not a costume for 'technical'. It carries the install commands on the landing, the keyboard-shortcut chips, and measured values on the stats page. Added to the token layer after the detector flagged every legitimate use of it as an undeclared family.",
+        "notes": "A system stack, deliberately. Nothing in this product is a code editor; a hosted monospace would add a webfont to carry one column of digits."
       }
     },
     "shadows": [
       {
         "name": "shadow-xs",
-        "value": null,
+        "value": "0 1px 2px rgba(31, 30, 27, 0.04)",
+        "dark": "0 1px 2px rgba(0, 0, 0, 0.3)",
         "purpose": "The faintest lift; disabled and inert states."
       },
       {
         "name": "shadow-sm",
-        "value": null,
+        "value": "0 1px 3px rgba(31, 30, 27, 0.06), 0 1px 2px rgba(31, 30, 27, 0.04)",
+        "dark": "0 1px 3px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.25)",
         "purpose": "Inset panels, the mobile drawer."
       },
       {
         "name": "shadow-md",
-        "value": null,
+        "value": "0 4px 12px rgba(31, 30, 27, 0.06), 0 1px 3px rgba(31, 30, 27, 0.04)",
+        "dark": "0 4px 14px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3)",
         "purpose": "The resting flashcard. Also the anchor of the card-landing animation."
       },
       {
         "name": "shadow-lg",
-        "value": null,
+        "value": "0 16px 40px rgba(31, 30, 27, 0.10), 0 2px 6px rgba(31, 30, 27, 0.05)",
+        "dark": "0 16px 48px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.3)",
         "purpose": "Modals and dialogs only."
       }
     ],
     "motion": [
       {
         "name": "dur-press",
-        "value": null,
+        "value": "100ms",
         "purpose": "The control acknowledging the finger. Under 150ms reads as physical."
       },
       {
         "name": "dur-fast",
-        "value": null,
+        "value": "140ms",
         "purpose": "A routine state change: hover, colour, a row settling."
       },
       {
         "name": "dur-base",
-        "value": null,
+        "value": "220ms",
         "purpose": "An overlay or a state swap: a modal, a toast, the scrim."
       },
       {
         "name": "dur-slow",
-        "value": null,
+        "value": "420ms",
         "purpose": "The authored moment — the card landing. Reserved on purpose."
       },
       {
         "name": "ease-out",
-        "value": null,
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
         "purpose": "Every arrival. Exponential deceleration."
       },
       {
         "name": "ease-in-out",
-        "value": null,
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
         "purpose": "Loops that go out and come back (shimmer, audio pulse)."
       },
       {
         "name": "ease-linear",
-        "value": null,
+        "value": "linear",
         "purpose": "Continuous rotation only. Any easing on a spinner reads as stutter."
       },
       {
         "name": "card-land",
-        "value": "420ms null",
-        "purpose": "The flashcard lands: shadow tightens onto an opaque surface, no fade."
+        "value": "var(--dur-slow) var(--ease-out)",
+        "purpose": "The flashcard lands: shadow tightens onto an opaque surface, no fade. The one animation in the product that gets the slow duration, and it gets the out curve because nothing here eases in.",
+        "notes": "Keyframe is `cardLand` in Flashcard.module.css, localised by CSS Modules. It animates on `.face`, not the card shell, because the shadow is on the face — animating the parent would lift the shadow before the surface arrives."
       }
     ],
     "breakpoints": [
@@ -650,11 +822,11 @@
       }
     ],
     "knownDebt": [
-      "No spacing token scale. 27 distinct px values are in use in padding/margin; the rhythm is a loose 2px step with a 4px preference, clustering on 4/6/8/10/12/14/16/20/24/32px.",
-      "Breakpoints are not unified — the map is now seven max-width values plus two height queries and the touch gate. Only the touch gate and the landscape split are load-bearing across modules.",
-      "The mobile nav drawer opens and closes with no transition; it is the only overlay not using the shared arrival vocabulary.",
-      "On the study screen at desktop width the undo toast overlaps the \"Показать ответ\" button.",
-      "The main study view renders no <h1> — only the done state has one. The .studyTitle class still exists in StudyPage.module.css and is rendered by nothing."
+      "No spacing token scale. 25 distinct px values are in use in padding/margin; the rhythm is a loose 2px step with a 4px preference, clustering on 4/6/8/10/12/14/16/20/24/32px.",
+      "Breakpoints are not unified — the map is now nine max-width values (420/540/600/640/720/760/768/900/1000), one min-width (901), four height queries and the touch gate. Only the touch gate, the 760px drawer swap and the landscape split are load-bearing across modules.",
+      "The mobile nav drawer opens and closes with no transition; it is the only overlay not using the shared arrival vocabulary. The comment above .mobileNav in Layout.module.css claims a 90ms CSS animation — there is no @keyframes in that file and no transition on .mobileNav, so the comment documents an intention, not the behaviour.",
+      ".btn--danger:hover paints the literal #963434 with no --danger-hover token in either theme. The dark palette has no such brown, so the hover is a colour the theme does not contain.",
+      "--surface-hover is declared in :root and read by nothing in src/ or landing/, and is never overridden for the dark theme. It is deliberately absent from the frontmatter colors: block — a contract entry has to promise the variable works."
     ]
   },
   "components": [
@@ -664,7 +836,7 @@
       "refersTo": "button-primary",
       "description": "The one solid accent surface. Carries the page's primary action; text is Clay Ink on Clay Solid, never white on bare Clay.",
       "html": "<button class=\"ds-btn-primary\" type=\"button\">Начать с A1 <svg class=\"ds-ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><line x1=\"5\" x2=\"19\" y1=\"12\" y2=\"12\"/><polyline points=\"12 5 19 12 12 19\"/></svg></button>",
-      "css": ".ds-btn-primary { display:inline-flex; align-items:center; justify-content:center; gap:8px; line-height:1; min-height:38px; padding:0 14px; border:1px solid transparent; border-radius:var(--radius-md); background:var(--accent-solid); color:var(--accent-fg); font-family:var(--font-sans); font-weight:500; font-size:var(--text-small); letter-spacing:-0.005em; cursor:pointer; white-space:nowrap; transition:background var(--dur-fast) var(--ease-out), transform var(--dur-press) var(--ease-out); }\n.ds-btn-primary .ds-ico { width:1em; height:1em; }\n.ds-btn-primary:hover { background:var(--accent-hover); }\n.ds-btn-primary:active { transform:translateY(1px); }\n.ds-btn-primary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; box-shadow: 0 0 0 3px var(--accent-soft); }"
+      "css": ".ds-btn-primary { display:inline-flex; align-items:center; justify-content:center; gap:8px; line-height:1; min-height:38px; padding:0 14px; border:1px solid transparent; border-radius:var(--radius-md); background:var(--accent-solid); color:var(--accent-fg); font-family:var(--font-sans); font-weight:500; font-size:var(--text-small); letter-spacing:-0.005em; cursor:pointer; white-space:nowrap; transition:background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), transform var(--dur-press) var(--ease-out); }\n.ds-btn-primary .ds-ico { width:1em; height:1em; }\n.ds-btn-primary:hover { background:var(--accent-hover); }\n.ds-btn-primary:active { transform:translateY(1px); }\n.ds-btn-primary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; box-shadow: 0 0 0 3px var(--accent-soft); }"
     },
     {
       "name": "Button — Ghost",
@@ -698,7 +870,7 @@
       "refersTo": "chip",
       "description": "The single solid accent surface on the study screen. It marks the active filter and nothing else; the rating row is deliberately neutral so this keeps that meaning.",
       "html": "<span class=\"ds-level\">A1</span>",
-      "css": ".ds-level { display:inline-flex; align-items:center; justify-content:center; min-width:44px; min-height:44px; border-radius:var(--radius-pill); background:var(--accent-solid); color:var(--accent-fg); font-family:var(--font-sans); font-size:var(--text-small); font-weight:600; }",
+      "css": ".ds-level { display:inline-flex; align-items:center; justify-content:center; min-width:44px; min-height:44px; border-radius:var(--radius-pill); background:var(--accent-solid); color:var(--accent-fg); font-family:var(--font-sans); font-size:var(--text-meta); font-weight:600; }",
       "notes": "A <span>, not a control: it renders the active filter and is not itself interactive, so it has no hover or focus state. This is the only solid accent surface on the study screen."
     },
     {
@@ -732,7 +904,7 @@
       "refersTo": "nav-link",
       "description": "Topbar links at body-small. The active link is a filled pill on the inset ground with strong ink — a tonal shift, not a colour one.",
       "html": "<a class=\"ds-nav ds-nav-active\" href=\"#\"><svg class=\"ds-ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m3 10.5 9-7 9 7\"/><path d=\"M5 9.5V20h14V9.5\"/></svg> Главная</a>",
-      "css": ".ds-nav { display:inline-flex; align-items:center; gap:8px; padding:8px 14px; border-radius:var(--radius-md); color:var(--text-muted); font-family:var(--font-sans); font-size:var(--text-small); font-weight:500; text-decoration:none; transition:background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out); }\n.ds-nav .ds-ico { width:16px; height:16px; }\n.ds-nav:hover { background:var(--surface-2); color:var(--text); }\n.ds-nav-active { background:var(--surface-2); color:var(--text-strong); }\n.ds-nav:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; box-shadow: 0 0 0 3px var(--accent-soft); }"
+      "css": ".ds-nav { display:inline-flex; align-items:center; gap:6px; padding:7px 12px; border-radius:var(--radius-md); color:var(--text-muted); font-family:var(--font-sans); font-size:var(--text-small); font-weight:500; text-decoration:none; transition:background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out); }\n.ds-nav .ds-ico { width:16px; height:16px; }\n.ds-nav:hover { background:var(--surface-2); color:var(--text); }\n.ds-nav-active { background:var(--surface-2); color:var(--text-strong); }\n.ds-nav:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; box-shadow: 0 0 0 3px var(--accent-soft); }"
     },
     {
       "name": "Collapsed filter row — study",
@@ -771,6 +943,11 @@
         "body": "Solid fill is not a resting style. It marks the moment the learner commits. A control that is already saturated at rest has nothing left to give the press."
       },
       {
+        "name": "The Measured-Ground Rule",
+        "section": "colors",
+        "body": "Contrast is a property of a *pair*, so every rule that puts text on a surface has to name both, and the surface has to be the one the reader actually sees. A token meeting 4.5:1 on `--surface` can still fail on `--border`, because a component nested in a table inherits the table's ground rather than the page's. When a nested element finds itself drawing on a colour it did not choose — a pager inside a grid, a chip inside a button — it owes the reader a real surface, not a borrowed one. What belongs to the container is not automatically the container's to lend."
+      },
+      {
         "name": "The Never-px Rule",
         "section": "typography",
         "body": "Never set a font size in px. px does not follow --font-scale, so a px shorthand silently opts that element out of the user's text-size setting."
@@ -779,6 +956,11 @@
         "name": "The Root-Size Rule",
         "section": "typography",
         "body": "Root is 15px, not the 16px web default. The density was deliberately tuned at 15px, and the sm setting is clamped to 0.92× so the compact step cannot drive the smallest role below ~10.8px. Raising the root is a whole-product proportion change, not a side effect of a cleanup."
+      },
+      {
+        "name": "The Heading Rule",
+        "section": "typography",
+        "body": "Every screen has exactly one `<h1>`, in every state it can be in — not only in the empty or finished one. A screen whose heading appears only when the work is over has no heading while the work is happening, which is backwards: a screen-reader user arrives with no idea where they are, and a sighted user is left reading a card under a toolbar. That rule is about the *document*, not about pixels. Where the visible design already states the heading — the study screen's active level is already a filled pill in its header — the `<h1>` is `srOnly` and repeats that label for the outline. It was measured, not assumed: adding it moved `cardWrap`, the answer button and the counter by exactly 0px at 1280×1000, 390×844 and 360×640. Study is the tightest screen in the product, and the card is the one thing that should hold its area. A heading that only restates what the eye already read is not hierarchy; it is a second copy."
       },
       {
         "name": "The Offset-and-Blur Rule",
