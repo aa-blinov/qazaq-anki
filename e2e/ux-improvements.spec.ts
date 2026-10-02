@@ -285,4 +285,68 @@ test.describe('UX improvements', () => {
     await page.screenshot({ path: `${SHOTS}/11-pwa.png`, fullPage: false });
   });
 
+  test('12. mobile topbar pins the control cluster to the right edge', async ({ page }) => {
+    // Regression: on a narrow viewport the header had no `flex: 1` child
+    // at all — the nav and the signed-out spacer were both `display:none`
+    // — so the wordmark and the controls packed against the left and
+    // ~137px of dead space sat on the right at 390px. Every other test
+    // passed with that on screen, because nothing measured the topbar.
+    //
+    // The invariant: the last control's right edge equals the header's
+    // content edge (its width minus its right padding), at every width
+    // where the burger is showing, for both auth states.
+    for (const w of [320, 390, 430, 600]) {
+      await page.setViewportSize({ width: w, height: 844 });
+      await loginFresh(page);
+
+      const m = await page.evaluate(() => {
+        const header = document.querySelector('header')!;
+        const hb = header.getBoundingClientRect();
+        const cs = getComputedStyle(header);
+        const btns = [...header.querySelectorAll('button')].filter((b) => {
+          const r = b.getBoundingClientRect();
+          return r.width > 0;
+        });
+        const last = btns[btns.length - 1].getBoundingClientRect();
+        return {
+          contentRight: hb.right - parseFloat(cs.paddingRight),
+          lastRight: last.right,
+          n: btns.length,
+        };
+      });
+      // 1px of slack: sub-pixel layout at fractional viewport widths.
+      expect(
+        Math.abs(m.lastRight - m.contentRight),
+        `signed-in @${w}px: last control ends at ${m.lastRight}, content edge is ${m.contentRight}`,
+      ).toBeLessThanOrEqual(1);
+      expect(m.n, `signed-in @${w}px: expected burger + 3 controls`).toBe(4);
+    }
+
+    // Signed out: no burger, but the spacer has to come back, or the two
+    // controls drift left the same way.
+    const ctx = page.context();
+    const fresh = await ctx.newPage();
+    await fresh.goto('/');
+    await fresh.setViewportSize({ width: 390, height: 844 });
+    await fresh.waitForLoadState('networkidle');
+    const guest = await fresh.evaluate(() => {
+      const header = document.querySelector('header')!;
+      const hb = header.getBoundingClientRect();
+      const cs = getComputedStyle(header);
+      const btns = [...header.querySelectorAll('button')].filter(
+        (b) => b.getBoundingClientRect().width > 0,
+      );
+      const last = btns[btns.length - 1].getBoundingClientRect();
+      return {
+        contentRight: hb.right - parseFloat(cs.paddingRight),
+        lastRight: last.right,
+        n: btns.length,
+      };
+    });
+    await fresh.close();
+    expect(
+      Math.abs(guest.lastRight - guest.contentRight),
+      `guest @390px: last control ends at ${guest.lastRight}, content edge is ${guest.contentRight}`,
+    ).toBeLessThanOrEqual(1);
+  });
 });
