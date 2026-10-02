@@ -309,7 +309,12 @@
      a slide-down panel below the topbar. The previous inline row
      is hidden; the same nav links live inside the drawer. */
   .nav { display: none; }
-  .navPlaceholder { display: none; }
+  /* `.navPlaceholder` is the only `flex: 1` in the header for a signed-out
+     visitor, and it used to be hidden here along with the nav. That left
+     the header with no growable child at all, so the wordmark and the
+     control cluster packed against the left edge and ~137px of empty
+     space sat on the right at 390px wide. It stays: its job on mobile is
+     the spacer, which is exactly the job it has on desktop. */
   .burger {
     display: inline-flex;
     align-items: center;
@@ -321,7 +326,12 @@
     background: transparent;
     color: var(--text-muted);
     cursor: pointer;
-    margin-left: 4px;
+    /* `auto`, not the 4px nudge this had: the burger stands in for the
+       nav, and the nav's slot is the flexible one. Absorbing the free
+       space here pushes the burger *and* the icon group that follows it
+       to the right edge, so the four controls stay one cluster instead
+       of drifting apart across the bar. */
+    margin-left: auto;
   }
   .burger:hover { background: var(--surface-2); color: var(--text); }
   .mobileNav {
