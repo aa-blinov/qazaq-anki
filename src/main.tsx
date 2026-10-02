@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { preloadAllLevels } from './data/decks';
+
 // @font-face blocks must be parsed before the rules that reference the
 // families, so this import has to stay above global.css. The files are
 // local (public/fonts) — see src/styles/fonts.css for why.
@@ -36,21 +36,22 @@ const basename = import.meta.env.BASE_URL.replace(/\/$/, '');
  * `src/lib/api.ts`. So there is no client-side DB to warm up
  * before render — we just mount the React tree.
  *
- * The level JSONs (a1.json … c1.json) are lazy-loaded on demand,
- * but the home page and the browse page need the per-level
- * counts on first paint. We kick off a fire-and-forget preload
- * so the cache is warm by the time the user reads the lede
- * (typically 100–200ms in dev, near-instant from the disk
- * cache in prod). The first render falls back to the build-time
- * `cardCount` hint in `decks.json` if the cache isn't ready
- * yet, so the user never sees "0".
+ * The level JSONs (a1.json … c1.json) are loaded by the pages that
+ * display them: HomePage, BrowsePage and StatsPage each call
+ * `loadLevel` for what they need, and `loadLevel` dedupes concurrent
+ * requests through an `inflight` map, so they share one fetch per
+ * level. There is deliberately no module-scope preload here any more.
+ *
+ * It used to call `preloadAllLevels()` before rendering, and it was
+ * pure duplication: every consumer above already loads what it reads.
+ * What it actually bought was 193 KB of JSON on routes that display no
+ * cards at all — /login, /register, /404 — and on the study screen,
+ * which needs one level and was being handed all five. `getCardCount`
+ * and `getTotalCards` already fall back to the build-time `cardCount`
+ * hint in `decks.json` when a level is not in the cache, so a page
+ * that has not loaded its decks yet renders correct numbers rather
+ * than zeros.
  */
-preloadAllLevels().catch((err) => {
-  // The pre-load is a progressive enhancement — if it fails (e.g.
-  // a corrupt JSON), the level still loads on demand when the
-  // user opens a study session. Log but don't crash.
-  console.warn('[main] preloadAllLevels failed:', err);
-});
 
 createRoot(rootEl).render(
   <StrictMode>

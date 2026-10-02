@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 """
 Generate Kazakh TTS audio for every unique word in the official
-decks using Piper (VITS via ONNX Runtime). One WAV per word,
+decks using Piper (VITS via ONNX Runtime). One FLAC clip per word,
 keyed by the first 16 hex chars of the SHA-1 of the Kazakh text.
 
+Piper emits raw 16-bit PCM, which is about 44 kB for every second of
+speech — 283 MB for this corpus. Each clip is therefore encoded to
+FLAC before it is written: lossless, so the learner hears exactly the
+waveform Piper produced, at 45% of the size. The `flac` reference
+encoder is used rather than ffmpeg's, because on this material it
+produces roughly a third smaller files at identical fidelity.
+
 The Docker build invokes this once per image version. Re-runs are
-idempotent: words whose WAV already exists are skipped, so an
+idempotent: words whose clip already exists are skipped, so an
 incremental build (e.g. when one level's JSON changes) only pays
 for the new words.
 
@@ -17,7 +24,11 @@ CLI:
 import argparse
 import hashlib
 import json
+import os
+import shutil
+import subprocess
 import sys
+import tempfile
 import time
 import wave
 from pathlib import Path
@@ -35,9 +46,15 @@ DECKS_DIR = PROJECT_ROOT / "src" / "data" / "decks"
 AUDIO_ROOT = PROJECT_ROOT / "public" / "audio"
 MODELS_DIR = PROJECT_ROOT / "models"
 
+# Container every clip ships in, and the floor below which a file is
+# treated as a truncated write rather than a usable clip. 2 KB is well
+# under the shortest real word in this corpus (2 771 bytes).
+AUDIO_EXT = "flac"
+MIN_CLIP_BYTES = 2_000
+
 # Language → voice file + audio subdir. The "lang" key is the
 # short tag the front-end uses in `audioUrl(text, 'kk')` /
-# `audioUrl(text, 'ru')`; the subdir is the folder the WAVs
+# `audioUrl(text, 'ru')`; the subdir is the folder the clips
 # land in (and that the browser fetches via /audio/<subdir>/).
 # Each model is loaded once at startup and reused across all
 # words in that language.
@@ -86,16 +103,55 @@ def collect_words() -> list[tuple[str, str]]:
 
 
 def synth_one(voice: PiperVoice, word: str, out_path: Path) -> None:
-    """Synthesize one word, write 22kHz mono 16-bit PCM WAV."""
+    """Synthesize one word and write it as a 22 kHz mono 16-bit FLAC.
+
+    Piper hands back raw PCM, so the samples are written to a temporary
+    WAV first and then run through the `flac` reference encoder. That
+    encoder is lossless — the decoded output is bit-identical to the
+    PCM Piper produced — and it beats ffmpeg's FLAC encoder by about a
+    third on this material, which is most of the reason this repo does
+    not just shell out to ffmpeg.
+
+    The temp file is in the destination directory so the encode is a
+    same-filesystem rename rather than a cross-device copy, and it is
+    always cleaned up so a failed synthesis never leaves a stray WAV
+    next to the real clips (which would be picked up by a later
+    manifest rebuild).
+    """
     chunks = list(voice.synthesize(word))
     if not chunks:
         raise RuntimeError("piper returned no audio chunks")
-    with wave.open(str(out_path), "wb") as f:
-        f.setnchannels(1)
-        f.setsampwidth(2)  # 16-bit
-        f.setframerate(voice.config.sample_rate)
-        for chunk in chunks:
-            f.writeframes(chunk.audio_int16_bytes)
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_name = tempfile.mkstemp(dir=str(out_path.parent), suffix=".wav")
+    os.close(fd)
+    tmp_wav = Path(tmp_name)
+    try:
+        with wave.open(str(tmp_wav), "wb") as f:
+            f.setnchannels(1)
+            f.setsampwidth(2)  # 16-bit
+            f.setframerate(voice.config.sample_rate)
+            for chunk in chunks:
+                f.writeframes(chunk.audio_int16_bytes)
+
+        flac_bin = shutil.which("flac")
+        if not flac_bin:
+            raise RuntimeError(
+                "the `flac` encoder is not on PATH; install the `flac` "
+                "package (apt) or the FLAC tools for your platform"
+            )
+        # Write to a temp name and rename, so a crash mid-encode can
+        # never leave a half-written .flac that passes a size check.
+        staged = out_path.with_suffix(".flac.part")
+        subprocess.run(
+            [flac_bin, "--silent", "--force", "--no-padding", "-8",
+             "-o", str(staged), str(tmp_wav)],
+            check=True,
+        )
+        staged.replace(out_path)
+    finally:
+        tmp_wav.unlink(missing_ok=True)
+        out_path.with_suffix(".flac.part").unlink(missing_ok=True)
 
 
 def main() -> int:
@@ -112,7 +168,7 @@ def main() -> int:
     )
     p.add_argument("--word", help="Generate just this single word (debug; pairs with --lang)")
     p.add_argument("--limit", type=int, help="Cap on number of words generated")
-    p.add_argument("--force", action="store_true", help="Regenerate even if WAV exists")
+    p.add_argument("--force", action="store_true", help="Regenerate even if a clip already exists")
     args = p.parse_args()
 
     # Filter the languages we'll iterate over. When `--lang` is set
@@ -163,8 +219,8 @@ def main() -> int:
         t0 = time.time()
         for i, word in enumerate(words, 1):
             h = word_hash(word)
-            out = audio_dir / f"{h}.wav"
-            if out.exists() and out.stat().st_size >= 10_000 and not args.force:
+            out = audio_dir / f"{h}.{AUDIO_EXT}"
+            if out.exists() and out.stat().st_size >= MIN_CLIP_BYTES and not args.force:
                 skipped += 1
                 continue
             try:
@@ -190,20 +246,21 @@ def main() -> int:
         if failed > 0:
             overall_failed += 1
 
-        # Write the manifest for this language. The browser
-        # fetches /audio/<lang>/manifest.json on load.
+        # Write the manifest for this language. The browser fetches
+        # /audio/<lang>/manifest.json lazily, the first time a speak
+        # button for that language mounts.
         if not args.word:
             write_manifest(audio_dir, lang)
     return 0 if overall_failed == 0 else 2
 
 
 def write_manifest(audio_dir: Path, lang: str) -> None:
-    """Scan audio_dir for *.wav and write a sorted JSON array of
-    their stem (the hash) to manifest.json. The manifest lives
-    next to the WAVs so the file is cacheable alongside them."""
+    """Scan audio_dir for *.flac and write a sorted JSON array of
+    their stem (the hash) to manifest.json. The manifest stores bare
+    hashes with no extension, so it survives a change of container."""
     if not audio_dir.exists():
         return
-    hashes = sorted(p.stem for p in audio_dir.glob("*.wav"))
+    hashes = sorted(p.stem for p in audio_dir.glob(f"*.{AUDIO_EXT}"))
     manifest = audio_dir / "manifest.json"
     manifest.write_text(json.dumps(hashes, ensure_ascii=False), encoding="utf-8")
     print(f"[tts] wrote manifest with {len(hashes)} hashes to {manifest}")

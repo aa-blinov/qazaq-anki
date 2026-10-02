@@ -1146,3 +1146,47 @@ decide rather than rediscover.
    using the variable works. It is recorded here so the omission reads as a
    decision rather than an oversight. Resolution is a one-line delete.
 
+7. **The two heaviest assets on a cold load are not visual.** The largest
+   single response is not a component or an image — it is
+   `newsreader-normal-latin.woff2` at 129 KB, followed by the app bundle
+   at 145 KB gzipped. Both sit on the critical path and both are
+   preloaded or discovered from the HTML, so they are *deliberate*. The
+   avoidable weight was elsewhere and has been removed: see the note on
+   audio and deck loading under Motion. What remains is honest — a
+   dictionary app that self-hosts its own type and ships 3 996 words is
+   not going to be small, and the number to compare against is the
+   first screenful, not the whole repository.
+
+## Audio and deck loading
+
+This file is about the visual system, but two loading decisions are
+load-bearing enough to record, because both were measured rather than
+assumed and both change what an agent should write next.
+
+**The clips are FLAC, and the manifests are lazy.** Pronunciation audio
+ships as lossless FLAC at 22.05 kHz mono — 7 473 clips, 168 MB, down from
+300 MB as WAV, a 45% reduction with decoded samples bit-identical to what
+Piper produced. The manifest for each language is no longer fetched on
+app start; a speak button requests the manifest for its own language when
+it first mounts, and `hasAudio` reports "unknown" until then, which the
+button already renders as nothing. On the home page, which shows a
+static teaser card and no speak button at all, that removed 74 KB and two
+requests for data the page could not use.
+
+**Deck JSONs are loaded by the page that displays them.** There is no
+module-scope preload. `HomePage`, `BrowsePage` and `StatsPage` call
+`loadLevel` for what they render, and `loadLevel` dedupes concurrent
+requests, so a route that shows no cards downloads no cards: `/login` went
+from roughly 596 KB to 403 KB. `getCardCount` and `getTotalCards` fall
+back to the build-time `cardCount` hint, so a count is never wrong
+because its deck has not arrived — it is correct before the JSON lands.
+
+The pattern both changes follow is the same one this document already
+states about tokens: **a screen should pay for the data it renders, and
+not one byte more.** The earlier code paid for both languages' audio and
+for every deck on every route, because "prefetch everything" is easier to
+write than "fetch what this screen shows" — and the measurement is what
+proved it, since none of it was ever on the critical path. Nothing here
+moved LCP; it moved the bill.
+
+

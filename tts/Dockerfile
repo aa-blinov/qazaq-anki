@@ -5,7 +5,7 @@
 # here as `server.py` so the runtime can find it at /app/.
 #
 # Voice models are NOT baked into the image. The repo ships
-# pre-generated WAVs in public/audio/, so this service only
+# pre-generated FLAC clips in public/audio/, so this service only
 # needs to handle the long tail of user-added words. On first
 # start we run scripts/download_tts_models.py to fetch the two
 # Piper ONNX models into /app/models/ (mounted as a persistent
@@ -24,8 +24,15 @@ WORKDIR /app
 # ffmpeg for the optional post-processing step (volume
 # normalisation), libsndfile for the audio I/O, tini for
 # signal handling so SIGTERM doesn't leave Piper half-loaded.
+#
+# `flac` is the encoder the service uses to write every synthesised
+# clip. It is the reference libFLAC implementation and is lossless, so
+# a runtime-synthesised word is bit-identical to a build-time one. It
+# is NOT interchangeable with ffmpeg's FLAC encoder: on this material
+# ffmpeg produces roughly a third larger files, and the repo's 7 473
+# committed clips were all encoded with the reference one.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        ffmpeg libsndfile1 tini curl ca-certificates \
+        ffmpeg flac libsndfile1 tini curl ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # Python deps. `pydub` is for the audio normalisation pass,

@@ -70,8 +70,9 @@ self-hosted via `docker-compose` for the server side.
   FOUC), responsive, accessible (keyboard, `prefers-reduced-motion`, focus
   rings), four interface text scales (sm / md / lg / xl).
 - Pre-generated TTS audio per word in two voices (`kk_KZ-issai-high` for
-  Kazakh, `ru_RU-denis-medium` for Russian) shipped as static `.wav` files
-  under `public/audio/{kk,ru}/`, with per-language manifests.
+  Kazakh, `ru_RU-denis-medium` for Russian) shipped as static, lossless
+  FLAC files under `public/audio/{kk,ru}/`, with per-language manifests
+  that are fetched lazily, per language, when a speak button first mounts.
 - Server endpoints for audio lazy-synthesis and per-deck metadata
   (`/api/audio`, `/api/deck-meta`, `/api/stats`).
 - Stats page with accuracy, mastery rings per CEFR level, ease histogram,

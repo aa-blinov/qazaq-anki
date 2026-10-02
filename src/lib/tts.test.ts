@@ -73,17 +73,17 @@ describe('audioUrl()', () => {
     expect(audioUrl('   ')).toBeNull();
   });
 
-  it('returns a stable /audio/kk/<hash>.wav URL for non-empty input', () => {
-    expect(audioUrl('сәлем')).toBe('/audio/kk/de73121b06b61f80.wav');
-    expect(audioUrl('Сәлеметсіз бе!')).toBe('/audio/kk/2c40cd08bae92949.wav');
+  it('returns a stable /audio/kk/<hash>.flac URL for non-empty input', () => {
+    expect(audioUrl('сәлем')).toBe('/audio/kk/de73121b06b61f80.flac');
+    expect(audioUrl('Сәлеметсіз бе!')).toBe('/audio/kk/2c40cd08bae92949.flac');
   });
 
   it('honours the lang arg for the URL path', () => {
     // Same word, different langs → different URLs (because the
     // Piper model and the manifest are per-language, even
     // though the hash is text-only).
-    expect(audioUrl('привет', 'ru')).toBe('/audio/ru/' + wordHash('привет') + '.wav');
-    expect(audioUrl('сәлем', 'kk')).toBe('/audio/kk/' + wordHash('сәлем') + '.wav');
+    expect(audioUrl('привет', 'ru')).toBe('/audio/ru/' + wordHash('привет') + '.flac');
+    expect(audioUrl('сәлем', 'kk')).toBe('/audio/kk/' + wordHash('сәлем') + '.flac');
   });
 
   it('strips surrounding whitespace before hashing', () => {
@@ -100,7 +100,7 @@ describe('audioUrl()', () => {
 describe('audioUrlForHash()', () => {
   it('builds the canonical path from a raw hash', () => {
     expect(audioUrlForHash('de73121b06b61f80')).toBe(
-      '/audio/kk/de73121b06b61f80.wav'
+      '/audio/kk/de73121b06b61f80.flac'
     );
   });
 });

@@ -599,10 +599,10 @@ app.post('/api/tts/synthesize', requireAuth, async (req, res, next) => {
   // Compute the hash locally so we can short-circuit on a cache
   // hit. The hash is identical to the one the browser uses (same
   // algorithm — sha1(utf-8)[:16]) so a synthesised file is
-  // immediately addressable by /audio/<lang>/<hash>.wav.
+  // immediately addressable by /audio/<lang>/<hash>.flac.
   const hash = computeAudioHash(text);
 
-  // Quick optimistic check: if the WAV is already on disk (built
+  // Quick optimistic check: if the clip is already on disk (built
   // at install time or synthesised by a previous request), the
   // TTS service would also return cached=true. We can skip the
   // network round-trip entirely and just return the URL. The
@@ -610,14 +610,31 @@ app.post('/api/tts/synthesize', requireAuth, async (req, res, next) => {
   // (./public/audio → /audio); we mirror that here so the local
   // hit-path works in the same environments.
   const audioRoot = process.env.AUDIO_ROOT || '/audio';
+  const clipPath = `${audioRoot}/${lang}/${hash}.flac`;
   try {
-    const stat = await fs.stat(`${audioRoot}/${lang}/${hash}.wav`);
-    // A real WAV from Piper is ≥ 10 KB at 22 kHz mono. Anything
-    // smaller is a truncated / failed-write artifact and we want
-    // to retry the synthesis — keep the on-disk file untouched
-    // so the user can inspect it if they want.
-    if (stat.size >= 10_000) {
-      return res.json({ hash, url: `/audio/${lang}/${hash}.wav`, lang, cached: true });
+    const stat = await fs.stat(clipPath);
+    // A complete FLAC always begins with the four bytes "fLaC". Reading
+    // them catches an empty file, a leftover WAV from an older install, or
+    // a write that never landed — cases where a size check alone would
+    // happily report a cache hit and hand the browser an undecodable URL.
+    // The size floor then catches a write that died partway through.
+    //
+    // The floor is 2 KB, not the old 10 KB. The previous number was
+    // calibrated against uncompressed 22 kHz PCM; these clips are
+    // losslessly compressed, and the shortest real word in the corpus
+    // lands at 2 771 bytes. A 10 KB floor would have thrown away every
+    // short word and re-synthesised it on every single request.
+    if (stat.size >= 2000) {
+      const fh = await fs.open(clipPath, 'r');
+      try {
+        const buf = Buffer.alloc(4);
+        const { bytesRead } = await fh.read(buf, 0, 4, 0);
+        if (bytesRead === 4 && buf.toString('latin1') === 'fLaC') {
+          return res.json({ hash, url: `/audio/${lang}/${hash}.flac`, lang, cached: true });
+        }
+      } finally {
+        await fh.close();
+      }
     }
   } catch {
     // Not on disk — fall through to the service call.
