@@ -18,12 +18,24 @@
  * old cache is dropped instead of served stale.
  * --------------------------------------------------------------------------- */
 
-const CACHE_NAME = 'soz-shell-v2';
+const CACHE_NAME = 'soz-shell-v3';
 const APP_SHELL = [
   '/',
   '/index.html',
   '/manifest.webmanifest',
   '/favicon.png',
+  // Self-hosted faces, precached so the very first offline launch
+  // renders in the real type rather than a system fallback. These
+  // names are stable (they live in public/, unhashed), so unlike the
+  // JS/CSS bundles they can be listed here at all.
+  //
+  // Inter is listed for both ranges; Newsreader only for latin. It
+  // ships "Google Fonts Latin Plus" and has no Cyrillic file to
+  // name — and addAll is atomic, so listing a 404 here would fail the
+  // whole install and leave the app with no offline shell at all.
+  '/fonts/inter-normal-latin.woff2',
+  '/fonts/inter-normal-cyrillic.woff2',
+  '/fonts/newsreader-normal-latin.woff2',
 ];
 
 self.addEventListener('install', (event) => {

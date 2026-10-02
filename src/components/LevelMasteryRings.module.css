@@ -150,3 +150,12 @@
    * coordinated peripheral motion this setting exists to stop. */
   .fill, .fillInner { transition: none; }
 }
+
+/* Placeholder ring for LevelMasteryRingsSkeleton. 96×96 to match
+   `.ring` exactly, so the grid's row count and therefore the block's
+   height are identical before and after the fetch lands. */
+.skeletonRing {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+}

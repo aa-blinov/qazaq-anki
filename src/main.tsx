@@ -4,6 +4,10 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { preloadAllLevels } from './data/decks';
+// @font-face blocks must be parsed before the rules that reference the
+// families, so this import has to stay above global.css. The files are
+// local (public/fonts) — see src/styles/fonts.css for why.
+import './styles/fonts.css';
 import './styles/global.css';
 
 const rootEl = document.getElementById('root');

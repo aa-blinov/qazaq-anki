@@ -33,7 +33,7 @@ import {
   type BackupSummary,
 } from '../lib/backup';
 import styles from './StatsPage.module.css';
-import { LevelMasteryRings } from '../components/LevelMasteryRings';
+import { LevelMasteryRings, LevelMasteryRingsSkeleton } from '../components/LevelMasteryRings';
 import { EaseHistogram } from '../components/EaseHistogram';
 
 type LoadedLevels = Record<string, Card[]>;
@@ -566,7 +566,11 @@ export function StatsPage() {
           <LevelMasteryRings stats={serverStats} />
           <EaseHistogram stats={serverStats} />
         </div>
-      ) : null}
+      ) : (
+        <div className={styles.tabPanel} aria-busy="true">
+          <LevelMasteryRingsSkeleton />
+        </div>
+      )}
 
       {/* Tab bar — splits the rest of the page (activity + SM-2
           parameters + leech list + topic grid) into three

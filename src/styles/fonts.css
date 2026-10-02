@@ -1,0 +1,99 @@
+/*
+ * Self-hosted typefaces.
+ *
+ * These were served from fonts.googleapis.com until the polish pass.
+ * Two reasons that stopped being acceptable:
+ *
+ *  1. Privacy. The app tells the learner "Телеметрии нет" and that data
+ *     never leaves the machine. A stylesheet request to Google discloses
+ *     their IP on every page load — a third-party data transfer that
+ *     contradicts the product's own promise. This is a self-hosted,
+ *     single-user study tool; it has no reason to phone anywhere.
+ *  2. Craft. An own-world product sources and hosts its display face.
+ *     Borrowing it from a CDN put a network round-trip between the
+ *     reader and the thing that makes the product look like itself.
+ *
+ * Both families are SIL Open Font License, which permits self-hosting.
+ * The files are Google's own woff2 subsets, trimmed to the ranges this
+ * interface renders: latin, latin-ext, and cyrillic. latin-ext is
+ * kept on purpose — usernames and imported Anki decks are user-supplied
+ * text, and a silently substituted glyph in someone's own name reads as
+ * broken.
+ *
+ * One file per family, style and subset; these are variable fonts,
+ * declared across the family's full weight range.
+ *
+ * KNOWN GAP — see DESIGN.md → Typography. Newsreader ships "Google
+ * Fonts Latin Plus" and has no Cyrillic at all, which is why there is
+ * no newsreader-*-cyrillic file here. Every Russian heading and every
+ * Kazakh word on the card has therefore been rendering in the fallback
+ * serif, not this one. That predates this pass and is not fixed by it:
+ * choosing a face that covers the language is a design decision, not a
+ * hosting one.
+ *
+ * Generated from the files actually present in public/fonts — see the
+ * note in the tooling. Do not hand-add a face whose file is missing.
+ */
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-normal-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-normal-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-normal-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Newsreader';
+  font-style: italic;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url('/fonts/newsreader-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Newsreader';
+  font-style: italic;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url('/fonts/newsreader-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Newsreader';
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url('/fonts/newsreader-normal-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Newsreader';
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url('/fonts/newsreader-normal-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}

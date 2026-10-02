@@ -212,12 +212,35 @@
   align-items: center;
   padding: 0 12px;
   height: 32px;
+  /* A floor under the chip so the header holds still while /api/me is
+     in flight. Usernames are 3–32 characters, so no width is right for
+     all of them; this one covers the ordinary case, and a long handle
+     costs a few pixels of reflow instead of a full "Войти" flash. */
+  min-width: 116px;
   background: var(--surface);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
   color: var(--text-muted);
   transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
   cursor: default;
+}
+
+/*
+ * Stand-in for the whole signed-in cluster (bubble + sign-out button)
+ * while the session is being resolved. Sized to match
+ * `.userBubble`'s min-width plus the 12px `.right` gap plus the 32px
+ * icon button, and deliberately invisible: an empty outline would
+ * announce "something is here" and then vanish, which is its own small
+ * flicker. This one just holds the ground.
+ *
+ * `userBubble` is `display: inline-flex`, so `display: block` here is
+ * what makes the width apply — an inline-flex box would shrink to fit
+ * an empty one.
+*/
+.userBubblePending {
+  display: block;
+  width: 160px;
+  height: 32px;
 }
 .userBubble:hover {
   background: var(--surface-2);
