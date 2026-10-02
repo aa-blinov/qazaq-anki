@@ -15,7 +15,7 @@ export function NotFoundPage() {
     >
       <h1
         style={{
-          fontSize: '2rem',
+          fontSize: 'var(--text-greeting)',
           marginBottom: 8,
           fontFamily: 'var(--font-display)',
           fontWeight: 500,

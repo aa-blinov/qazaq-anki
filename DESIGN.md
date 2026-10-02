@@ -513,8 +513,48 @@ Use these tokens, not raw `rem` values. Role names describe purpose.
 | `--text-small` | 0.95rem | 14.3px | 13.1px | secondary UI, dense rows |
 | `--text-body` | 1rem | 15px | 13.8px | default reading and interface size |
 | `--text-lead` | 1.15rem | 17.3px | 15.9px | lead paragraphs, card sentences |
-| `--text-title` | 1.5rem | 22.5px | 20.7px | section headings |
-| `--text-display` | 2.4rem | 36px | 33.1px | page and hero headings |
+| `--text-heading` | 1.3rem | 19.5px | 17.9px | dialog titles, section heads |
+| `--text-title` | 1.5rem | 22.5px | 20.7px | the larger heading inside a card or panel |
+| `--text-figure` | 1.7rem | 25.5px | 23.5px | page h1s, the big numbers on Stats |
+| `--text-greeting` | 2rem | 30px | 27.6px | the learner's own name, set large |
+| `--text-display` | 2.4rem | 36px | 33.1px | hero headings |
+| `--text-card` | 3.4rem | 51px | 46.9px | the Kazakh word on a study card |
+
+**The last four steps were added because the ramp was losing to the
+components.** Checking the stylesheets against the scale found 24 places
+writing bare `rem` values, and the interesting part was not the literals
+themselves — it was that the *same role was implemented at several
+different sizes*. A dialog title or section head was written at 1.1,
+1.2, 1.2, 1.3, 1.3, 1.35 and 1.4rem across ten sites. A page h1 — the same
+job, sometimes on the same screen — was 1.7, 1.7, 1.75, 1.75 and 1.85.
+A ramp that has to be rescued by literals in the components is not a
+ramp. `heading`, `figure`, `greeting` and `card` are roles that already
+existed in the markup and had nowhere to live.
+
+Collapsing them onto one step each is a small visual change, and mostly
+not a change at all. Seven of the 24 sites were already sitting on the
+step they moved to and render identically; the study-card word and its
+`clamp` did not move by a thousandth. The largest single shift is the
+ease-histogram label, 1.1 → 1.3rem (+18%), and three more land between
+8% and 9%. Everything else moves by less than 8%, with two worth naming
+because they moved the other way from what the table suggests:
+
+- The **home hero**'s `clamp` now ends at `--text-display` (2.4rem)
+  instead of a literal 2.65rem, so on a wide screen that heading is
+  about 4px smaller than it was — the token is the smaller of the two
+  and the old ceiling was not on the ramp at all.
+- The **card word's mobile floor** went from 2.2rem to `--text-display`
+  (2.4rem) — the value its own `clamp` already used one media query up,
+  which is the kind of mismatch a bare literal invites.
+
+It is the difference between a scale you can read and a scale you have
+to memorise.
+
+**Fluid sizes are expressed as token endpoints**, not as raw rem:
+`clamp(var(--text-display), 6vw, var(--text-card))` for the study card
+word, `clamp(var(--text-figure), 4.2vw, var(--text-display))` for the
+home hero. The middle term is the part that has to stay a number; the
+endpoints are the part that decides what the size *means*.
 
 **The floor is the point.** The app once carried 43 distinct sizes, with
 eleven steps packed between 0.65rem and 0.78rem — 9.8px to 11.7px. At that
@@ -527,7 +567,16 @@ when the default is hard to read.
 Line height is per-role, not one universal ratio (`--lh-micro` 1.35 through
 `--lh-display` 1.12) — small type needs more leading than large type to
 stay readable, and a display heading needs almost none. The dark theme
-gets a touch more; light text on a dark surface spreads optically.
+gets a touch more: light text on a dark surface spreads optically, so
+every `--lh-*` role gains 0.03–0.05 and body copy goes from 1.55 to 1.60
+(measured: 23.25px → 24px at the default text size). The gain is largest
+on the small roles, whose strokes are thinnest relative to the leading,
+and smallest on display type, which has the most air to begin with. This
+was claimed here and in `global.css` for a long time before it was true —
+`body` itself was sitting on a literal `1.55`, so the override never
+reached the text people actually read. The new size roles have no
+leading roles of their own: headings borrow `--lh-title`, which is
+correct, and the home hero keeps a literal `1.1` that no theme moves.
 
 ### Named rules
 
@@ -1139,31 +1188,15 @@ from the items inside it.
   animation.
 - **Sound design** beyond TTS playback and the two state animations.
 - **Print layout** beyond the forced palette and the stripped chrome.
-- **The dark theme does not get more leading.** The line-height tokens
-  are declared once and never overridden under `[data-theme='dark']`,
-  although the reasoning for doing so — light text on a dark surface
-  spreads optically and reads airier at the same ratio — is sound and was
-  previously recorded as if it had been done. It has not been
-  implemented, and it is not a small change: it alters leading on every
-  screen in the product and needs its own pass with real copy in front of
-  it, the same reasoning that applied to the root-size question. The
-  comment in `global.css` now says so rather than claiming otherwise.
 - **The wordmark is one role, not a lockup.** It is set in the display
   face at `--text-title` and nothing else in the system has to agree with
   it. If the product ever grows a second mark — an icon-tile lockup for
   the PWA splash, say — the two will need to be drawn from the same
   optical size to look related, and that constraint does not exist yet.
-- **Fourteen off-ramp `font-size` literals** are still written as bare
-  numbers across the component stylesheets (`1.1` in EaseHistogram, `1.2`
-  in AddCardModal and LevelMasteryRings and StatsPage, `1.3` in
-  ConfirmDialog and StatsPage, `1.35`, three `1.4`s in HomePage, `1.6` in
-  Flashcard and Onboarding, `1.7` in BrowsePage and StatsPage, `1.75` in
-  StudyPage and Auth, `1.85`, two `2`s in HomePage and NotFoundPage, `2.2`
-  in Flashcard, `2.4` in DemoCard, plus two `clamp()` calls). The ramp has
-  seven roles; these are all decorative multiples of it. None of them is a
-  bug and none is unreadable, which is why they were left — but a reader
-  cannot tell from the stylesheet which of them are doing real work, and
-  that is the thing the ramp exists to make obvious.
+- **Off-ramp `font-size` literals** were written as bare numbers across the
+  component stylesheets — fourteen distinct values, at twenty-four sites.
+  Closed: the ramp gained the four roles that were missing and all
+  twenty-four sites now name one. See Typography → The ramp.
 
 ## Drift this document now makes visible
 
@@ -1211,12 +1244,12 @@ decide rather than rediscover.
    there — declaring the role made the check pass, not the code. Worth
    replacing with the token on the next pass through this file.
 
-3. **Twenty-two off-ramp `rem` font sizes** — 1.1, 1.2, 1.3, 1.35, 1.6,
-   1.7rem, plus `1.5rem` written literally where
-   `--text-title` already means the same thing. These are *not* the
-   scale-breaking `px` bug the Never-px Rule exists for; they still track
-   `--font-scale` correctly. They are an un-collapsed tail of the type
-   ramp.
+3. ~~**Twenty-two off-ramp `rem` font sizes.**~~ **Closed.** All 24 sites
+   are on role tokens now, and the ramp grew the four roles that were
+   missing rather than the sizes being forced into roles that did not
+   exist. See Typography → The ramp. What this entry is really about —
+   that a ramp gets bypassed when the roles it needs do not exist — is
+   recorded there.
 
 4. **Twenty-one undocumented literal colours**, almost all
    `rgba(0, 0, 0, 0.08–0.45)` modal scrims and overlay chips. These are
@@ -1248,7 +1281,7 @@ decide rather than rediscover.
 7. **The two heaviest assets on a cold load are not visual.** The largest
    single response is not a component or an image — it is
    `sourceserif4-normal-cyrillic.woff2` at 62 KB, followed by the app
-   bundle at 148 KB gzipped. Both sit on the critical path and both are
+   bundle at 147 KB gzipped. Both sit on the critical path and both are
    preloaded or discovered from the HTML, so they are *deliberate*. The
    display face used to be `newsreader-normal-latin.woff2` at 129 KB, and
    the replacement came out both smaller and actually used, because

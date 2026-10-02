@@ -12,7 +12,7 @@
 
 .title {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: var(--text-heading);
   font-weight: 600;
   line-height: var(--lh-title);
 }
@@ -94,7 +94,7 @@
 }
 
 .percent {
-  font-size: 1.35rem;
+  font-size: var(--text-heading);
   font-weight: 700;
   line-height: 1.1;
   color: var(--text);

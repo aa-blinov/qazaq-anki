@@ -128,23 +128,39 @@
        small    — secondary UI, table cells, dense rows
        body     — default reading and interface size
        lead     — lead paragraphs, card sentences
-       title    — section headings
-       display  — page and hero headings */
-  --text-micro:   0.78rem;
-  --text-meta:    0.85rem;
-  --text-small:   0.95rem;
-  --text-body:    1rem;
-  --text-lead:    1.15rem;
-  --text-title:   1.5rem;
-  --text-display: 2.4rem;
+       heading  — dialog titles, section heads
+       title    — the larger heading inside a card or panel
+       figure   — page h1s and the big numbers on the stats page
+       display  — hero headings
+       greeting — the learner's own name, set large
+       card     — the Kazakh word on a study card, the largest thing here
+
+     `heading`, `figure`, `greeting` and `card` were added when this ramp
+     was checked against the code rather than trusted. It had seven steps
+     and the product was writing bare rem values in 24 places — and
+     worse, the *same role* was implemented at several different sizes:
+     four different dialog `.title`s at 1.1/1.2/1.2/1.3rem, section
+     heads at 1.3 and 1.4, page h1s at 1.7 and 1.75. A ramp that has to
+     be rescued by literals in the components is not a ramp. Each of
+     these is a role that already existed in the markup and had nowhere
+     to live. */
+  --text-micro:    0.78rem;
+  --text-meta:     0.85rem;
+  --text-small:    0.95rem;
+  --text-body:     1rem;
+  --text-lead:     1.15rem;
+  --text-heading:  1.3rem;
+  --text-title:    1.5rem;
+  --text-figure:   1.7rem;
+  --text-greeting: 2rem;
+  --text-display:  2.4rem;
+  --text-card:     3.4rem;
 
   /* Line height per role, not one universal ratio. Small type needs more
      leading than large type to stay readable, and a display heading needs
-     almost none. These are declared once and are NOT overridden in the
-     dark theme — the principle that light text on a dark surface wants a
-     touch more leading is real, and it is also unimplemented, which this
-     comment used to assert as fact. It is recorded as a known gap in
-     DESIGN.md rather than quietly claimed here. */
+     almost none. These are the light-theme values; the dark theme adds a
+     little more leading to every role, for the reason given in its own
+     block below. */
   --lh-micro:   1.35;
   --lh-meta:    1.45;
   --lh-small:   1.5;
@@ -350,6 +366,22 @@
   --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.3);
 
+  /* More leading on dark. Light text on a dark surface spreads
+     optically — halation thickens the apparent stroke and eats into the
+     gap between lines — so the same ratio that is comfortable on paper
+     is slightly tight here. Every role gets a little more, uniformly;
+     the effect is largest on the small roles where the strokes are
+     thinnest relative to the leading, and smallest on display type
+     which has the most air to begin with. This was claimed in a
+     comment here for a long time and never actually implemented. */
+  --lh-micro:   1.40;
+  --lh-meta:    1.50;
+  --lh-small:   1.55;
+  --lh-body:    1.60;
+  --lh-lead:    1.65;
+  --lh-title:   1.30;
+  --lh-display: 1.16;
+
   color-scheme: dark;
 }
 
@@ -483,7 +515,12 @@ body {
   color: var(--text);
   font-family: var(--font-sans);
   font-size: var(--text-body);
-  line-height: 1.55;
+  /* The token, not a literal. It was `1.55` here, which is the same
+     number as --lh-body — and that is the whole problem: body text is
+     the largest single consumer of leading in the product, and it was
+     the one place the role token did not reach, so the dark theme's
+     extra leading never applied to the text people actually read. */
+  line-height: var(--lh-body);
   font-feature-settings: 'cv11', 'ss01', 'ss03';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
