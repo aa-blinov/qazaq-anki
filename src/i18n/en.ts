@@ -386,6 +386,9 @@ export const en: Translations = {
   'stats.retention.title': 'Daily accuracy',
   'stats.retention.subtitle':
     'Share of correct answers over the last 30 days. 80–95% is the healthy range.',
+  // Accessible names for the two chart SVGs — see the note in ru.ts.
+  'stats.activityChart.aria': 'Daily reviews, last 30 days',
+  'stats.retentionChart.aria': 'Daily retention, last 30 days',
   'stats.levels.title': 'Mastery rings',
   'stats.levels.subtitle':
     'Outer ring: words from this level you have opened at least once. Inner ring: words you have anchored in long-term memory (interval ≥ 21 days).',
@@ -486,7 +489,6 @@ export const en: Translations = {
   'stats.heatmap.day.fri': 'Fri',
   'stats.heatmap.less': 'less',
   'stats.heatmap.more': 'more',
-  'stats.heatmap.cell': '{n} reviews, {date}',
   'stats.heatmap.cellCount.one': '{count} review',
   'stats.heatmap.cellCount.few': '{count} reviews',
   'stats.heatmap.cellCount.many': '{count} reviews',
