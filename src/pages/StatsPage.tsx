@@ -1429,7 +1429,7 @@ function ActivityHeatmap({
       <div
         className={styles.heatmapGrid}
         role="img"
-        aria-label={`${t('stats.heatmap.aria')}: ${t('stats.heatmap.cellCount', { count: total })}, ${t('stats.heatmap.activeDays', { count: active })}`}
+        aria-label={`${t('stats.heatmap.ariaWeeks', { weeks })}: ${t('stats.heatmap.cellCount', { count: total })}, ${t('stats.heatmap.activeDays', { count: active })}`}
       >
         <div className={styles.heatmapMonths}>
           {monthLabels.map((m) => (

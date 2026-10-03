@@ -475,7 +475,9 @@ export const en: Translations = {
   'stats.activity.windowTotalSub.many': '{active} of {total} days active',
   'stats.heatmap.title': 'Activity heatmap',
   'stats.heatmap.subtitle': 'One square per day, brighter = more reviews',
-  'stats.heatmap.aria': 'Activity heatmap for the last 13 weeks',
+  // See the note in ru.ts — the window is a prop, so the key is too.
+  'stats.heatmap.ariaWeeks': 'Activity heatmap for the last {weeks} weeks',
+  'stats.heatmap.noReviews': 'no reviews',
   'stats.heatmap.totalReviews.one': 'review total',
   'stats.heatmap.totalReviews.few': 'reviews total',
   'stats.heatmap.totalReviews.many': 'reviews total',

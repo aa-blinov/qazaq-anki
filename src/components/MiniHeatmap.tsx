@@ -19,6 +19,12 @@ interface MiniHeatmapProps {
   // the last `weeks * 7` entries.
   days: DayStat[];
   weeks?: number;
+  // This component had three hard-coded Russian strings in it — the
+  // accessible name, the per-cell label and the "no reviews" tooltip
+  // value — while the app ships an English interface. HomePage passes
+  // its translator down, the same way ActivityHeatmap and TopicGroups
+  // already did.
+  t: (key: string, vars?: Record<string, string | number>) => string;
 }
 
 function dayKey(d: Date): string {
@@ -28,7 +34,7 @@ function dayKey(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
-export function MiniHeatmap({ days, weeks = 7 }: MiniHeatmapProps) {
+export function MiniHeatmap({ days, weeks = 7, t }: MiniHeatmapProps) {
   // The cell the cursor is over (or null). Same single-div
   // tooltip pattern as the Stats heatmap — native `title`
   // has a 1s delay and looks terrible.
@@ -129,15 +135,24 @@ export function MiniHeatmap({ days, weeks = 7 }: MiniHeatmapProps) {
             {hover.cell.inFuture
               ? '—'
               : hover.cell.n === 0
-                ? 'нет повторений'
+                ? t('stats.heatmap.noReviews')
                 : hover.cell.n}
           </div>
         </div>
       ) : null}
+      {/* role="img", not role="grid". This is the same defect the
+          Stats heatmap had: a grid role promises rows, arrow-key
+          navigation and focusable cells, and this one has none of
+          them — the cells answer to onMouseEnter and nothing else.
+          `role="img"` makes the subtree presentational, so the 49
+          squares are announced once rather than walked. Unlike the
+          Stats page this one has no visible header, so the two
+          figures a non-mouse reader needs live only here — which is
+          exactly why the name carries them. */}
       <div
         className={styles.heatmapGrid}
-        role="grid"
-        aria-label={`Активность за ${weeks} недель: ${total} повторений, ${active} активных дней`}
+        role="img"
+        aria-label={`${t('stats.heatmap.ariaWeeks', { weeks })}: ${t('stats.heatmap.cellCount', { count: total })}, ${t('stats.heatmap.activeDays', { count: active })}`}
       >
         <div
           className={styles.heatmapCells}
@@ -147,12 +162,6 @@ export function MiniHeatmap({ days, weeks = 7 }: MiniHeatmapProps) {
             <div
               key={c.key}
               className={`${styles.heatmapCell} ${styles[`level${level(c.n)}`]} ${c.inFuture ? styles.heatmapCellFuture : ''}`}
-              role="gridcell"
-              aria-label={
-                c.inFuture
-                  ? c.date.toLocaleDateString()
-                  : `${c.date.toLocaleDateString()}: ${c.n} повторений`
-              }
               onMouseEnter={(e) =>
                 setHover({
                   cell: c,

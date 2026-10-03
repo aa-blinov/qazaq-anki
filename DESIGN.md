@@ -1273,21 +1273,32 @@ floor stays 44 and `mobile-measure` still fails loudly below it.
   menu on open, and Escape closed it and stranded the focus on `<body>`.
   They now keep the contract, and share one implementation
   (src/lib/listboxKeys.ts) rather than two.
-- **The heatmap announced a grid it did not implement.** `role="grid"` around
-  91 `role="gridcell"` divs promised rows, arrow-key navigation and reachable
-  cells; there was no `role="row"`, no roving tabindex, no keydown handler,
-  and the only way to touch a cell was to hover it. It is now a
-  `role="img"` — the one repair of the two this document named that does not
-  invent an interaction — whose accessible name carries the review total and
-  the active-day count, with the cells decorative underneath it. The header
-  above already showed both figures in visible text, so nothing became
-  readable only by hover.
+- **The heatmap announced a grid it did not implement — in two places.**
+  `role="grid"` around 91 `role="gridcell"` divs promised rows, arrow-key
+  navigation and reachable cells; there was no `role="row"`, no roving
+  tabindex, no keydown handler, and the only way to touch a cell was to
+  hover it. Both are now a `role="img"` — the one repair of the two this
+  document named that does not invent an interaction — whose accessible
+  name carries the review total and the active-day count, with the cells
+  decorative underneath it. The Stats page states both figures in a
+  visible header as well, so nothing became readable only by hover; the
+  Home heatmap has no such header, which is why its name has to carry
+  them.
+  The second one is the lesson. `MiniHeatmap` is a separate
+  implementation of the same chart on the first screen a learner sees,
+  and it carried the same markup — plus three hard-coded Russian
+  strings in its JSX, so switching the app to English left its
+  accessible name and its tooltip Russian while the rest of the screen
+  changed. Fixing the Stats heatmap and writing it up as *the* heatmap
+  was wrong; an aria-label sweep of one page is not a sweep.
+  `e2e/stats-a11y.spec.ts` and `e2e/home-heatmap-a11y.spec.ts` pin both.
 - **Two chart SVGs described themselves in English.** `aria-label="Daily
   reviews, last 30 days"` and `"Daily retention, last 30 days"` were literals
   in the JSX, so switching the interface language never reached them and a
   Russian screen reader announced an English description of a Russian chart.
-  Both are dictionary keys now. `e2e/stats-a11y.spec.ts` pins all of the
-  above, and its third test is the sweep that would catch the next one.
+  Both are dictionary keys now, and `stats-a11y.spec.ts`'s third test — an
+  aria-label sweep — is scoped to the Stats page precisely because a sweep
+  of that page is what would not have found the Home page's literals.
 - **76 selectors had a `:hover` and no `:active`.** A control that only
   changes on hover gives a touch screen no signal that it was pressed:
   nothing happens, and the app answers only once the navigation lands.
