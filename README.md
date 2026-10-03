@@ -197,7 +197,9 @@ replay. On login or registration the server mints an opaque session token,
 stores it in the `sessions` table and hands it back; the client sends it as
 `Authorization: Bearer <token>` on every request. That token is the one piece
 of session state the browser persists, in `localStorage` under `aq:token` —
-alongside theme, font size, TTS speed and onboarding flags.
+alongside `aq:theme`, `aq:fontSize` and `aq:ttsSpeed`. Those four keys are the
+entire local footprint: even the "have I seen this tour" flags live on the
+server (`users.onboardingSeen`), with no localStorage copy behind them.
 
 Progress is not in the browser at all. `ProgressContext` reads it from the API
 on load and writes it back through the review endpoints, so clearing site data
