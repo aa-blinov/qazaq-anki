@@ -11,9 +11,9 @@
 > are not the intended learner of this product, the **[inferred]** lines are
 > the ones to correct first.
 
-## Read this first: one product document is out of date
+## Read this first: the product document was wrong, and was fixed
 
-`PRODUCT.md` still says:
+When this file was first written, `PRODUCT.md` said:
 
 > Each account is a private data island in `localStorage` — nothing is sent
 > to the server unless the user opts in to the audio-sync endpoint.
@@ -21,17 +21,23 @@
 > …**Local-first by default.** Study data lives in the browser; the server is
 > optional.
 
-Both are false, and they are load-bearing. The app registers and signs in
+Both were false, and they were load-bearing. The app registers and signs in
 through Express; progress is read from `/api/progress` on every load and
 written back through the review endpoints; there is a recovery flow, a
 preferences blob, an activity log and per-card leech counters, all of them
 server-side. The same claim was in `README.md` until commit `fd0230e`
-removed it there.
+removed it there, and in this file's own first draft these stories
+contradicted it on purpose.
 
-`PRODUCT.md` is a drift record, so it was left alone rather than quietly
-edited. But the stories below contradict it, deliberately: a story built on
-a false premise is worse than no story. Reconciling the two is the open
-item, not the stories.
+`PRODUCT.md` has since been reconciled against the code, and the stories
+below and the product document now agree. That is not a formality: the
+writer of this file had to read `PRODUCT.md` to decide whether a story
+described a real feature or a wish, and could not. The full list of what
+was wrong and what it was replaced with is in the commit that changed it.
+
+The reason the disagreement section at the bottom of this file survived the
+rewrite is that it is a different kind of claim: the product document is
+now true, but the code underneath it still has these gaps.
 
 ---
 
@@ -47,10 +53,12 @@ Russian-only by design — `setLang` in `src/contexts/LanguageContext.tsx`
 is a deliberate no-op **[verified]** — so the Kazakh word is the only
 Kazakh surface on screen.
 
-`PRODUCT.md` names the project owner's wife as the primary user. That is
-one real learner, and a design constraint of one real user is not a market.
-These stories are written for that learner and for whoever holds the phone
-after them.
+`PRODUCT.md` began by naming the project owner's wife as the primary user
+and asking that no other cohort be invented. The owner has since settled
+that: the audience is the owner plus anyone who deploys the server for
+themselves. One real learner was the sharpest description of who this is
+for, but a design constraint of one person is not a market, and the
+account system and Docker path were built for the second reader all along.
 
 ### P2 — The person who runs the server **[verified]**
 
@@ -223,20 +231,20 @@ list, and these are the lines the product has drawn on purpose.
 
 ---
 
-## Where the stories and the code disagree
+## Where the code does not yet match its own story
 
 The most useful part of this file, and the reason the status column is not
-decorative:
+decorative. Everything in this table is a gap in the **code**, found while
+writing a story that could not be told honestly. The `PRODUCT.md` conflicts
+that used to live here are resolved — that document was rewritten against
+the code in the same pass.
 
-| Claim | Reality |
+| Story that cannot be told | Reality |
 |---|---|
-| `PRODUCT.md` "Capabilities" — server endpoints `/api/audio`, `/api/deck-meta`, `/api/stats` | `/api/stats` is real. The synthesis route is `POST /api/tts/synthesize`; there is no `/api/audio`. `/api/deck-meta` has no route either, though `server.js` imports four functions from `deck-meta.js` and uses them internally — so the module is live and the endpoint is not. |
-| `PRODUCT.md` "Product Principles" §1 — study data lives in the browser, the server is optional | False. Progress is read from and written to the server on every session. The principle needs rewriting, not the code. |
-| `PRODUCT.md` "Users" — no audiences beyond one learner | True today, and it is why almost every story above is about one person. If a second learner ever uses this, the multi-account and per-user isolation stories become load-bearing rather than incidental. |
-| `PRODUCT.md` "Capabilities" — "one username is one localStorage data island" | False. Accounts live in the `users` table. |
-| `PRODUCT.md` "Operating Context" — "the Express server is only needed for account creation and audio asset sync; it is not required to study" | False. Registration is one of several things that need it, but progress does too. |
 | 20 distinct `max-width` breakpoints in `src/**/*.css` **[verified]** | Not a story, but it is a product smell: five screens cannot be checked for consistency by hand against twenty numbers. The stories in E4 and E5 all assume a layout that holds at each of them. |
 | `Layout.module.css:286` promises a 90ms drawer animation | `.mobileNav` is `display: none` and nothing else. The comment describes a motion the app does not have. |
 | `.btn--danger:hover` is a literal `#963434` | The one hard-coded colour left in the button system; the rest of the palette is tokens. |
 | `var(--warn-soft, #fee)` in `AddCardModal.module.css` | A fallback colour chosen to be readable on white, used on a surface where it may not be. Latent contrast failure, only if the token is ever missing. |
 | `window.location.reload()` ×3 | A full page reload to refresh state that an in-app state update would cover. Loses scroll position and any unsaved input, and on mobile throws away the app shell. |
+| `EaseHistogram` loads a `labelKey` per bucket and renders `range` instead | The dictionary keys for those labels exist and are unused, and the rendered text is a hard-coded range string. Not visible as a bug; it just means the histogram cannot be translated, which matters the moment the interface stops being Russian-only. |
+| `.langBtn` / `.langBtnActive` in `Layout.module.css` | Styling for a language switcher that was never built — `setLang` is a deliberate no-op. Five `:active` rules were briefly added to these and to two other dead selectors in `ea804f5`; they were retracted in `f46bdfc`. The dead CSS itself is still here. |

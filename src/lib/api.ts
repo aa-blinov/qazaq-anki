@@ -40,8 +40,12 @@ import type { LevelName } from '../data/decks';
 /**
  * Base URL of the API server.
  *
- * - In production: set `VITE_API_URL=https://anki-qazaq-api.onrender.com`
- *   (or wherever the backend is hosted) at build time.
+ * The app is self-hosted: the API is required for accounts, progress and
+ * statistics, and it runs on the same machine as the SQLite file. There is no
+ * hosted deployment of it.
+ *
+ * - In production behind a reverse proxy (the Docker image does this): leave
+ *   it empty, so requests hit `/api/*` on the same origin.
  * - In development with the Vite proxy (see `vite.config.ts`):
  *   leave it empty so requests hit `/api/*` on the same origin and
  *   are forwarded to `http://localhost:3001`.
