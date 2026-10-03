@@ -1259,6 +1259,67 @@ floor stays 44 and `mobile-measure` still fails loudly below it.
   doing, but it is a sweep across eight stylesheets and belongs in a pass
   of its own.
 
+## Where the display serif is allowed
+
+The rule has been in this file since the Overview — "a serif that appears
+only where the learner is meeting the new language" — and on the Stats
+page it was running exactly backwards. Source Serif 4 was on the `h1`,
+on all five section-title roles, and on every KPI numeral, which is the
+largest serif on the screen. The one Kazakh string on that page,
+`.leechKk` in the leech list, declared no `font-family` at all and
+inherited Inter.
+
+So the rule as written was not "Kazakh gets the serif". It was "the
+serif is decorative", and the Kazakh content was the one thing not
+getting it. Two changes close that:
+
+- `.leechKk` is the **display** face at `--text-lead`. It is the only
+  Kazakh string in the component and it is now the most prominent
+  typeface on the page that is not a heading.
+- `.kpiValue` is **sans**, 600, keeping `tabular-nums`. The numerals
+  are Russian scaffolding about Russian scaffolding.
+
+There is no `[lang="kk"]` rule in `global.css`, and this change did not
+add one. A language-attribute rule would be the more general fix, but
+it is a different change with a different blast radius: it would
+re-face every Kazakh string in the app at once, and each of those was
+chosen individually. Pinning the one case that was demonstrably wrong
+is the targeted fix; the general rule is a separate decision.
+
+`.leechKk` also no longer truncates. It had `white-space: nowrap` with
+`text-overflow: ellipsis`, and Kazakh compounds run long — an ellipsis
+on the single string the product exists to display is the wrong way to
+run out of room. It wraps now.
+
+## The detector does not see markup
+
+`impeccable detect src/pages/StatsPage.tsx` returns **exit 0, zero
+findings** on a 1,700-line page. That is not a clean page. A control
+experiment settled it: a `.tsx` file containing an `<img>` with no
+`alt`, a `<div onClick>`, an unnamed `<button>` and a `transition: all`
+fired **one** finding — `design-system-radius`, on an inline
+`borderRadius` — while the same file as `.css` fired two.
+
+The scanner reads `.tsx` and parses inline style props. It emits **no
+JSX or accessibility rules at all**. Treat markup and a11y as
+*unscanned*, not *clean*.
+
+This matters for how detector numbers are read throughout this file.
+`design-system-color` and `design-system-radius` are real checks against
+the frontmatter. A missing-class bug is invisible to both: the
+Stats page's forecast row referenced `styles.kpiRow`, which was defined
+in no stylesheet, so CSS Modules resolved it to `undefined`, React
+omitted the `className`, the `<section>` got no `display: grid`, and
+three tiles stacked full-width — 994px tall where ~110px was meant. A
+class that exists on only one side of the fence is a class the scanner
+cannot evaluate, and the render was the only witness.
+
+The second blind spot is `text-transform`. `.kpiLabel` uppercases its
+label, so the rendered text of a live "Серия" reads back as "СЕРИЯ". An
+e2e assertion written as `not.toContain('Серия')` passes against a
+fully restored streak. It has to be case-insensitive, and the test that
+now guards it says so.
+
 ## What this file does not cover yet
 
 - **Spacing tokens.** There is no `--space-*` scale; 25 distinct px values
@@ -1284,22 +1345,29 @@ floor stays 44 and `mobile-measure` still fails loudly below it.
 Writing the token layer into the frontmatter turned the Impeccable
 detector from blind on this project into an actual check — and it
 immediately found things that were always there and previously
-invisible. `impeccable detect src/` reports **3 anti-patterns and 56
-advisories** (22 off-ramp font sizes, 21 literal colours, 13 radii). Nothing
-regressed; the check simply started working. The count fell from 58 when
-`--text-meta` and `--text-small` were added to the frontmatter: two advisories
-were the detector correctly reporting that the product's two most-used font
-sizes were not in the token contract at all.
+invisible. It currently reports **4 anti-patterns and 33 advisories**
+(`overused-font` ×4, `design-system-color` ×21, `design-system-radius`
+×12, plus four font-size advisories). This count has moved as the
+ramp and the frontmatter moved; the current number is 4 + 33.
 
-The three anti-patterns are all the same `overused-font` warning against
-Inter, raised once per `@font-face` block in `src/styles/fonts.css` since
-self-hosting moved the declaration into a file the detector reads. It is
-accepted, and the reason is worth stating: Inter is the *body* voice here,
-chosen for its real Cyrillic coverage and its tabular figures, and the
-product's character comes from the serif standing against it. The warning
-is about interfaces converging on one face for everything; this one uses
-two on purpose. It becomes an interesting finding rather than a false
-alarm the moment the display face is fixed — see Typography, where the
+**The four anti-patterns are one decision counted four times.** They are
+`overused-font` against Inter, raised once per `@font-face` block in
+`src/styles/fonts.css` — one family split by `unicode-range` into four
+blocks, self-hosted, so the detector reads it four times. It is a single
+finding wearing a multiplier, and it is accepted: Inter is the *body*
+voice here, chosen for its real Cyrillic coverage and its tabular
+figures, and the product's character comes from the serif standing
+against it. The warning is about interfaces converging on one face for
+everything; this one uses two on purpose.
+
+**And the detector has no coverage of markup at all.** Every number
+above is a CSS or token number. `detect` on a `.tsx` file returns zero
+findings for the same reason it returns zero for a clean stylesheet: it
+has no JSX or accessibility rules, so a page full of unlabelled
+controls and dead class references scans identically to a well-built
+one. See *The detector does not see markup*, above. A passing
+`detect src/pages/StatsPage.tsx` is evidence about tokens and nothing
+else.
 serif currently in charge is not the one this document names.
 
 `detect landing/` reports 5 for the same reason: 3 from the new

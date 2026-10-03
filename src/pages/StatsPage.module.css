@@ -58,6 +58,31 @@
   overflow: hidden;
 }
 
+/*
+  The failed-forecast notice. Sits exactly where the forecast row
+  would have been, so the page doesn't have a hole in it. Warm
+  neutral rather than a warning colour: a stopped server is the
+  documented state of this product, not a fault the learner caused.
+*/
+.notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  margin-bottom: 18px;
+}
+
+.noticeText {
+  margin: 0;
+  font-size: var(--text-small);
+  color: var(--text-muted);
+}
+
 .kpi {
   display: flex;
   flex-direction: column;
@@ -65,6 +90,31 @@
   background: var(--surface);
   padding: 18px 20px;
   position: relative;
+}
+
+/*
+  The forecast row — the three "на 7 дней / на 30 дней / проклятых"
+  tiles that answer "what's coming?".
+
+  This class was referenced by StatsPage.tsx and defined nowhere, so
+  CSS Modules resolved it to `undefined`, React omitted the
+  className, the <section> got no `display: grid`, and the three
+  .kpi children stacked as full-width bands — ~330px on desktop
+  where ~110px was meant, with no group border and no gap. The
+  detector does not catch a class that exists only on one side, and
+  the markup scan has no JSX rules at all, so nothing caught it.
+
+  Same hairline technique as .kpis above: 1px gaps over a border
+  background, which fakes dividers without per-child borders.
+*/
+.kpiRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
 
 /*
@@ -83,6 +133,11 @@
 }
 .kpiLink:hover {
   background: var(--surface-2);
+  /* global.css:537 is `a:hover { text-decoration: underline }` —
+     specificity 0-1-1, which outranks this class at 0-1-0, so a
+     hovered KPI tile underlined itself. A tile is a tile; the
+     arrow and the surface tint already say "clickable". */
+  text-decoration: none;
 }
 .kpiCta {
   position: absolute;
@@ -114,10 +169,19 @@
   letter-spacing: 0.04em;
 }
 
+/*
+  Sans, not serif. The design system's rule is that Source Serif 4
+  is reserved for the learner meeting the new language — Kazakh
+  content only. These numerals are Russian scaffolding about Russian
+  scaffolding, and they were the largest serif on the page, so the
+  contrast that carries the product's character was spent on the one
+  layer that isn't it. tabular-nums keeps the digits from shifting
+  as counts change.
+*/
 .kpiValue {
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: var(--text-figure);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-strong);
   line-height: 1.1;
   letter-spacing: -0.02em;
@@ -230,9 +294,14 @@
   font-size: var(--text-meta);
 }
 
+/* Two tiles, not three. `auto-fit` rather than `repeat(3, 1fr)`
+   because a fixed 3-track grid with two children leaves a third
+   cell showing nothing but the border background — a hole in the
+   hairline row. The two that remain are the window total and the
+   daily average; the streak and the personal best were removed. */
 .activityKpis {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
@@ -759,13 +828,23 @@
   min-width: 0;
 }
 
+/*
+  The one Kazakh string on the Stats page, and the one place the
+  display serif is actually owed. It previously set no font-family
+  at all, so it inherited Inter while every Russian label around it
+  was serif — the mechanism exactly backwards.
+
+  No truncation: Kazakh compounds run long ("арнаулы тілші"), and an
+  ellipsis on the single string the product exists to show is the
+  wrong way to run out of room. Let it wrap instead.
+*/
 .leechKk {
-  font-size: var(--text-body);
-  font-weight: 600;
-  color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-family: var(--font-display);
+  font-size: var(--text-lead);
+  font-weight: 500;
+  color: var(--text-strong);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 
 .leechRu {

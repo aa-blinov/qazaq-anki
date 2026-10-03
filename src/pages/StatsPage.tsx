@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Layers, ChevronDown, ChevronRight, Calendar, Download, Upload, X, AlertTriangle, ArrowRight } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -68,6 +68,16 @@ export function StatsPage() {
   // count come from /api/stats. We don't recompute them client-
   // side because the SQL is faster and the response is small.
   const [serverStats, setServerStats] = useState<ServerStats | null>(null);
+  // A failed /api/stats is not the same thing as a slow one. The
+  // catch used to only console.warn, which left `serverStats` null
+  // forever: the forecast row never rendered, the rings skeleton
+  // held at aria-busy="true" indefinitely, and a learner whose
+  // server was asleep saw a page that looked like it was still
+  // loading rather than one that had quietly lost its forecast.
+  // This product is local-first and the server is optional, so the
+  // honest answer is to say the forecast is unavailable and keep
+  // the four client-computed KPIs on screen.
+  const [serverStatsError, setServerStatsError] = useState(false);
   // Retention chart data: per-day accuracy over the last 30 days.
   // We pull from /api/retention because the SQL is much faster
   // than walking the in-memory reviewLog on every render.
@@ -82,10 +92,13 @@ export function StatsPage() {
       .then((s) => {
         if (cancelled) return;
         setServerStats(s);
+        setServerStatsError(false);
       })
       .catch((err) => {
         // eslint-disable-next-line no-console
         console.warn('[stats] server stats fetch failed:', err);
+        if (cancelled) return;
+        setServerStatsError(true);
       });
     api
       .retention(30)
@@ -101,6 +114,27 @@ export function StatsPage() {
       cancelled = true;
     };
   }, [user, totalLapses, reset]);
+
+  // Retry for the failed forecast fetch. The effect above re-runs on
+  // [user, totalLapses, reset], but a learner whose server was asleep
+  // and has since come up has no way to ask again without a full page
+  // reload — which on this page also throws away their scroll and
+  // their active tab.
+  const retryServerStats = useCallback(() => {
+    if (!user) return;
+    setServerStatsError(false);
+    api
+      .stats()
+      .then((s) => {
+        setServerStats(s);
+        setServerStatsError(false);
+      })
+      .catch((err) => {
+        // eslint-disable-next-line no-console
+        console.warn('[stats] server stats retry failed:', err);
+        setServerStatsError(true);
+      });
+  }, [user]);
   const { t, tTopic } = useLang();
   const [loaded, setLoaded] = useState<LoadedLevels>({});
   // Confirmation modal for "Сбросить прогресс". Replaces the
@@ -247,26 +281,15 @@ export function StatsPage() {
       });
     }
 
-    // Streak: walk backwards from today; allow today to be 0 (user
-    // hasn't studied yet today) but require yesterday to break the
-    // chain.
-    let streak = 0;
-    for (let i = days.length - 1; i >= 0; i--) {
-      if (days[i].reviews > 0) streak++;
-      else if (i === days.length - 1) continue; // today can be empty
-      else break;
-    }
-
-    // Best day: across the visible window (and the whole log if we
-    // want — but keeping it limited keeps the message honest).
-    let best = { date: days[0]?.date ?? today, reviews: 0 };
-    for (const d of days) {
-      if (d.reviews > best.reviews) best = { date: d.date, reviews: d.reviews };
-    }
     const totalInWindow = days.reduce((acc, d) => acc + d.reviews, 0);
     const activeDays = days.filter((d) => d.reviews > 0).length;
+    // Average per day across the whole window, not across the active
+    // days — dividing by `activeDays` would quietly flatter a learner
+    // who studied once and make a 2-review week look like a strong
+    // one. The honest denominator is the window the card names.
+    const avgPerDay = totalInWindow / ACTIVITY_WINDOW_DAYS;
 
-    return { days, streak, best, totalInWindow, activeDays };
+    return { days, totalInWindow, activeDays, avgPerDay };
   }, [reviewLog]);
 
   const handleReset = () => {
@@ -555,6 +578,26 @@ export function StatsPage() {
         </section>
       ) : null}
 
+      {/* The forecast row above and the rings below both hang off
+          `serverStats`. When the fetch fails, this is what the user
+          gets instead of a skeleton that never resolves. `role=
+          "status"` so it is announced: the page changed shape
+          without the user doing anything, and silence is exactly
+          the failure this replaces. */}
+      {serverStatsError ? (
+        <div className={styles.notice} role="status">
+          <p className={styles.noticeText}>{t('stats.forecast.unavailable')}</p>
+          <button
+            type="button"
+            className="btn btn--ghost"
+            onClick={retryServerStats}
+            data-testid="stats-retry-forecast"
+          >
+            {t('stats.forecast.retry')}
+          </button>
+        </div>
+      ) : null}
+
       {/* New metrics — per-level rings (with ETA from velocity) and
           ease-factor histogram. Both render on the Сводка tab so the
           user sees "where am I?" at a glance, alongside the headline
@@ -567,7 +610,11 @@ export function StatsPage() {
           <LevelMasteryRings stats={serverStats} />
           <EaseHistogram stats={serverStats} />
         </div>
-      ) : (
+      ) : serverStatsError ? null : (
+        // Skeleton only while the request is genuinely in flight.
+        // On failure the notice above replaces it — a skeleton that
+        // spins forever after the request already failed is the
+        // exact "still loading" lie this state now distinguishes.
         <div className={styles.tabPanel} aria-busy="true">
           <LevelMasteryRingsSkeleton />
         </div>
@@ -655,28 +702,30 @@ export function StatsPage() {
         </header>
 
         <div className={styles.activityKpis}>
+          {/* Not a streak counter and not a personal best.
+
+              Both of those were here, and they are the two
+              gamification primitives PRODUCT.md principle 4 names
+              by hand: "no ceremony, no gamification, no streak
+              shaming. Returning after a week off is a normal event,
+              not a failure state." A learner who came back after a
+              week landed on a 0-series, a record set before the
+              gap, and a subheadline pointing at the exact cells
+              where they had dropped out of rhythm.
+
+              The replacement is a fact rather than a score: the
+              average reviews per day across the window. It cannot
+              be "broken", it does not punish absence, and it is not
+              already on the page — due7 and due30 live in the
+              forecast row directly above, so repeating either here
+              would put one number under two labels, which is the
+              duplication this page is already guilty of. */}
           <KPI
-            label={t('stats.activity.streak')}
-            value={t('stats.activity.streakValue', { count: activity.streak })}
-            sub={
-              activity.streak > 0
-                ? t('stats.activity.streakSub')
-                : t('stats.activity.streakSubZero')
-            }
-          />
-          <KPI
-            label={t('stats.activity.bestDay')}
-            value={activity.best.reviews.toLocaleString()}
-            sub={
-              activity.best.reviews > 0
-                ? t('stats.activity.bestDaySub', {
-                    date: t('stats.activity.dateFormat', {
-                      d: activity.best.date.getDate(),
-                      m: t(`stats.activity.month.${activity.best.date.getMonth() + 1}`),
-                    }),
-                  })
-                : t('stats.activity.bestDaySubZero')
-            }
+            label={t('stats.activity.avgPerDay')}
+            value={activity.avgPerDay.toLocaleString('ru-RU', {
+              maximumFractionDigits: 1,
+            })}
+            sub={t('stats.activity.avgPerDaySub')}
           />
           <KPI
             label={t('stats.activity.windowTotal')}
@@ -709,7 +758,18 @@ export function StatsPage() {
         </div>
       ) : null}
 
-      {activeTab === 'overview' ? null : (
+      {/* The deep-dive view: day-by-day activity, the heatmap, the
+          retention chart and the leech list.
+
+          Gated on `activity` specifically, not on "not overview".
+          It used to be `activeTab === 'overview' ? null : (…` —
+          which meant the Темы tab opened with ~900px of activity
+          and heatmap charts stacked above the topic grid, on a
+          document measured at 3,566px. The whole point of the tab
+          bar is to split this content into focused views; the
+          three views were not actually split. Measured after this
+          change, the topic grid starts directly under the tab bar. */}
+      {activeTab !== 'activity' ? null : (
         <div className={styles.tabPanel} role="tabpanel">
           {/*
         Day-by-day activity — gives the user a real "have I been
@@ -728,28 +788,30 @@ export function StatsPage() {
         </header>
 
         <div className={styles.activityKpis}>
+          {/* Not a streak counter and not a personal best.
+
+              Both of those were here, and they are the two
+              gamification primitives PRODUCT.md principle 4 names
+              by hand: "no ceremony, no gamification, no streak
+              shaming. Returning after a week off is a normal event,
+              not a failure state." A learner who came back after a
+              week landed on a 0-series, a record set before the
+              gap, and a subheadline pointing at the exact cells
+              where they had dropped out of rhythm.
+
+              The replacement is a fact rather than a score: the
+              average reviews per day across the window. It cannot
+              be "broken", it does not punish absence, and it is not
+              already on the page — due7 and due30 live in the
+              forecast row directly above, so repeating either here
+              would put one number under two labels, which is the
+              duplication this page is already guilty of. */}
           <KPI
-            label={t('stats.activity.streak')}
-            value={t('stats.activity.streakValue', { count: activity.streak })}
-            sub={
-              activity.streak > 0
-                ? t('stats.activity.streakSub')
-                : t('stats.activity.streakSubZero')
-            }
-          />
-          <KPI
-            label={t('stats.activity.bestDay')}
-            value={activity.best.reviews.toLocaleString()}
-            sub={
-              activity.best.reviews > 0
-                ? t('stats.activity.bestDaySub', {
-                    date: t('stats.activity.dateFormat', {
-                      d: activity.best.date.getDate(),
-                      m: t(`stats.activity.month.${activity.best.date.getMonth() + 1}`),
-                    }),
-                  })
-                : t('stats.activity.bestDaySubZero')
-            }
+            label={t('stats.activity.avgPerDay')}
+            value={activity.avgPerDay.toLocaleString('ru-RU', {
+              maximumFractionDigits: 1,
+            })}
+            sub={t('stats.activity.avgPerDaySub')}
           />
           <KPI
             label={t('stats.activity.windowTotal')}
