@@ -63,6 +63,7 @@
   background: var(--surface-2);
   color: var(--text-strong);
 }
+.closeBtn:active { transform: translateY(1px); }
 
 .form {
   padding: 16px 22px 22px;
@@ -112,6 +113,7 @@
 .advanced summary:hover {
   color: var(--text-strong);
 }
+.advanced summary:active { transform: translateY(1px); }
 .advancedGrid {
   display: flex;
   flex-direction: column;

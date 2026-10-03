@@ -157,6 +157,7 @@
 .linkBtn:hover {
   text-decoration: none;
 }
+.linkBtn:active { transform: translateY(1px); }
 
 .hint {
   margin: 0 0 0.5rem;

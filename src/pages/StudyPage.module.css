@@ -49,6 +49,7 @@
   align-self: flex-start;
 }
 .backLink:hover { color: var(--accent); text-decoration: none; }
+.backLink:active { transform: translateY(1px); }
 
 /* Touch floor. The back link is 18px of text with a title 8px below
    it, so a hit-area overlay would sit on top of the title and block
@@ -95,6 +96,7 @@
   border-color: var(--text-muted);
   text-decoration: none;
 }
+.levelPill:active { transform: translateY(1px); }
 .levelPillActive,
 .levelPillActive:hover {
   /* --accent-solid, not --accent. #FAF7F2 on #C96442 measured 3.65:1;
@@ -106,6 +108,7 @@
   border-color: var(--accent);
   font-weight: 600;
 }
+.levelPillActive:active { transform: translateY(1px); }
 
 .headerRight {
   display: flex;
@@ -189,6 +192,7 @@
   background: var(--surface-2);
   color: var(--text);
 }
+.queueChip:active { transform: translateY(1px); }
 
 .queueChipActive {
   background: var(--accent);
@@ -200,6 +204,7 @@
   background: var(--accent-solid);
   color: var(--accent-fg);
 }
+.queueChipActive:active { transform: translateY(1px); }
 
 .queueChipCount {
   font-variant-numeric: tabular-nums;
@@ -639,6 +644,7 @@
   padding: 0 4px;
 }
 .leechDismiss:hover { color: var(--text); }
+.leechDismiss:active { transform: translateY(1px); }
 
 /* Undo toast. Pinned to the bottom of the study column so it
    doesn't compete with the rating row. Rounded surface in the
@@ -703,6 +709,7 @@
   color: var(--accent-fg);
   border-color: var(--accent);
 }
+.undoBtn:active { transform: translateY(1px); }
 
 .undoBtn:focus-visible {
   outline: 2px solid var(--accent);
@@ -774,6 +781,7 @@
   transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
 }
 .pickerToggle:hover { background: var(--surface-2); }
+.pickerToggle:active { transform: translateY(1px); }
 .pickerToggle > svg:first-child { flex-shrink: 0; color: var(--text-muted); }
 .pickerSummary {
   flex: 1;

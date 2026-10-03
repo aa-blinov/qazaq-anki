@@ -68,6 +68,7 @@
   text-decoration: none;
 }
 .heroSecondaryLink:hover { text-decoration: underline; }
+.heroSecondaryLink:active { transform: translateY(1px); }
 
 /* Demo card placement — right column on desktop, below copy on
    mobile. Slight tilt makes it feel "set down" rather than
@@ -327,6 +328,7 @@
   text-decoration: none;
 }
 .headLink:hover { color: var(--accent); text-decoration: none; }
+.headLink:active { transform: translateY(1px); }
 
 .levelsList {
   display: flex;
@@ -394,6 +396,7 @@
   background: var(--surface-2);
   text-decoration: none;
 }
+.dueRowLink:active { transform: translateY(1px); }
 .dueRowLevel {
   font-weight: 600;
   font-size: var(--text-small);
@@ -422,6 +425,7 @@
   color: var(--accent-fg);
   text-decoration: none;
 }
+.dueOverviewCta:active { transform: translateY(1px); }
 .dueOverviewCta:hover svg {
   transform: translateX(2px);
 }
@@ -443,6 +447,7 @@
 }
 .levelRow:last-child { border-bottom: none; }
 .levelRow:hover { background: var(--surface-2); text-decoration: none; }
+.levelRow:active { transform: translateY(1px); }
 
 .levelBody { min-width: 0; }
 
@@ -551,6 +556,7 @@
 .heatmapLink:hover {
   color: var(--accent);
 }
+.heatmapLink:active { transform: translateY(1px); }
 
 @media (prefers-reduced-motion: reduce) {
   /* A bar sweeping 0 -> 100% is motion the learner did not ask for. The fill

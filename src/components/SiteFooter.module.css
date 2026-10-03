@@ -29,6 +29,7 @@
   color: var(--accent, #c96442);
   text-decoration: none;
 }
+.link:active { transform: translateY(1px); }
 
 .tagline {
   flex: 1 1 auto;

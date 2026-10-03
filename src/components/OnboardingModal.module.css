@@ -71,6 +71,7 @@
   background: var(--surface-2);
   color: var(--text);
 }
+.closeBtn:active { transform: translateY(1px); }
 
 .head {
   margin-bottom: 24px;
