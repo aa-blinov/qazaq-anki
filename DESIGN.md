@@ -1287,10 +1287,15 @@ floor stays 44 and `mobile-measure` still fails loudly below it.
   The second one is the lesson. `MiniHeatmap` is a separate
   implementation of the same chart on the first screen a learner sees,
   and it carried the same markup — plus three hard-coded Russian
-  strings in its JSX, so switching the app to English left its
-  accessible name and its tooltip Russian while the rest of the screen
-  changed. Fixing the Stats heatmap and writing it up as *the* heatmap
-  was wrong; an aria-label sweep of one page is not a sweep.
+  strings in its JSX, bypassing `t()` where every other component
+  goes through it. The app is Russian-only by design (`setLang` is a
+  deliberate no-op in `LanguageContext`), so those literals were not
+  showing the wrong language to anyone; what they cost was the one
+  thing the dictionary guarantees, that user-facing text has a key
+  somebody can find and a test can check. Fixing the Stats heatmap and
+  writing it up as *the* heatmap was still wrong — a passing test is
+  not evidence about the rest of the codebase, and a sweep of one page
+  is not a sweep.
   `e2e/stats-a11y.spec.ts` and `e2e/home-heatmap-a11y.spec.ts` pin both.
 - **Two chart SVGs described themselves in English.** `aria-label="Daily
   reviews, last 30 days"` and `"Daily retention, last 30 days"` were literals

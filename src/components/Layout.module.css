@@ -174,7 +174,6 @@
 .langBtn:hover {
   color: var(--text);
 }
-.langBtn:active { transform: translateY(1px); }
 .langBtnActive {
   background: var(--accent-solid);
   color: var(--accent-fg);
@@ -182,7 +181,6 @@
 .langBtnActive:hover {
   color: var(--accent-fg);
 }
-.langBtnActive:active { transform: translateY(1px); }
 
 .userName {
   font-size: var(--text-meta);
