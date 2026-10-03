@@ -1415,44 +1415,53 @@ one. See *The detector does not see markup*, above. A passing
 `detect src/pages/StatsPage.tsx` is evidence about tokens and nothing
 else.
 
-`detect landing/` reports **16 advisories** — 6 `overused-font`, 8
-`design-system-color`, 8 `design-system-font-size` — and the breakdown
-matters more than the total. The landing is a separate surface with its
-own `styles.css` and its own self-hosted `fonts.css`, so the same Inter
-multiplicity applies (6, not the 4 the app raises, because the landing
-carries two more `@font-face` blocks). The colour findings are the known
-dark-landing literals already noted above.
+`detect landing/` reports **9 advisories** — 6 `overused-font`, 8
+`design-system-color`, 1 `design-system-font-size`. The landing is a
+separate surface with its own `styles.css` and its own self-hosted
+`fonts.css`, so the same Inter multiplicity applies (6, not the 4 the
+app raises, because the landing carries two more `@font-face` blocks).
+The colour findings are the known dark-landing literals already noted
+above.
 
-The eight font-size findings are the real news, and this file's own
-count of them was wrong until this revision. It previously claimed 5
-advisories for `landing/` on the strength of a memory of the three
-`@font-face` blocks. It was 19 when this pass opened: 6, 8, and **11**
-font-size findings, because the landing grew a type ramp of its own that
-this file's `typography:` block had never heard of.
+**The font-size findings went from 8 to 1, and the 8 were this file's
+fault, not the landing's.** It previously claimed 5 advisories for
+`landing/` on the strength of a memory of the three `@font-face` blocks.
+It was actually 19 when this pass opened: 6, 8, and **11** font-size
+findings.
 
-Adding the four missing ramp roles above — `heading`, `figure`,
-`greeting`, `card` — took the landing from 19 to 16 on its own. Three of
-its sizes were already app roles the contract simply failed to list.
-That is the clearest available measure of how much a contract block can
-be wrong while still reading as complete.
+Two causes, both in the contract rather than the code. Adding the four
+missing ramp roles to `typography:` — `heading`, `figure`, `greeting`,
+`card`, all of them live and all of them already named in the prose ramp
+table — took it from 19 to 16 by itself. Then the remaining literals
+turned out to be *the same roles written out longhand*: `30px` was
+exactly `--text-greeting`, `17px` was `--text-lead` to within 0.25px,
+`0.92rem` was exactly the contract's `mono` step. `landing/styles.css`
+opens by declaring that every value is lifted from `global.css` and that
+the landing "does not get its own visual language" — and then wrote
+`--text-greeting` as `30px` four lines apart from where it would have
+belonged.
 
-What remains is genuinely the landing's own: `17px`, `30px`, `1.05rem`,
-`1.25rem`, `0.72rem` as literals, and the `clamp()` endpoints `2.1rem`
-and `3.9rem`. The landing's card glyph is `clamp(2.1rem, 6.2vw, 3.4rem)`
-and its h1 is `clamp(2.4rem, 9vw, 3.9rem)` — the app's `--text-card`
-tops out at `3.4rem`, so the marketing page overshoots the product's own
-largest step by 0.5rem, deliberately, to sell a word the app itself never
-sets that large.
+So the four missing roles were also added to the landing's own `:root`,
+and thirteen literals became tokens. Measured shifts, largest first:
+`2.1rem → --text-greeting` −1.5px, `0.72rem → --text-micro` +0.9px,
+`1.25rem → --text-heading` +0.75px, `1.05rem → --text-body` −0.75px,
+`17px → --text-lead` +0.25px. The other eight sites were exact and
+cannot have moved at all. This is the same collapse the ramp did in the
+app — 24 literals onto roles, largest shift 18% — and like that one it
+is mostly not a change at all.
 
-That is a legitimate reason for the divergence and not a defect, which
-is exactly why it is written down: a detector run over `landing/` is
-measuring a different surface against a contract written for the app,
-and these 8 will keep reappearing until the landing either gets its own
-ramp block or is exempted. Neither is done here, because both are
-decisions.
+**The one that remains is intentional.** `.word` — the Kazakh word on
+the specimen card — is `clamp(var(--text-display), 9vw, 3.9rem)`. The
+app's `--text-card` tops out at `3.4rem`, so the one place the landing
+shows actual Kazakh content overshoots the product's own largest step by
+0.5rem on purpose, to sell a word the app itself never sets that large.
+Measured on the deployed page at 1280px: 62.4px, against 54.4px for the
+hero h1 whose ceiling is `--text-card`. The floor is a role; the ceiling
+is a fact about the surface, and it is left as a literal so the detector
+keeps reporting it rather than being taught to stop looking.
 
-None of these are fixed here. They are recorded so the next pass can
-decide rather than rediscover.
+None of the remaining findings are fixed here. They are recorded so the
+next pass can decide rather than rediscover.
 
 1. **A latent contrast bomb.** `AddCardModal.module.css` has
    `background: var(--warn-soft, #fee)`. `--warn-soft` is defined, so the
