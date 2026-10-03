@@ -405,6 +405,13 @@ export const ru: Translations = {
   'stats.retention.title': 'Точность по дням',
   'stats.retention.subtitle':
     'Процент верных ответов за последние 30 дней. Здоровый диапазон: 80–95%.',
+  // aria-label for the two chart SVGs. The English strings used to be
+  // hard-coded in StatsPage.tsx, so a Russian screen reader heard an
+  // English description of a Russian chart. These are the accessible
+  // names, not visible captions — the <h2> above each chart already
+  // carries the visible title.
+  'stats.activityChart.aria': 'Повторения по дням за последние 30 дней',
+  'stats.retentionChart.aria': 'Точность по дням за последние 30 дней',
   'stats.levels.title': 'Уровни по кольцам',
   'stats.levels.subtitle':
     'Внешнее кольцо: сколько слов из уровня вы уже открыли. Внутреннее: сколько закрепили в долгой памяти (интервал ≥ 21 день).',
@@ -504,7 +511,6 @@ export const ru: Translations = {
   'stats.heatmap.day.fri': 'Пт',
   'stats.heatmap.less': 'меньше',
   'stats.heatmap.more': 'больше',
-  'stats.heatmap.cell': '{n} повторов, {date}',
   'stats.heatmap.cellCount.one': '{count} повторение',
   'stats.heatmap.cellCount.few': '{count} повторения',
   'stats.heatmap.cellCount.many': '{count} повторений',

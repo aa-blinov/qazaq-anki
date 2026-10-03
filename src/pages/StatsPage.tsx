@@ -738,7 +738,7 @@ export function StatsPage() {
           />
         </div>
 
-        <ActivityChart days={activity.days} />
+        <ActivityChart days={activity.days} t={t} />
       </section>
 
       {/* 90-day heatmap. The bar chart above is good for spotting
@@ -824,7 +824,7 @@ export function StatsPage() {
           />
         </div>
 
-        <ActivityChart days={activity.days} />
+        <ActivityChart days={activity.days} t={t} />
       </section>
 
       {/* 90-day heatmap. The bar chart above is good for spotting
@@ -866,7 +866,7 @@ export function StatsPage() {
             </h2>
             <p className="muted">{t('stats.retention.subtitle')}</p>
           </header>
-          <RetentionChart buckets={retention} />
+          <RetentionChart buckets={retention} t={t} />
         </section>
       ) : null}
 
@@ -1220,7 +1220,13 @@ function ImportConfirmDialog({
   in the window. Today is rendered last with an accent colour and a
   small "today" label so the user can read the chart at a glance.
 */
-function ActivityChart({ days }: { days: DayStat[] }) {
+function ActivityChart({
+  days,
+  t,
+}: {
+  days: DayStat[];
+  t: (key: string, vars?: Record<string, string | number>) => string;
+}) {
   const max = Math.max(1, ...days.map((d) => d.reviews));
   const W = 100; // viewBox units
   const H = 100;
@@ -1240,7 +1246,7 @@ function ActivityChart({ days }: { days: DayStat[] }) {
         viewBox={`0 0 ${W} ${H}`}
         preserveAspectRatio="none"
         role="img"
-        aria-label="Daily reviews, last 30 days"
+        aria-label={t('stats.activityChart.aria')}
       >
         {days.map((d, i) => {
           const x = padX + i * barW;
@@ -1420,7 +1426,11 @@ function ActivityHeatmap({
           {t('stats.heatmap.activeDays', { count: active })}
         </span>
       </div>
-      <div className={styles.heatmapGrid} role="grid" aria-label={t('stats.heatmap.aria')}>
+      <div
+        className={styles.heatmapGrid}
+        role="img"
+        aria-label={`${t('stats.heatmap.aria')}: ${t('stats.heatmap.cellCount', { count: total })}, ${t('stats.heatmap.activeDays', { count: active })}`}
+      >
         <div className={styles.heatmapMonths}>
           {monthLabels.map((m) => (
             <span
@@ -1443,15 +1453,15 @@ function ActivityHeatmap({
             style={{ gridTemplateColumns: `repeat(${weeks}, 1fr)` }}
           >
             {cells.map((c) => (
+              // No role and no aria-label on the cells. The wrapper is
+              // role="img", which makes this whole subtree presentational,
+              // so a screen reader announces the heatmap once and stops —
+              // instead of walking 91 divs it could not reach anyway.
+              // Per-day detail stays a pointer affordance; the totals a
+              // non-mouse user needs are in the header and in the label.
               <div
                 key={c.key}
                 className={`${styles.heatmapCell} ${styles[`heatmapLevel${level(c.n)}`]} ${c.inFuture ? styles.heatmapCellFuture : ''}`}
-                role="gridcell"
-                aria-label={
-                  c.inFuture
-                    ? c.date.toLocaleDateString()
-                    : t('stats.heatmap.cell', { n: c.n, date: c.date.toLocaleDateString() })
-                }
                 onMouseEnter={(e) => {
                   const wrap = wrapRef.current?.getBoundingClientRect();
                   if (!wrap) return;
@@ -1722,8 +1732,10 @@ function KPI({
  */
 function RetentionChart({
   buckets,
+  t,
 }: {
   buckets: { day: string; n: number; correct: number; accuracy: number | null }[];
+  t: (key: string, vars?: Record<string, string | number>) => string;
 }) {
   if (buckets.length === 0) return null;
   const W = 100;
@@ -1747,7 +1759,7 @@ function RetentionChart({
         viewBox={`0 0 ${W} ${H}`}
         preserveAspectRatio="none"
         role="img"
-        aria-label="Daily retention, last 30 days"
+        aria-label={t('stats.retentionChart.aria')}
       >
         <line
           x1={padX}

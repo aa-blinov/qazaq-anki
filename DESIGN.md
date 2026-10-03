@@ -1273,6 +1273,21 @@ floor stays 44 and `mobile-measure` still fails loudly below it.
   menu on open, and Escape closed it and stranded the focus on `<body>`.
   They now keep the contract, and share one implementation
   (src/lib/listboxKeys.ts) rather than two.
+- **The heatmap announced a grid it did not implement.** `role="grid"` around
+  91 `role="gridcell"` divs promised rows, arrow-key navigation and reachable
+  cells; there was no `role="row"`, no roving tabindex, no keydown handler,
+  and the only way to touch a cell was to hover it. It is now a
+  `role="img"` — the one repair of the two this document named that does not
+  invent an interaction — whose accessible name carries the review total and
+  the active-day count, with the cells decorative underneath it. The header
+  above already showed both figures in visible text, so nothing became
+  readable only by hover.
+- **Two chart SVGs described themselves in English.** `aria-label="Daily
+  reviews, last 30 days"` and `"Daily retention, last 30 days"` were literals
+  in the JSX, so switching the interface language never reached them and a
+  Russian screen reader announced an English description of a Russian chart.
+  Both are dictionary keys now. `e2e/stats-a11y.spec.ts` pins all of the
+  above, and its third test is the sweep that would catch the next one.
 
 **Left alone on purpose:**
 
@@ -1286,11 +1301,6 @@ floor stays 44 and `mobile-measure` still fails loudly below it.
   `--accent-soft` (#F4E4D6 on white) — a pale tint, barely separable from
   the field. The solid accent outline is what puts an input on equal
   footing with a button, and DESIGN.md already promised it.
-- The heatmap's `role="grid"` is still wrong: it promises keyboard
-  navigation over cells that have none, and only respond to hover. The
-  honest fix is roving tabindex with arrow keys over 91 cells, or dropping
-  the role and summarising the grid as an image. Neither is a targeted
-  fix, so it is recorded here rather than half-done.
 - About 25 controls have a `:hover` style and no `:active`, so on a
   touch screen they have no feedback until the navigation lands. Worth
   doing, but it is a sweep across eight stylesheets and belongs in a pass
