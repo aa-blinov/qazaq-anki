@@ -192,7 +192,6 @@
   background: var(--surface-2);
   color: var(--text);
 }
-.queueChip:active { transform: translateY(1px); }
 
 .queueChipActive {
   background: var(--accent);
@@ -204,7 +203,6 @@
   background: var(--accent-solid);
   color: var(--accent-fg);
 }
-.queueChipActive:active { transform: translateY(1px); }
 
 .queueChipCount {
   font-variant-numeric: tabular-nums;

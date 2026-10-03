@@ -328,7 +328,6 @@
   text-decoration: none;
 }
 .headLink:hover { color: var(--accent); text-decoration: none; }
-.headLink:active { transform: translateY(1px); }
 
 .levelsList {
   display: flex;
