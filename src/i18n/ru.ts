@@ -397,6 +397,11 @@ export const ru: Translations = {
   'stats.kpi.due30Sub': 'Прогноз на месяц вперёд',
   'stats.kpi.leeches': 'Проклятых',
   'stats.kpi.leechesSub': 'Карточек с 8+ промахами',
+  // Shown in place of the forecast row when /api/stats fails. The
+  // server is optional in this product, so the copy says what still
+  // works rather than reporting a failure the learner can't act on.
+  'stats.forecast.unavailable': 'Прогноз и кольца считаются на сервере — сейчас он недоступен. Остальные цифры посчитаны на устройстве.',
+  'stats.forecast.retry': 'Повторить',
   'stats.retention.title': 'Точность по дням',
   'stats.retention.subtitle':
     'Процент верных ответов за последние 30 дней. Здоровый диапазон: 80–95%.',
@@ -478,22 +483,15 @@ export const ru: Translations = {
 
   // Day-by-day activity
   'stats.activity.title': 'Активность по дням',
-  'stats.activity.subtitle': 'Последние {days} дней. Видно, как вы держите ритм',
-  'stats.activity.streak': 'Серия',
-  'stats.activity.streakValue.one': '{count} день',
-  'stats.activity.streakValue.few': '{count} дня',
-  'stats.activity.streakValue.many': '{count} дней',
-  'stats.activity.streakSub': 'Подряд с повторениями',
-  'stats.activity.streakSubZero': 'Повторите сегодня, чтобы начать',
-  'stats.activity.bestDay': 'Лучший день',
-  'stats.activity.bestDaySub': '{date}',
-  'stats.activity.bestDaySubZero': 'Пока ни одного повтора',
+  'stats.activity.subtitle': 'Последние {days} дней по дням',
+  'stats.activity.avgPerDay': 'В среднем за день',
+  'stats.activity.avgPerDaySub': 'повторений за окно',
   'stats.activity.windowTotal': 'За 30 дней',
   'stats.activity.windowTotalSub.one': '{active} из {total} активный',
   'stats.activity.windowTotalSub.few': '{active} из {total} активных',
   'stats.activity.windowTotalSub.many': '{active} из {total} активных',
   'stats.heatmap.title': 'Карта занятий',
-  'stats.heatmap.subtitle': 'Квадратик = один день, ярче = больше повторений. Сразу видно, где вы выпали из ритма.',
+  'stats.heatmap.subtitle': 'Квадратик = один день, ярче = больше повторений',
   'stats.heatmap.aria': 'Карта занятий за последние 13 недель',
   'stats.heatmap.totalReviews.one': 'повторение всего',
   'stats.heatmap.totalReviews.few': 'повторения всего',
