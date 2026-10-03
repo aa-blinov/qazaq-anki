@@ -9,12 +9,18 @@ colors:
   # under extensions.colorMeta.<key>.displayName. Values are the LIGHT theme,
   # which is the default; dark values are in the same file under colorMeta.
   #
-  # 35 entries, and that count is the contract: every one of them is
+  # 36 entries, and that count is the contract: every one of them is
   # referenced by at least one `var()` in src/ or landing/. A token defined
   # in global.css but referenced nowhere does NOT belong here — an agent
   # that "discovers" it would emit a live-looking variable with no contract
-  # behind it. (--surface-hover is currently in exactly that position; see
-  # the Drift section at the foot of this file.)
+  # behind it. --surface-hover was exactly such a token and was removed on
+  # 2026-10-03 rather than documented.
+  #
+  # The reverse also holds and cost a gap: a token that IS referenced by
+  # code but absent here is invisible to an agent writing a screen, which
+  # then reaches for a literal. --ok-soft was live in two stylesheets and
+  # missing from this block while its siblings --warn-soft and
+  # --danger-soft were both listed. See the Drift section.
   bg: "#FAF7F2"
   surface: "#FFFFFF"
   surface-2: "#F2EEE6"
@@ -35,6 +41,12 @@ colors:
   # clay than --accent-solid, so it is a surface, never a text background.
   accent-strong: "#A8522F"
   ok: "#5A7D3F"
+  # The pale moss wash behind a success callout and the example-sentence
+  # highlight. Split like --warn-soft / --danger-soft: the wash is a
+  # surface, and it is the only colour that may serve as a ground there.
+  # It was live in Flashcard.module.css and BrowsePage.module.css while
+  # absent from this block — see the Drift section.
+  ok-soft: "#E6EFDB"
   warn: "#B68A1B"
   warn-text: "#7A5E10"
   # The soft amber wash behind a warning callout, and the ink that sits on
@@ -105,6 +117,31 @@ typography:
     lineHeight: 1.35
     fontWeight: 500
     letterSpacing: "0.02em"
+  # Four ramp roles that were live before this block knew about them.
+  # --text-heading alone had 11 call sites, --text-figure 6,
+  # --text-greeting 2, --text-card 1 — the second-most-used role in
+  # the product after --text-micro (70), and an agent writing a screen
+  # had no entry to reach for, so it reached for a literal.
+  #
+  # These four are size roles only. They carry no line-height or weight
+  # token of their own — call sites pair them with --lh-title or a
+  # literal 1.1, and pick 500 or 600 — so recording a value here would
+  # be inventing one. Family is stated because it is not a free choice:
+  # seven of the eight --text-heading sites are display serif, one is
+  # sans (EaseHistogram, a chart), five of six --text-figure sites are
+  # display, and both --text-greeting and --text-card are display.
+  heading:
+    fontFamily: "'Source Serif 4', 'Iowan Old Style', 'Apple Garamond', Georgia, 'Times New Roman', serif"
+    fontSize: "1.3rem"
+  figure:
+    fontFamily: "'Source Serif 4', 'Iowan Old Style', 'Apple Garamond', Georgia, 'Times New Roman', serif"
+    fontSize: "1.7rem"
+  greeting:
+    fontFamily: "'Source Serif 4', 'Iowan Old Style', 'Apple Garamond', Georgia, 'Times New Roman', serif"
+    fontSize: "2rem"
+  card:
+    fontFamily: "'Source Serif 4', 'Iowan Old Style', 'Apple Garamond', Georgia, 'Times New Roman', serif"
+    fontSize: "3.4rem"
   # Mono is a real role in this system, not a costume: it carries the
   # install commands on the landing, the keyboard-shortcut chips, and
   # the `--font-mono` token the app uses for code and measurement. It
@@ -1360,6 +1397,15 @@ figures, and the product's character comes from the serif standing
 against it. The warning is about interfaces converging on one face for
 everything; this one uses two on purpose.
 
+It stopped being a false alarm once the display face was settled. The
+serif in charge is `Source Serif 4` — `--font-display` at
+`src/styles/global.css:186`, self-hosted across six `@font-face` blocks
+in `src/styles/fonts.css` — which is the face this document has always
+named. It was not always so: the slots once carried Newsreader, and an
+earlier revision of this file was written to say so, which is why the
+detector's count and this paragraph could both be read as stale at the
+same time.
+
 **And the detector has no coverage of markup at all.** Every number
 above is a CSS or token number. `detect` on a `.tsx` file returns zero
 findings for the same reason it returns zero for a clean stylesheet: it
@@ -1368,11 +1414,42 @@ controls and dead class references scans identically to a well-built
 one. See *The detector does not see markup*, above. A passing
 `detect src/pages/StatsPage.tsx` is evidence about tokens and nothing
 else.
-serif currently in charge is not the one this document names.
 
-`detect landing/` reports 5 for the same reason: 3 from the new
-`landing/fonts.css` plus the 2 it has always had. Same warning, same
-answer.
+`detect landing/` reports **16 advisories** — 6 `overused-font`, 8
+`design-system-color`, 8 `design-system-font-size` — and the breakdown
+matters more than the total. The landing is a separate surface with its
+own `styles.css` and its own self-hosted `fonts.css`, so the same Inter
+multiplicity applies (6, not the 4 the app raises, because the landing
+carries two more `@font-face` blocks). The colour findings are the known
+dark-landing literals already noted above.
+
+The eight font-size findings are the real news, and this file's own
+count of them was wrong until this revision. It previously claimed 5
+advisories for `landing/` on the strength of a memory of the three
+`@font-face` blocks. It was 19 when this pass opened: 6, 8, and **11**
+font-size findings, because the landing grew a type ramp of its own that
+this file's `typography:` block had never heard of.
+
+Adding the four missing ramp roles above — `heading`, `figure`,
+`greeting`, `card` — took the landing from 19 to 16 on its own. Three of
+its sizes were already app roles the contract simply failed to list.
+That is the clearest available measure of how much a contract block can
+be wrong while still reading as complete.
+
+What remains is genuinely the landing's own: `17px`, `30px`, `1.05rem`,
+`1.25rem`, `0.72rem` as literals, and the `clamp()` endpoints `2.1rem`
+and `3.9rem`. The landing's card glyph is `clamp(2.1rem, 6.2vw, 3.4rem)`
+and its h1 is `clamp(2.4rem, 9vw, 3.9rem)` — the app's `--text-card`
+tops out at `3.4rem`, so the marketing page overshoots the product's own
+largest step by 0.5rem, deliberately, to sell a word the app itself never
+sets that large.
+
+That is a legitimate reason for the divergence and not a defect, which
+is exactly why it is written down: a detector run over `landing/` is
+measuring a different surface against a contract written for the app,
+and these 8 will keep reappearing until the landing either gets its own
+ramp block or is exempted. Neither is done here, because both are
+decisions.
 
 None of these are fixed here. They are recorded so the next pass can
 decide rather than rediscover.
@@ -1418,14 +1495,30 @@ decide rather than rediscover.
    the second option is a decision and the first is a deletion that belongs
    to whoever is next in this file.
 
-6. **One defined, never-referenced token.** `--surface-hover: #F2EEE6` is
-   declared in `:root` and read by nothing in `src/` or `landing/`. It is
-   also never overridden in `[data-theme='dark']`, so it is a light value
-   sitting in a token set that a dark-theme caller would resolve to a pale
-   beige. That is exactly why it is absent from the frontmatter `colors:`
-   block: the block is a contract, and a contract entry has to promise that
-   using the variable works. It is recorded here so the omission reads as a
-   decision rather than an oversight. Resolution is a one-line delete.
+6. **A dead token, and a live one missing from the contract.** Two
+   opposite failures found by regenerating this file against the code on
+   2026-10-03, recorded together because the fix for one caused the other
+   to surface.
+
+   *Closed.* `--surface-hover: #F2EEE6` was declared in `:root` and read
+   by nothing in `src/` or `landing/`, and was never overridden in
+   `[data-theme='dark']` — so it was a light beige sitting in a token set
+   a dark-theme caller would resolve to a pale wash. It was the
+   one-line delete this entry had been asking for, and it is deleted. The
+   `colors:` block is a contract, and a contract entry has to promise
+   that using the variable works; a token nothing reads promises nothing.
+
+   *Closed.* `--ok-soft: #E6EFDB` was the reverse error and had been live
+   the whole time: two `var(--ok-soft)` call sites in
+   `Flashcard.module.css` and `BrowsePage.module.css`, a dark-theme
+   override to `#2C3525`, and no entry in the `colors:` block — while its
+   siblings `--warn-soft` and `--danger-soft` were both listed. An agent
+   writing a success callout had no way to reach it, so it reached for a
+   literal. It is in the block now, and the count is 36.
+
+   The pair is the whole argument for checking this file against the
+   code rather than trusting it. One of the two would have been found by
+   reading the frontmatter, and neither by reading the stylesheets.
 
 7. **The two heaviest assets on a cold load are not visual.** The largest
    single response is not a component or an image — it is

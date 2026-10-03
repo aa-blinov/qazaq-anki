@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-02T13:36:03.000Z",
+  "generatedAt": "2026-10-03T06:56:19.000Z",
   "title": "Design System: qazaq-anki",
   "extensions": {
     "colorMeta": {
@@ -668,6 +668,25 @@
           "#d7d4cf",
           "#f1eee9"
         ]
+      },
+      "ok-soft": {
+        "role": "secondary",
+        "displayName": "Moss Soft",
+        "canonical": "oklch(94.0% 0.0282 126.8)",
+        "light": "#E6EFDB",
+        "dark": "#2C3525",
+        "darkOklch": "oklch(31.5% 0.0302 131.8)",
+        "tonalRamp": [
+          "#050f00",
+          "#162e00",
+          "#2f4f0f",
+          "#4f7234",
+          "#729657",
+          "#96bc7b",
+          "#bbe3a0",
+          "#d5fdb9"
+        ],
+        "purpose": "The pale moss wash behind a success callout and the example-sentence highlight. A surface, never a text background. Added to the contract on 2026-10-03 after two call sites were found using it with no contract entry; its tonalRamp is the shared Moss family ramp, not a separately generated one."
       }
     },
     "typographyMeta": {
@@ -846,7 +865,7 @@
       "Breakpoints are not unified — the map is now nine max-width values (420/540/600/640/720/760/768/900/1000), one min-width (901), four height queries and the touch gate. Only the touch gate, the 760px drawer swap and the landscape split are load-bearing across modules.",
       "The mobile nav drawer opens and closes with no transition; it is the only overlay not using the shared arrival vocabulary. The comment above .mobileNav in Layout.module.css claims a 90ms CSS animation — there is no @keyframes in that file and no transition on .mobileNav, so the comment documents an intention, not the behaviour.",
       ".btn--danger:hover paints the literal #963434 with no --danger-hover token in either theme. The dark palette has no such brown, so the hover is a colour the theme does not contain.",
-      "--surface-hover is declared in :root and read by nothing in src/ or landing/, and is never overridden for the dark theme. It is deliberately absent from the frontmatter colors: block — a contract entry has to promise the variable works.",
+      "--surface-hover: #F2EEE6 was declared in :root and read by nothing in src/ or landing/. Closed on 2026-10-03 — the token was deleted rather than documented, because a contract entry has to promise the variable works. Its deletion is what surfaced the inverse gap in the same pass: --ok-soft was live in two stylesheets with no contract entry at all, and is now listed.",
       "The two largest responses on a cold load are the preloaded Cyrillic slices of the two faces — sourceserif4-normal-cyrillic (62 KB) and inter-normal-cyrillic (18 KB) — and the app entry bundle (147 KB gzipped). The whole font payload is 574 KB across 10 files, but only those two are on the critical path; the other eight are fetched when a role that needs them first appears. Both are deliberate. The avoidable weight — both audio manifests and the module-scope deck preload — was removed; see the Audio and deck loading section in DESIGN.md."
     ]
   },
