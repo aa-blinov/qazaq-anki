@@ -87,8 +87,16 @@
   --text-small:   0.95rem;
   --text-body:    1rem;
   --text-lead:    1.15rem;
+  --text-heading: 1.3rem;
   --text-title:   1.5rem;
+  --text-figure:  1.7rem;
+  --text-greeting: 2rem;
   --text-display: 2.4rem;
+  --text-card:    3.4rem;
+  /* Mono is a role here for the same reason it is one in the app: the
+     install command block and the CEFR keys are the landing's only
+     code, and 0.92rem is the app contract's mono step exactly. */
+  --text-mono:    0.92rem;
 
   color-scheme: light;
 }
@@ -134,7 +142,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
-  font-size: 17px;
+  font-size: var(--text-lead);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
@@ -180,7 +188,7 @@ code, pre, kbd { font-family: var(--font-mono); font-variant-numeric: tabular-nu
 .wordmark {
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: 30px;
+  font-size: var(--text-greeting);
   letter-spacing: -0.02em;
   color: var(--text-strong);
   text-decoration: none;
@@ -221,7 +229,7 @@ code, pre, kbd { font-family: var(--font-mono); font-variant-numeric: tabular-nu
 .hero { padding: 64px 0 0; }
 
 .hero h1 {
-  font-size: clamp(2.1rem, 6.2vw, 3.4rem);
+  font-size: clamp(var(--text-greeting), 6.2vw, var(--text-card));
   max-width: 18ch;
 }
 .hero h1 .count { color: var(--accent); }
@@ -268,7 +276,7 @@ code, pre, kbd { font-family: var(--font-mono); font-variant-numeric: tabular-nu
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scrollbar-width: thin;
-  font-size: 0.92rem;
+  font-size: var(--text-mono);
   line-height: 1.85;
   color: var(--text);
 }
@@ -277,7 +285,7 @@ code, pre, kbd { font-family: var(--font-mono); font-variant-numeric: tabular-nu
 
 .opens {
   margin-top: 14px;
-  font-size: 0.95rem;
+  font-size: var(--text-small);
   color: var(--text-muted);
 }
 .opens code {
@@ -294,7 +302,7 @@ code, pre, kbd { font-family: var(--font-mono); font-variant-numeric: tabular-nu
   align-items: center;
   min-height: 44px;
   margin-top: 18px;
-  font-size: 0.95rem;
+  font-size: var(--text-small);
   color: var(--text-muted);
 }
 
@@ -303,7 +311,7 @@ code, pre, kbd { font-family: var(--font-mono); font-variant-numeric: tabular-nu
 .specimen { margin-top: 88px; }
 
 .specimen-head { max-width: 68ch; }
-.specimen-head h2 { font-size: clamp(1.5rem, 3.6vw, 2rem); }
+.specimen-head h2 { font-size: clamp(var(--text-title), 3.6vw, var(--text-greeting)); }
 
 /* The one authored moment on this page. The card does not fade in and
    it does not slide: it settles, the way a card lands in the app when
@@ -344,7 +352,7 @@ code, pre, kbd { font-family: var(--font-mono); font-variant-numeric: tabular-nu
    largest size on the page. */
 .word {
   font-family: var(--font-display);
-  font-size: clamp(2.4rem, 9vw, 3.9rem);
+  font-size: clamp(var(--text-display), 9vw, 3.9rem);
   line-height: 1.05;
   color: var(--text-strong);
   letter-spacing: -0.02em;
@@ -352,22 +360,22 @@ code, pre, kbd { font-family: var(--font-mono); font-variant-numeric: tabular-nu
 .tr {
   font-family: var(--font-display);
   font-style: italic;
-  font-size: 1.05rem;
+  font-size: var(--text-body);
   color: var(--text-muted);
 }
-.meaning { font-size: 1.25rem; font-weight: 600; color: var(--text); margin-top: 8px; }
+.meaning { font-size: var(--text-heading); font-weight: 600; color: var(--text); margin-top: 8px; }
 
 .card-tag {
   position: absolute;
   top: 16px; left: 20px;
-  font-size: 0.78rem;
+  font-size: var(--text-micro);
   font-weight: 600;
   color: var(--text-muted);
 }
 .card-phase {
   position: absolute;
   top: 14px; right: 18px;
-  font-size: 0.78rem;
+  font-size: var(--text-micro);
   font-weight: 600;
   color: var(--accent-ink);
   background: var(--accent-soft);
@@ -398,7 +406,7 @@ code, pre, kbd { font-family: var(--font-mono); font-variant-numeric: tabular-nu
   background: var(--surface);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
-  font-size: 0.92rem;
+  font-size: var(--text-mono);
   font-weight: 600;
   background-clip: padding-box;
 }
@@ -445,7 +453,7 @@ code, pre, kbd { font-family: var(--font-mono); font-variant-numeric: tabular-nu
 /* CEFR is the product's spine, so the levels are a spine: one rule, five
    stations, real counts from the decks. */
 .levels { margin-top: 88px; }
-.levels h2 { font-size: clamp(1.5rem, 3.6vw, 2rem); max-width: 68ch; }
+.levels h2 { font-size: clamp(var(--text-title), 3.6vw, var(--text-greeting)); max-width: 68ch; }
 .levels > p { max-width: 68ch; margin-top: 12px; color: var(--text-muted); }
 
 .ladder {
@@ -485,7 +493,7 @@ code, pre, kbd { font-family: var(--font-mono); font-variant-numeric: tabular-nu
 /* ---------------------------------------------------------------- stacks */
 
 .facts { margin-top: 88px; }
-.facts h2 { font-size: clamp(1.5rem, 3.6vw, 2rem); max-width: 68ch; }
+.facts h2 { font-size: clamp(var(--text-title), 3.6vw, var(--text-greeting)); max-width: 68ch; }
 
 .rows { margin-top: 28px; border-top: 1px solid var(--border); }
 .row {
@@ -558,11 +566,11 @@ code, pre, kbd { font-family: var(--font-mono); font-variant-numeric: tabular-nu
   .ladder { grid-template-columns: repeat(5, 1fr); }
   .rung { padding: 14px 8px 0 0; }
   .rung b { font-size: var(--text-lead); }
-  .rung span { font-size: 0.78rem; }
+  .rung span { font-size: var(--text-micro); }
   .row { grid-template-columns: 1fr; }
   .grades { gap: 6px; }
   .grade { font-size: var(--text-meta); padding: 8px 2px; }
-  .card-tag, .card-phase { top: 12px; font-size: 0.72rem; }
+  .card-tag, .card-phase { top: 12px; font-size: var(--text-micro); }
   .card-tag { left: 14px; }
   .card-phase { right: 12px; }
   .face { padding: 22px 20px 52px; }
@@ -570,7 +578,7 @@ code, pre, kbd { font-family: var(--font-mono); font-variant-numeric: tabular-nu
 }
 
 @media (max-width: 420px) {
-  .word { font-size: 2.1rem; }
+  .word { font-size: var(--text-greeting); }
   .term pre { font-size: var(--text-micro); padding: 14px 14px; }
 }
 
