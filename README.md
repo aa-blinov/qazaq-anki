@@ -1,21 +1,21 @@
 # Қазақ Anki — Spaced-Repetition Flashcards for Kazakh
 
-A free, local-first web app for learning **Қазақ тілі** (Kazakh) with **Anki-style spaced repetition**. 3,996 words across the five CEFR levels A1, A2, B1, B2, C1.
+A free, self-hosted web app for learning **Қазақ тілі** (Kazakh) with **Anki-style spaced repetition**. 3,996 words across the five CEFR levels A1, A2, B1, B2, C1.
 
-> Modern TypeScript stack · React 19 · Vite 6 · SM-2 algorithm · bcrypt auth · localStorage · **163 KB gzipped** for the first screenful (HTML + JS + CSS, measured against the production build). Type is self-hosted and costs a further 176 KB for the two faces on the critical path; 7,473 pronunciation clips ship as lossless FLAC — 168 MB, down from 300 MB as WAV, with the audio fetched one word at a time.
+> Modern TypeScript stack · React 19 · Vite 6 · SM-2 algorithm · bcrypt auth · SQLite · **164 KB gzipped** for the first screenful (HTML + JS + CSS, measured against the production build). Type is self-hosted: the two preloaded Cyrillic faces cost 80 KB, and a Kazakh card pulls two more Cyrillic-Ext slices — another 56 KB for Ә Ғ Қ Ң Ө Ұ Ү Һ. 7,473 pronunciation clips ship as lossless FLAC — 168 MB, down from 300 MB as WAV, with the audio fetched one word at a time.
 
 ---
 
 ## Features
 
-- **3,996 words** organized by CEFR level (A1 → C1) and topic. Sourced from the public [Wordmastery 1000-most-common-Kazakh-words](https://wordmastery.org/kazakh/) list and the official school lexicon (Жұмбақтары / etc.).
+- **3,996 words** organized by CEFR level (A1 → C1) and topic. Sourced from the [Qazcorpus school lexicon](https://qazcorpus.kz/_oqu-ishorpus/Sauattik/); per-card provenance and licensing live in [`src/data/SOURCES.md`](src/data/SOURCES.md).
 - **SM-2 spaced repetition** with four rating buttons: *Again / Hard / Good / Easy*, plus keyboard shortcuts (1/2/3/4 and Space).
 - **Per-user accounts** with bcrypt-hashed passwords. Each username is its own data island.
-- **No server.** Your study progress, account and theme live in `localStorage`. Nothing is sent anywhere.
+- **Self-hosted, single-user.** Accounts and progress live in a SQLite file on your own machine; nothing goes to a third party. The browser's `localStorage` holds only a session token and your display preferences.
 - **Light + dark theme**, responsive, accessible (keyboard, reduced-motion, focus styles).
 - **Browse every card** with search and level filters.
 - **Stats page** with accuracy, mastery, level mastery rings and per-topic progress.
-- **Deployed with `npm run deploy`** — pushes `dist/` to a `gh-pages` branch on GitHub Pages.
+- **Runs with Docker** — `docker compose up -d --build` brings up the API, the web container and TTS together on `http://localhost:8080`. See **[DEPLOY.md](DEPLOY.md)**.
 
 ---
 
@@ -35,17 +35,30 @@ The full gallery (mobile, dark mode, every route) lives in
 
 ## Quick start
 
+The app needs an API. Accounts and progress are server-side, so `npm run dev`
+on its own gives you a UI that cannot register anyone.
+
 ```bash
 npm install
-npm run dev        # http://localhost:5173/anki-qazaq/
+npm run server     # API on http://localhost:3001 — leave this running
+npm run dev        # app on http://localhost:5173/
+```
+
+The dev server proxies `/api/*` to the API, so there is nothing to configure.
+
+Or let Docker do it, which also starts TTS:
+
+```bash
+docker compose up -d --build    # → http://localhost:8080
 ```
 
 Build for production:
 
 ```bash
-npm run build      # → dist/
+npm run build      # → dist/ (still needs an API at runtime)
 npm run preview    # serve dist/ locally
-npm run deploy     # build + push dist/ to gh-pages branch
+npm run deploy     # publish landing/ to the gh-pages branch
+npm run deploy:app # build dist/ and publish it to gh-pages
 ```
 
 ---
@@ -115,15 +128,15 @@ jobs:
 <details>
 <summary>Old: deploying the app bundle to Pages (only if you also host an API)</summary>
 
-1. Push this repo to GitHub (default branch: `main` or `master`).
-2. In your repo settings → **Pages** → Source: **GitHub Actions** (recommended) or the **`gh-pages` branch** (created by `npm run deploy`).
+1. Push this repo to GitHub (default branch: `main`).
+2. In your repo settings → **Pages** → Source: **GitHub Actions** (recommended) or the **`gh-pages` branch** (created by `npm run deploy:app`).
 3. If using the **`gh-pages` branch** flow, just run:
 
    ```bash
-   npm run deploy
+   npm run deploy:app
    ```
 
-   Builds and pushes `dist/` to a `gh-pages` branch.
+   Builds `dist/` and pushes it to a `gh-pages` branch.
 
 4. If using **GitHub Actions**, drop in the workflow below at `.github/workflows/deploy.yml`:
 
@@ -155,11 +168,11 @@ jobs:
            uses: actions/deploy-pages@v4
    ```
 
-> If you rename the repo, edit `base` in `vite.config.ts` (and any hard-coded links in the README) to match.
+> The `/qazaq-anki/` base is the repo name baked into the production build. To change it, set `VITE_BASE` — that is the override `vite.config.ts` reads — rather than editing the file, or the next build will disagree with you.
 
 ### Custom domain
 
-If you serve from a custom domain (apex or subdomain), set `base: '/'` in `vite.config.ts` and add a `CNAME` file in `public/` containing your domain. Then re-deploy.
+Build with `VITE_BASE=/ npm run build` (or `npm run build:pages` with the variable overridden) so assets resolve at the domain root, add a `CNAME` file in `public/` containing your domain, then deploy.
 
 ---
 
@@ -178,56 +191,74 @@ Tap **All** in the study tabs to drill every card in the level regardless of due
 
 ## A note on auth
 
-There is no backend. Accounts and progress live in your browser's `localStorage`, keyed by username. Passwords are bcrypt-hashed (8 rounds) on the client before being stored.
+Auth is server-side. The API hashes passwords with bcrypt (10 rounds) and keeps
+the result in the `users` table, so the browser never holds a hash it could
+replay. On login or registration the server mints an opaque session token,
+stores it in the `sessions` table and hands it back; the client sends it as
+`Authorization: Bearer <token>` on every request. That token is the one piece
+of session state the browser persists, in `localStorage` under `aq:token` —
+alongside theme, font size, TTS speed and onboarding flags.
 
-This is convenience auth, not security. Anyone with access to your browser profile can read the data. That's the right call for a single-user, local-first learning app on static hosting. Don't put anything sensitive here.
+Progress is not in the browser at all. `ProgressContext` reads it from the API
+on load and writes it back through the review endpoints, so clearing site data
+costs you a re-login rather than your history.
 
-You can reset your progress at any time from the **Stats** page.
+Single-user and self-hosted is a deliberate scope, but the trust boundary is
+then the machine the server runs on — don't put anything in it you'd mind
+losing. You can reset your progress at any time from the **Stats** page.
 
 ---
 
 ## Project structure
 
 ```
-src/
+server/               # Express API — plain ESM, no build step
+  server.js           # routes
+  auth.js             # register / login / sessions / password change
+  db.js               # sql.js (SQLite via WASM) + schema + migrations
+  cards.js            # user-added cards
+  ratelimit.js        # in-memory fixed-window limiter
+  apkg.js             # Anki package import/export
+src/                  # React front-end
   data/
-    decks.json         # 3,996 cards by CEFR level (auto-generated, see below)
-    decks.ts           # typed export
+    decks.json        # manifest: 5 levels, topics, cardCount
+    decks/            # the cards themselves, one file per level
+      a1.json         #   712 · a2 693 · b1 1,559 · b2 449 · c1 583
+    decks.ts          # Card type + lazy loadLevel()
+    SOURCES.md        # per-card provenance, licensing, regeneration
   lib/
-    sm2.ts             # spaced-repetition algorithm
-    auth.ts            # bcrypt registration / login
-    storage.ts         # localStorage wrapper + SHA-256 helper
-    progress.ts        # per-user progress map
-  contexts/
-    AuthContext.tsx    # current user
-    ProgressContext.tsx# SM-2 grade + totals
-    ThemeContext.tsx   # light / dark
-  components/
-    Layout.tsx         # header / nav / footer
-    Flashcard.tsx      # flippable card
-    ProtectedRoute.tsx # redirect to /login when signed out
-  pages/
-    HomePage.tsx       # marketing + dashboard
-    LoginPage.tsx
-    RegisterPage.tsx
-    DecksPage.tsx      # all 5 levels
-    StudyPage.tsx      # main study session
-    BrowsePage.tsx     # search every card
-    StatsPage.tsx      # KPIs + per-level mastery
-    NotFoundPage.tsx
-  styles/global.css    # design tokens + base
-  App.tsx              # router
-  main.tsx             # entry
+    sm2.ts            # spaced-repetition algorithm
+    auth.ts           # domain types + shared validation
+    api.ts            # the only module that talks to the server
+    storage.ts        # localStorage wrapper with an in-memory fallback
+    progress.ts       # per-card schedule types
+  contexts/           # auth, progress, theme, font size, language, onboarding
+  components/         # Layout, Flashcard, modals, pickers, skeleton
+  pages/              # Home, Login, Register, Decks, Study, Browse, Stats, Settings
+  styles/
+    global.css        # design tokens + base
+    fonts.css         # self-hosted @font-face, one rule per subset
+e2e/                  # Playwright specs
+scripts/              # deck build, TTS, font tooling
 ```
+
+Each level is a lazy `import()`, so Vite splits the bundle per level and you
+only download the deck you actually open.
 
 ### Refreshing the deck data
 
-The cards came from parsing the public Wordmastery PDFs (one per CEFR level). To re-generate:
+The cards were parsed from the Qazcorpus school-lexicon PDFs. To re-generate:
 
-1. Place the five `A1..C1` PDFs at `/tmp/kazakh-cards/`.
-2. Run `python3 /tmp/kazakh-cards/parse_pdfs.py` — it writes `src/data/decks.json`.
+```bash
+mkdir -p /tmp/lexmin                        # then put lexmin_A1.pdf … lexmin_C1.pdf there
+node scripts/build-lexmin.mjs /tmp/lexmin   # → src/data/decks/{a1..c1}.json
+node scripts/unify-topics.mjs               # unify topics, drop cross-level duplicates
+npm test                                    # decks.test.ts pins the counts
+```
 
-Or just edit `decks.json` directly.
+Full details, including the per-source attribution rules, are in
+[`src/data/SOURCES.md`](src/data/SOURCES.md). To add a card by hand, edit the
+level file and bump its `cardCount` in `decks.json`.
 
 ---
 
@@ -245,7 +276,7 @@ Or just edit `decks.json` directly.
 
 ## Credits
 
-- Vocabulary: [Wordmastery.org — 1000 most common Kazakh words (CEFR A1–C1)](https://wordmastery.org/kazakh/), used as an educational source.
+- Vocabulary: [Qazcorpus — school lexicon, CEFR A1–C1](https://qazcorpus.kz/_oqu-ishorpus/Sauattik/), used as an educational source. Per-card provenance in [`src/data/SOURCES.md`](src/data/SOURCES.md).
 - Spaced repetition: SM-2 algorithm (Wozniak, 1990).
 - Design tokens: `src/styles/global.css`.
 
