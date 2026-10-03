@@ -78,6 +78,7 @@
 .dismissBtn:hover {
   background: rgba(0, 0, 0, 0.05);
 }
+.dismissBtn:active { transform: translateY(1px); }
 
 .addBtn {
   display: inline-flex;
@@ -148,6 +149,7 @@
   color: var(--accent-ink);
   text-decoration: none;
 }
+.studyCtaLink:active { transform: translateY(1px); }
 .studyCtaLink:hover svg {
   transform: translateX(2px);
 }
@@ -202,6 +204,7 @@
   letter-spacing: 0;
 }
 .clearBtn:hover { color: var(--text); }
+.clearBtn:active { transform: translateY(1px); }
 
 .levelFilters,
 .categoryFilters {
@@ -226,6 +229,7 @@
   font-variant-numeric: tabular-nums;
 }
 .chip:hover { color: var(--text); background: var(--surface-2); }
+.chip:active { transform: translateY(1px); }
 
 .chipActive {
   background: var(--surface-2);
@@ -342,6 +346,7 @@
   background: var(--surface-2);
   color: var(--warn);
 }
+.deleteBtn:active { transform: translateY(1px); }
 
 .editBtn {
   position: absolute;
@@ -365,6 +370,7 @@
   background: var(--surface-2);
   color: var(--accent);
 }
+.editBtn:active { transform: translateY(1px); }
 
 /* No hover to fire, so the actions are always present — quieter than
    the hovered state but never absent. */
@@ -384,6 +390,7 @@
   background: var(--warn);
   color: var(--warn-fg);
 }
+.deleteBtnConfirm:active { transform: translateY(1px); }
 
 .meta {
   display: flex;
@@ -534,6 +541,7 @@
   color: var(--text);
   border-color: var(--border-strong);
 }
+.pagerArrow:active:not(:disabled) { transform: translateY(1px); }
 
 .pagerArrow:disabled {
   opacity: 0.4;
@@ -553,6 +561,7 @@
   color: var(--text);
   border-color: var(--border-strong);
 }
+.pagerPage:active { transform: translateY(1px); }
 
 .pagerPageActive {
   background: var(--accent-solid);
@@ -566,6 +575,7 @@
   color: var(--accent-fg);
   border-color: var(--accent);
 }
+.pagerPageActive:active { transform: translateY(1px); }
 
 .pagerEllipsis {
   display: inline-flex;

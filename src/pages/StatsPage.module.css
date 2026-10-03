@@ -139,6 +139,7 @@
      arrow and the surface tint already say "clickable". */
   text-decoration: none;
 }
+.kpiLink:active { transform: translateY(1px); }
 .kpiCta {
   position: absolute;
   bottom: 14px;
@@ -487,6 +488,7 @@
   transition: background var(--dur-fast) var(--ease-out);
 }
 .topicLevelHead:hover { background: var(--surface-2); }
+.topicLevelHead:active { transform: translateY(1px); }
 
 .topicLevelIcon {
   display: inline-flex;
@@ -548,6 +550,7 @@
   transition: background var(--dur-fast) var(--ease-out);
 }
 .topicCard:hover { background: var(--surface-2); text-decoration: none; }
+.topicCard:active { transform: translateY(1px); }
 
 .topicCardTop {
   display: flex;
@@ -792,6 +795,7 @@
 .toastClose:hover {
   background: rgba(0, 0, 0, 0.06);
 }
+.toastClose:active { transform: translateY(1px); }
 
 /* Leech list — compact rows, one per sticky card. The Reset
    button is the actionable thing; everything else is
@@ -1114,6 +1118,7 @@
 .tabButton:hover:not([aria-selected='true']) {
   color: var(--text);
 }
+.tabButton:active:not([aria-selected='true']) { transform: translateY(1px); }
 
 .tabButtonActive {
   background: var(--surface-2);
@@ -1123,6 +1128,7 @@
 .tabButtonActive:hover {
   color: var(--text-strong);
 }
+.tabButtonActive:active { transform: translateY(1px); }
 
 .tabPanel {
   display: flex;
@@ -1180,6 +1186,7 @@
 .emptyCta:hover {
   background: var(--accent-strong);
 }
+.emptyCta:active { transform: translateY(1px); }
 
 @media (prefers-reduced-motion: reduce) {
   /* A bar sweeping 0 -> 100% is motion the learner did not ask for. The fill

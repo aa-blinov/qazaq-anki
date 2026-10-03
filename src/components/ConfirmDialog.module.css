@@ -53,6 +53,7 @@
   background: var(--surface-2);
   color: var(--text);
 }
+.close:active { transform: translateY(1px); }
 
 .icon {
   display: inline-flex;

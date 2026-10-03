@@ -1288,6 +1288,27 @@ floor stays 44 and `mobile-measure` still fails loudly below it.
   Russian screen reader announced an English description of a Russian chart.
   Both are dictionary keys now. `e2e/stats-a11y.spec.ts` pins all of the
   above, and its third test is the sweep that would catch the next one.
+- **76 selectors had a `:hover` and no `:active`.** A control that only
+  changes on hover gives a touch screen no signal that it was pressed:
+  nothing happens, and the app answers only once the navigation lands.
+  All of them now carry the press the two pre-existing rules set —
+  `transform: translateY(1px)`, from `.btn:active` and
+  `.ratingBtn:active` — rather than a new colour treatment invented for
+  the sweep. Four did not need a rule and got none: `.btn`,
+  `.ratingBtn` and `.speakBtn` already have one, and every
+  `.ratingBtn[data-grade=…]` and `.btn--*` variant also carries its
+  parent class, so a second rule would have been a byte-identical
+  duplicate. `.chartBar` and the two `.heatmapCell` rules are SVG rects
+  and `aria-hidden` divs, not controls — a 1px translate would distort a
+  bar against its neighbours. `a:hover` is untouched: it underlines text
+  inside running prose, and shifting body text 1px is not press
+  feedback. The descendant rules (`.row:hover .editBtn`,
+  `.kpiLink:hover .kpiCta` and friends) are left to their parent. One
+  that looks like a control is not: `.row` is a non-interactive
+  `<article>`, and `:active` matches ancestors, so pressing a button
+  inside it would have fired both rules and shifted the card twice.
+  `e2e/press-feedback.spec.ts` holds the mouse down and reads the
+  computed transform, so a rule that is overridden or misfiled fails.
 
 **Left alone on purpose:**
 

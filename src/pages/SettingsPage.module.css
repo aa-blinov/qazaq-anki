@@ -105,6 +105,7 @@
   background: var(--surface-2);
   border-color: var(--accent);
 }
+.stepBtn:active:not(:disabled) { transform: translateY(1px); }
 
 .stepBtn:disabled {
   opacity: 0.4;
@@ -214,6 +215,7 @@
 .speedBtn:hover:not([aria-checked='true']) {
   color: var(--text);
 }
+.speedBtn:active:not([aria-checked='true']) { transform: translateY(1px); }
 
 .speedBtnActive {
   background: var(--accent-solid);
@@ -224,6 +226,7 @@
 .speedBtnActive:hover {
   color: var(--accent-fg);
 }
+.speedBtnActive:active { transform: translateY(1px); }
 
 /* Touch floor. The stepper buttons sit 8px apart and the speed
    segments 2px apart, so neither can take a hit-area overlay without

@@ -44,6 +44,7 @@
   border-color: var(--border);
   color: var(--text);
 }
+.trigger:active { transform: translateY(1px); }
 .trigger[aria-expanded='true'] {
   background: var(--surface-2);
   border-color: var(--border);
@@ -110,6 +111,7 @@
 .item:hover {
   background: var(--surface-2);
 }
+.item:active { transform: translateY(1px); }
 .itemActive {
   background: var(--accent-soft);
   color: var(--accent-ink);
@@ -117,6 +119,7 @@
 .itemActive:hover {
   background: var(--accent-soft);
 }
+.itemActive:active { transform: translateY(1px); }
 
 .itemLabel {
   overflow: hidden;
