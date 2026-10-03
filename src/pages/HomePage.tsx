@@ -496,7 +496,7 @@ function Dashboard({
               <ArrowRight size={14} />
             </Link>
           </header>
-          <MiniHeatmap days={heatmapDays} weeks={7} />
+          <MiniHeatmap days={heatmapDays} weeks={7} t={t} />
         </section>
       ) : null}
     </div>

@@ -499,7 +499,11 @@ export const ru: Translations = {
   'stats.activity.windowTotalSub.many': '{active} из {total} активных',
   'stats.heatmap.title': 'Карта занятий',
   'stats.heatmap.subtitle': 'Квадратик = один день, ярче = больше повторений',
-  'stats.heatmap.aria': 'Карта занятий за последние 13 недель',
+  // The window is a prop on both heatmaps (7 weeks on Home, 13 on
+  // Stats), so the label is parameterised rather than two near-identical
+  // strings that would drift apart.
+  'stats.heatmap.ariaWeeks': 'Карта занятий за последние {weeks} недель',
+  'stats.heatmap.noReviews': 'нет повторений',
   'stats.heatmap.totalReviews.one': 'повторение всего',
   'stats.heatmap.totalReviews.few': 'повторения всего',
   'stats.heatmap.totalReviews.many': 'повторений всего',
