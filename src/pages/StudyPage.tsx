@@ -73,7 +73,7 @@ export function StudyPage() {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { progress, grade, gradeUndo } = useProgress();
+  const { progress, grade, gradeUndo, loading: progressLoading } = useProgress();
   const { t, lang } = useLang();
   const { user } = useAuth();
   // Effective per-user limits — fall back to Anki defaults if the
@@ -151,7 +151,15 @@ export function StudyPage() {
     () => [...officialCards, ...myCardsForLevel],
     [officialCards, myCardsForLevel],
   );
-  const loading = officialLoading && userCards.length === 0;
+  // Named `cardsLoading` rather than `loading` on purpose. This flag
+  // tracks the DECK, not the user's progress, and the two race each
+  // other on a cold load: whichever fetch returns first decides which
+  // one the queue effects below get to act on. The name used to be
+  // plain `loading`, and two comments in this file confidently described
+  // it as ProgressContext's flag — describing a value this component
+  // never read. It is now two names, and each comment below names the
+  // flag it actually depends on.
+  const cardsLoading = officialLoading && userCards.length === 0;
   // Derive the topic dropdown from the loaded card set itself,
   // not from `getCategoriesByLevel(levelId)`. The latter would
   // return [] for the cross-level queue (levelId = 'all') and
@@ -197,7 +205,7 @@ export function StudyPage() {
   // — the topic may have been valid for the official deck but
   // stop being valid once user cards join, or vice versa.
   useEffect(() => {
-    if (loading) return;
+    if (cardsLoading) return;
     const topicFromUrl = searchParams.get('topic');
     if (topicFromUrl && allCards.some((c) => c.category === topicFromUrl)) {
       if (activeCategory !== topicFromUrl) setActiveCategory(topicFromUrl);
@@ -205,12 +213,12 @@ export function StudyPage() {
       setActiveCategory('all');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allCards, loading]);
+  }, [allCards, cardsLoading]);
 
   // Keep the URL in sync with category + direction + phase filter
   // (so it's shareable and a refresh keeps the same view).
   useEffect(() => {
-    if (loading) return;
+    if (cardsLoading) return;
     const currentTopic = searchParams.get('topic') ?? 'all';
     const currentDir = (searchParams.get('dir') as Direction) || 'kk-ru';
     const currentPhase = searchParams.get('phase') ?? 'all';
@@ -229,9 +237,22 @@ export function StudyPage() {
       setSearchParams(next, { replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeCategory, direction, phaseFilter, loading]);
+  }, [activeCategory, direction, phaseFilter, cardsLoading]);
 
-  const [mode, setMode] = useState<Mode>('all');
+  // Default to the due queue, not the whole deck.
+  //
+  // It was 'all', which meant a session opened on every card in every
+  // level — a 3,996-card pool with a returning learner's 22 real due
+  // reviews shuffled among ~3,974 words they had never seen, behind a
+  // "1 из 3996" counter and a 0% progress bar. That is the opposite of
+  // the ritual the product documents: open → review queue → close.
+  //
+  // 'due' is not automatically right either — a learner who registered
+  // yesterday has no schedules at all, so a pure 'due' default would
+  // greet them with an empty screen. Effect C below falls back to 'new'
+  // (which honours the daily cap) when there is nothing due.
+  const [mode, setMode] = useState<Mode>('due');
+  const modeFallbackDone = useRef(false);
 
   // Build a fresh queue.
   const buildQueue = useCallback(
@@ -344,14 +365,31 @@ export function StudyPage() {
   useEffect(() => {
     const q = buildQueue(mode, direction, progress);
     setQueue(q);
+    builtQueueLen.current = q.length;
     setCurrentIdx(0);
     setRevealed(false);
     setHasRevealed(false);
     setReviewed(0);
     setCorrect(0);
     setDone(q.length === 0);
+    // `progressLoading` is a dep, and it has to be. The queue is
+    // derived from `progress`, which arrives after the first render, so
+    // on mount this effect builds it from an empty map — and a 'due'
+    // session then shows an empty queue that never recovers, because
+    // this effect cannot depend on `progress` itself without resetting
+    // the session on every single grade. `progressLoading` flips exactly
+    // once per user (ProgressContext sets it in the effect keyed on
+    // `user`, and nowhere else), so depending on it rebuilds the queue
+    // once, when the data lands, and on sign-in — not mid-session.
+    //
+    // This dep used to be the deck's `loading` flag, which the comment
+    // above then described as ProgressContext's. It was not. The two
+    // fetches race: when the deck won the race, this effect fired with
+    // progress still `{}`, and Effect C below read the resulting empty
+    // queue as a verdict that nothing was due. `progressLoading` is the
+    // flag that actually tracks the data this effect reads.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, activeCategory, direction, allCards.length]);
+  }, [mode, activeCategory, direction, allCards.length, progressLoading]);
 
   // Effect B — filter rebuild. Triggers when the user
   // changes a queue-shaping knob that doesn't justify
@@ -360,7 +398,9 @@ export function StudyPage() {
   // new-cards cap. Queue is rebuilt, but currentIdx,
   // reviewed, and correct are preserved.
   useEffect(() => {
-    setQueue(buildQueue(mode, direction, progress));
+    const q = buildQueue(mode, direction, progress);
+    setQueue(q);
+    builtQueueLen.current = q.length;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phaseFilter, newCardsPerDay]);
 
@@ -377,6 +417,63 @@ export function StudyPage() {
   }, []);
 
   const [queue, setQueue] = useState<CardData[]>([]);
+  // Effect A records the length of the queue it just built, so Effect C
+  // can read it. Effect C cannot read `queue` for this: in the same
+  // commit that Effect A populates the state, the `queue` binding in
+  // Effect C's closure is still the `[]` the hook was initialised with,
+  // so a length check there would always report "nothing due" and flip a
+  // real due queue to 'new' before it was ever computed. -1 is the
+  // sentinel for "Effect A has not run yet at all".
+  const builtQueueLen = useRef(-1);
+
+  // Effect C — first-run fallback. If the due queue came back empty
+  // and there is genuinely new material, open 'new' instead of showing
+  // an empty study screen to someone who registered yesterday. Runs
+  // once: after the learner has chosen a tab themselves, we stop
+  // second-guessing it, so an intentional switch back to an empty 'due'
+  // queue is respected.
+  useEffect(() => {
+    if (modeFallbackDone.current) return;
+    if (mode !== 'due') {
+      modeFallbackDone.current = true;
+      return;
+    }
+    // The gate has to be `progressLoading`, and the reason is not
+    // "signed out users have no progress" as the previous comment here
+    // claimed — it is that this effect judges an empty due queue, and
+    // an empty due queue is indistinguishable from "progress has not
+    // arrived yet". Both are `{}` filtering down to nothing.
+    //
+    // The gate it used was the DECK's loading flag, which tracks a
+    // different fetch entirely. So on a cold load the sequence was:
+    // deck returns first, `cardsLoading` goes false, this effect runs
+    // against a still-empty `progress`, reads the empty due queue that
+    // Effect A built one commit earlier as a verdict, finds unstudied
+    // cards, and moves the session to 'new' — for a learner with a real
+    // review waiting. Progress then landed, Effect A rebuilt correctly,
+    // and `modeFallbackDone` had already been spent, so the session
+    // stayed on the wrong queue until the next visit. The deck/progress
+    // race decided the outcome.
+    //
+    // `progressLoading` is true from the first render until the
+    // progress fetch settles, so "not loaded" can no longer be read as
+    // "nothing due". `!user` is kept as a separate condition for the
+    // signed-out case, where there is nothing to fall back to anyway.
+    if (!user || progressLoading || allCards.length === 0) return;
+    if (builtQueueLen.current < 0) return;
+    const dueEmpty = builtQueueLen.current === 0;
+    if (!dueEmpty) {
+      modeFallbackDone.current = true;
+      return;
+    }
+    const hasNew = allCards.some((c) => !progress[makeProgressKey(c.id)]);
+    if (hasNew) {
+      modeFallbackDone.current = true;
+      setMode('new');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, progressLoading, allCards.length, mode, progress]);
+
   const [currentIdx, setCurrentIdx] = useState(0);
   const [revealed, setRevealed] = useState(false);
   // Once the user has revealed the current card at least once, the
@@ -928,7 +1025,7 @@ export function StudyPage() {
     );
   }
 
-  if (loading) {
+  if (cardsLoading) {
     // Skeleton card + rating row — same vertical rhythm as the
     // real study UI, so the page doesn't "jump" when the JSON
     // arrives. aria-busy announces the loading state to AT.

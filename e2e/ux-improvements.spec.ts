@@ -274,14 +274,39 @@ test.describe('UX improvements', () => {
     // /sw.js is reachable.
     const sw = await page.request.get('/sw.js');
     expect(sw.status()).toBe(200);
-    // Register a SW in this page and wait for it to become active.
-    const swReady = await page.evaluate(async () => {
-      if (!('serviceWorker' in navigator)) return 'no-sw-support';
-      const reg = await navigator.serviceWorker.register('/sw.js');
-      await navigator.serviceWorker.ready;
-      return reg.active ? 'active' : 'pending';
+
+    // The page must have registered the worker BY ITSELF.
+    //
+    // This used to call `navigator.serviceWorker.register('/sw.js')` from
+    // the test, which made the assertion unfalsifiable: it passed whether
+    // or not the shipped app registered anything. The registration was an
+    // inline <script> in index.html, which the deployed stack's
+    // `script-src 'self'` blocked — verified on a running container as
+    // 0 registrations and 1 CSP violation — and this test went green over
+    // it the whole time.
+    //
+    // So: do not register here. Reload, let the page do it, and count
+    // what it actually produced. A CSP violation surfaces as a console
+    // error, which is what the old code was doing silently.
+    const cspErrors: string[] = [];
+    page.on('console', (m) => {
+      if (m.type() === 'error' && /Content Security Policy/.test(m.text())) cspErrors.push(m.text());
     });
-    expect(['active', 'pending']).toContain(swReady);
+    await page.reload({ waitUntil: 'load' });
+    await page.waitForFunction(
+      async () => (await navigator.serviceWorker.getRegistrations()).length > 0,
+      undefined,
+      { timeout: 15000 },
+    );
+
+    const pageRegs = await page.evaluate(async () => {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      return { count: regs.length, scopes: regs.map((r) => r.scope) };
+    });
+    expect(pageRegs.count, 'the page itself must register the service worker').toBeGreaterThan(0);
+    expect(pageRegs.scopes.join(','), 'the worker must cover the app root').toContain('/');
+    expect(cspErrors, `inline script blocked by CSP: ${cspErrors.join(' | ')}`).toEqual([]);
+
     await page.screenshot({ path: `${SHOTS}/11-pwa.png`, fullPage: false });
   });
 

@@ -70,3 +70,7 @@ coverage/
 
 # Impeccable — platform engine binary, re-downloaded on first run by scripts/impeccable
 .github/skills/impeccable/scripts/bin/
+
+# Local agent runtime scratch — canvases, captured assets. Not project
+# content, and this is a public repo.
+.mavis/
