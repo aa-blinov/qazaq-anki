@@ -45,11 +45,21 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [progress, setProgressState] = useState<ProgressMap>({});
   const [reviewLog, setReviewLog] = useState<ReviewLog>([]);
-  const [loading, setLoading] = useState(false);
+  // Starts `true`, not `false`. This is not optimism about the network,
+  // it is the honest answer to "have we asked the server yet?" — we have
+  // not, and the fetch does not start until the effect below runs, one
+  // commit later. Starting at `false` published an empty progress map as
+  // if it were a real, loaded answer, and any consumer that asks "is
+  // there anything here?" during that window is told "no" about every
+  // card. That is not a cosmetic lie: StudyPage's first-run queue
+  // fallback read it and moved a returning learner with a real due
+  // review onto the 'new' queue for the rest of the session.
+  const [loading, setLoading] = useState(true);
 
   // On user change: pull progress + log from the server. The server
   // is the source of truth now — there's no localStorage mirror to
-  // keep in sync.
+  // keep in sync. The signed-out branch below resets it to `false`,
+  // so a visitor without a token settles instead of spinning.
   useEffect(() => {
     let cancelled = false;
     if (!user) {

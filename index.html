@@ -22,10 +22,23 @@
     <meta name="theme-color" content="#1F1E1B" media="(prefers-color-scheme: dark)" />
     <!--
       Content Security Policy — defense in depth against XSS. Everything is
-      self-hosted except the Google Fonts CSS. We allow inline styles for the
-      React-generated styles and Vite's dev-mode HMR; `unsafe-inline` for
-      script-src is allowed only because Vite injects inline <script>
-      blocks in dev. The build output doesn't use inline scripts.
+      self-hosted. We allow inline styles for the React-generated styles and
+      Vite's dev-mode HMR; `'unsafe-inline'` and `'unsafe-eval'` in
+      script-src are for the dev server only, which injects inline <script>
+      blocks for HMR. The production build has no inline scripts — anything
+      that has to run before first paint (theme-init, the service-worker
+      registration) is a self-hosted file, precisely so the deployed
+      `script-src 'self'` from nginx allows it.
+
+      That last line is not theory. The service-worker registration used to
+      be an inline block, so the deployed app registered nothing and the
+      e2e test — which called `register()` itself instead of checking that
+      the page did — stayed green over a dead feature. It now lives in
+      public/sw-register.js.
+
+      When a policy is delivered by both a header and a <meta> tag the
+      stricter of the two wins, so the nginx header governs in production
+      and this tag only governs `npm run dev`.
       Note: `frame-ancestors` is silently ignored when delivered via a
       <meta> tag (browsers only honour it from real HTTP headers), so we
       rely on the GitHub Pages X-Frame-Options / equivalent header in
@@ -85,22 +98,18 @@
     <title>Qazaq — учите казахский с интервальным повторением</title>
     <!--
       Register the service worker for offline app-shell + level JSON
-      caching. The script is in /sw.js (served from public/ at root).
+      caching. The script is in /sw.js (served from public/ at root),
+      and the registration itself lives in /sw-register.js — an external
+      file, for the same reason theme-init.js is: the production stack
+      serves `script-src 'self'`, which an inline block violates. It
+      used to be inline here, and the deployed app therefore never
+      registered a worker at all.
       We register AFTER the page is interactive so the SW install
       doesn't compete with the first paint. If the SW fails (Safari
       private mode, an overzealous extension, etc.) the app still
       works — just without the offline shell.
     -->
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').catch((err) => {
-            // eslint-disable-next-line no-console
-            console.warn('[sw] registration failed:', err);
-          });
-        });
-      }
-    </script>
+    <script src="/sw-register.js"></script>
   </head>
   <body>
     <div id="root"></div>

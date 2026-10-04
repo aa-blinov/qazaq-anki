@@ -249,12 +249,12 @@ test.describe('Study flow + progress persistence', () => {
     // ("N из M") with an accuracy percentage. The queue length is the
     // observable that remains.
     //
-    // Note which queue this is. The study page now defaults to the "Все"
-    // (all) phase, not "Новые", so grading three cards does NOT shrink
-    // this number — a graded card leaves "Новые" but stays in "Все" as a
-    // non-new card. The "three grades removed three cards" check
-    // therefore has to be made against the "Новые" queue below, which is
-    // where the test's own comment already said the default was.
+    // Note which queue this is. The study page opens on "На повторе"
+    // (due) and falls back to "Новые" when nothing is due, so a brand-new
+    // account lands on "Новые" — and the length is therefore the daily
+    // cap, not the level's card count. That cap is what makes the
+    // post-reload assertion below meaningful: grading a new card consumes
+    // daily budget, so three grades must show up as a shorter queue.
     const counter = page.getByTestId('study-counter');
     const totalBefore = Number(
       (await counter.innerText()).match(/из\s+(\d+)/)?.[1],
@@ -276,25 +276,42 @@ test.describe('Study flow + progress persistence', () => {
       ).toBeVisible({ timeout: 3000 });
     }
 
-    // Reload the page — progress must persist
+    // Reload the page — progress must persist.
     await page.reload();
 
-    // The session position resets to 1 and the "Все" queue is still the
-    // full set: the three graded cards are there, they are simply no
-    // longer new. Combined with the per-grade position assertions above,
-    // that is the part of "progress persisted" this test can assert on
-    // UI that actually exists.
+    // The session position resets to 1 and a fresh queue is built.
+    await expect(counter).toHaveText(/^1 из \d+$/);
+
+    // The persistence check itself, read from the server through the
+    // app's own endpoint.
     //
-    // It used to also assert a "3 верно" tally and then, after reload, a
-    // "0 верно" — a session counter that no longer exists anywhere in the
-    // app. A first attempt replaced those with "the Новые queue must be
-    // three shorter", but that number is not the New-queue size this
-    // route produces (A1 "Новые" is 712 on a fresh account and the
-    // post-grade figure is 19, not 709), so it would have been a
-    // fabricated expectation. Left out rather than guessed at; pinning
-    // down what the queue actually counts here is product work, not test
-    // hygiene.
-    await expect(counter).toHaveText(new RegExp(`^1 из ${totalBefore}$`));
+    // It used to be `^1 из ${totalBefore}$` — the queue unchanged after
+    // three grades. That passed without proving anything had persisted:
+    // the number was pinned to whatever the deck happened to be, and a
+    // graded card stayed in the pool as a non-new card. Under the
+    // due-then-new default the queue is the daily cap minus today's new
+    // cards, and that number cannot carry the assertion either: the
+    // client fires `PUT /api/progress/:id` and `POST /api/review`
+    // concurrently, and the server decides `wasNew` by reading the
+    // progress row the PUT may already have rewritten (server.js:1041).
+    // So whether a given grade consumes new-card budget depends on which
+    // request lands first — measured 3 grades yielding a queue of 18
+    // instead of 17. That race is a real defect and it is reported
+    // separately; it is not something a test should be written around.
+    //
+    // `reviewsDone` is incremented unconditionally on every non-cram
+    // review, so it carries the same fact without the race: three grades
+    // graded here, three recorded on the server after a full reload.
+    const daily = await page.evaluate(async () => {
+      const res = await fetch('/api/daily', {
+        headers: { Authorization: 'Bearer ' + localStorage.getItem('aq:token') },
+      });
+      return res.json();
+    });
+    expect(
+      daily.reviewsDone,
+      'the three grades must be recorded on the server, not just in the tab',
+    ).toBe(3);
   });
 
   test('Switch to New button works when Due tab is empty', async ({ page }) => {
