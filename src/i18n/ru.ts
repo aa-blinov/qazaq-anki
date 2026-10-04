@@ -220,7 +220,6 @@ export const ru: Translations = {
   'study.counter': '{pos} из {total}',
   'study.empty.title': 'Сейчас повторять нечего.',
   'study.empty.titleDone': 'Сессия завершена.',
-  'study.empty.titleDoneGreat': 'Отлично!',
   'study.empty.suggestNew.one':
     'Попробуйте вкладку «{tab}»: 1 неизученная карточка ждёт.',
   'study.empty.suggestNew.few':

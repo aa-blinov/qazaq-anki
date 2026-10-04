@@ -304,14 +304,25 @@
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding: 14px 8px;
+  /* The top padding reserves the corner the shortcut chip is pinned
+     to. It is not cosmetic: the chip is `position: absolute` at 6px
+     from the top-left, and the label below it is centred, so on a
+     narrow button the two collide. At 375px the four-across row gives
+     each grade 73px and "Снова" is ~48px of it, which puts the label
+     straight under the chip — the first pass of the interval line made
+     that visible by pushing the label down into the chip's band.
+
+     Reserving the band fixes it at every width rather than at the one
+     that happened to break, and costs 12px of height on a row that has
+     room for it. */
+  padding: 26px 8px 12px;
   background: var(--surface);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
   color: var(--text);
   cursor: pointer;
   transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), transform var(--dur-press) var(--ease-out);
-  min-height: 56px;
+  min-height: 64px;
 }
 .ratingBtn:hover {
   background: var(--surface-2);
@@ -363,6 +374,28 @@
   font-weight: 600;
   font-size: var(--text-body);
   letter-spacing: -0.005em;
+}
+
+/* When the learner will next see this card, stated on the button that
+   causes it. It used to exist only inside `aria-label`, so a sighted
+   learner had to guess what "Снова" would cost them — the consequence
+   of a grade is the whole reason the four grades are ordered, and
+   hiding it behind a screen-reader string is the one place the
+   decision cannot be made on evidence.
+
+   Muted rather than a second colour, and never a fourth: the label
+   above already carries the grade's identity and the keyline carries
+   the same cue without colour. This line is information, not state.
+   `tabular-nums` so the four durations in the row do not jitter as
+   their digit counts differ. */
+.ratingInterval {
+  font-size: var(--text-micro);
+  font-weight: 500;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  text-align: center;
 }
 
 .ratingShortcut {
@@ -459,18 +492,6 @@
   box-shadow: var(--shadow-sm);
 }
 
-.doneIcon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: var(--accent-soft);
-  color: var(--accent);
-  margin-bottom: 20px;
-}
-
 .doneTitle {
   font-family: var(--font-display);
   font-size: var(--text-figure);
@@ -506,15 +527,27 @@
     align-items: stretch;
     gap: 12px;
   }
+  /* The four grades stay on one row. They used to collapse to a 2×2
+     grid here, which is the wrong shape for this control: the four SM-2
+     grades are an ordered scale, and stacking them two-by-two breaks
+     that reading — "Снова" and "Трудно" end up in a column instead of
+     beside each other, so the left-to-right order that carries the
+     scale's meaning is lost. It also cost a row of vertical space on
+     the shortest screens, which is where the card itself is tightest.
+
+     The base rule is already `repeat(4, 1fr)`, so the fix is to stop
+     overriding it. The gap tightens and the label drops a step to pay
+     for the narrower column; the interval line added below is what
+     fills the extra height the buttons gain from it. */
   .ratingRow {
     gap: 6px;
-    grid-template-columns: 1fr 1fr;
   }
   .ratingBtn {
-    padding: 14px 8px 12px;
-    min-height: 64px;
+    padding: 26px 4px 10px;
+    min-height: 72px;
   }
   .ratingLabel { font-size: var(--text-small); }
+  .ratingInterval { font-size: var(--text-micro); }
   .doneCard { padding: 40px 24px; }
   .doneTitle { font-size: 1.5rem; }
   .metaRow { font-size: var(--text-micro); }
