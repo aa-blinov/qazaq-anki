@@ -90,6 +90,20 @@ function Flashcard({
   // FRONT shows the prompt — Kazakh for kk-ru, Russian for ru-kk.
   // BACK reveals the answer.
   const frontMain = isKkRu ? card.kazakh : card.translationRu;
+  // Which face of the card is showing Kazakh and which is showing
+  // Russian. Exactly one of the two is Kazakh in either direction, so
+  // the flag is a negation rather than a second lookup.
+  //
+  // This exists because the display face is a *Kazakh* face, not a
+  // general one. `--font-display` is Source Serif 4, and the app's
+  // entire interface — every prompt, label, button and message, all of
+  // it Russian, since there is no Kazakh UI — is set in Inter. Both
+  // faces used `.kazakhWord*` unconditionally, so whichever side was
+  // showing Russian got a serif: the answer in the default kk-ru
+  // direction, and the prompt in ru-kk. The most-read text on the
+  // screen was the one piece of it in a font nothing else used.
+  const frontIsRussian = !isKkRu;
+  const backIsRussian = isKkRu;
   // Transliteration only matters for Kazakh (Cyrillic script the
   // learner is still getting used to). It shows up under the Kazakh
   // text and never under Russian text.
@@ -178,7 +192,9 @@ function Flashcard({
             <PhasePill phase={phase} t={t} />
           </div>
           <div className={styles.kazakhWordRow}>
-            <div className={styles.kazakhWord}>{frontMain}</div>
+            <div className={`${styles.kazakhWord} ${frontIsRussian ? styles.faceTextRu : ''}`}>
+              {frontMain}
+            </div>
           </div>
           {frontSub ? (
             <div className={styles.transliteration}>{frontSub}</div>
@@ -239,7 +255,9 @@ function Flashcard({
             )}
           </div>
           <div className={styles.kazakhWordRow}>
-            <div className={styles.kazakhWordSmall}>{backMain}</div>
+            <div className={`${styles.kazakhWordSmall} ${backIsRussian ? styles.faceTextRu : ''}`}>
+              {backMain}
+            </div>
           </div>
           {backSub ? (
             <div className={styles.transliteration}>{backSub}</div>

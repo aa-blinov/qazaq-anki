@@ -217,6 +217,20 @@
   letter-spacing: -0.015em;
 }
 
+/* Russian half of a card face, set in the interface sans.
+
+   `.kazakhWord` and `.kazakhWordSmall` are named for the script they
+   were built around and applied to both faces unconditionally, so
+   whichever side held Russian inherited a 500-weight serif. The
+   tracking is opened up a step to match: -0.02em is tuned for a
+   high-contrast serif at display size and reads as cramped in Inter
+   at the same size, so the sans side is set a little looser rather
+   than inheriting the serif's tuning unchanged. */
+.faceTextRu {
+  font-family: var(--font-sans);
+  letter-spacing: -0.008em;
+}
+
 /* Word + speaker button row. The button now lives in the
    top-right corner of the card (.speakCorner) instead of
    inline with the word — the row is just the word now. */

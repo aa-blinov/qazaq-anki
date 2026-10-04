@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, NavLink, useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Sparkles, ArrowRight, ChevronDown, SlidersHorizontal } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChevronDown, SlidersHorizontal } from 'lucide-react';
 import { Flashcard } from '../components/Flashcard';
 import { TopicSelect } from '../components/TopicSelect';
 import { PickerSelect, type PickerOption } from '../components/PickerSelect';
@@ -949,15 +949,21 @@ export function StudyPage() {
     return (
       <div className={styles.doneWrap}>
         <div className={styles.doneCard}>
-          <div className={styles.doneIcon}>
-            <Sparkles size={36} strokeWidth={1.4} />
-          </div>
+          {/* No celebratory icon. This screen used to open with a
+              36px Sparkles above the title, and the title itself
+              switched to "Отлично!" past 80% accuracy. Two problems
+              with the same root: the learner has just closed a session
+              and the honest summary — how many cards, at what accuracy
+              — is one line below, so the icon and the adjective were
+              both standing between them and the number they came for.
+              And the praise was unearned on a fixed scale — 80% of four
+              cards and 80% of forty are the same word, and only one of
+              them is the result of real work.
+
+              The accuracy is not gone: it is in the summary line, where
+              it is paired with the count it is a percentage of. */}
           <h1 className={styles.doneTitle}>
-            {reviewed === 0
-              ? t('study.empty.title')
-              : accuracy >= 80
-                ? t('study.empty.titleDoneGreat')
-                : t('study.empty.titleDone')}
+            {reviewed === 0 ? t('study.empty.title') : t('study.empty.titleDone')}
           </h1>
           <p className={styles.doneSub}>
             {reviewed === 0
@@ -1312,6 +1318,9 @@ export function StudyPage() {
               >
                 <span className={styles.ratingShortcut}>{shortcut}</span>
                 <span className={styles.ratingLabel}>{label}</span>
+                <span className={styles.ratingInterval}>
+                  {nextIntervalLabel(currentState, key, undefined, lang)}
+                </span>
               </button>
             ))}
           </div>

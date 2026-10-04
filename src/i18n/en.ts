@@ -206,7 +206,6 @@ export const en: Translations = {
   'study.counter': '{pos} of {total}',
   'study.empty.title': 'Nothing to study right now.',
   'study.empty.titleDone': 'Session complete.',
-  'study.empty.titleDoneGreat': 'Nicely done.',
   'study.empty.suggestNew.one':
     'Try the {tab} tab: 1 unlearned card waiting.',
   'study.empty.suggestNew.few':

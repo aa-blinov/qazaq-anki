@@ -123,7 +123,10 @@ test('mobile: study page fits 375px viewport and direction picker stacks vertica
   await page.waitForTimeout(200);
   await page.screenshot({ path: join(OUT, '19-mobile-study.png'), fullPage: true });
 
-  // Reveal on mobile — rating buttons should be 2x2
+  // Reveal on mobile — the four grades stay on one row. They used to
+  // collapse to a 2×2 grid below 600px, which broke the left-to-right
+  // reading of an ordered scale and spent a row of height on the
+  // shortest screens.
   await page.locator('button', { hasText: /Показать ответ/i }).first().click();
   await page.waitForTimeout(200);
   await page.screenshot({ path: join(OUT, '20-mobile-study-revealed.png'), fullPage: true });
