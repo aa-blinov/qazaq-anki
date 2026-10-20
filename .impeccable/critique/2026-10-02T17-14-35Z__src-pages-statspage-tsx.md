@@ -2,7 +2,7 @@
 target: src/pages/StatsPage.tsx
 total_score: 19
 max_score: 40
-na_heuristics: 
+na_heuristics:
 p0_count: 1
 p1_count: 4
 target_identity: "file:/Users/justcomex/Documents/pet/anki-qazaq/src/pages/StatsPage.tsx"
