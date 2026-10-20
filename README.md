@@ -181,6 +181,6 @@ Per-card provenance and licensing live in [src/data/SOURCES.md](src/data/SOURCES
 
 ## License
 
-MIT. Use it, fork it, build something on it; do not claim you made it. See [LICENSE](LICENSE).
+MIT. Use it, fork it, build something on it; do not claim you made it. The repository carries no `LICENSE` file yet, so this paragraph is the only statement of the terms.
 
 The vocabulary comes from the [Qazcorpus school lexicon](https://qazcorpus.kz/_oqu-ishorpus/Sauattik/), used under CC-BY-4.0, with attribution recorded per card in [src/data/SOURCES.md](src/data/SOURCES.md). The scheduler is the SM-2 algorithm by Wozniak, 1990.
