@@ -1,3 +1,7 @@
+<!-- house-style: emoji-ok -->
+<!-- The emoji in this file are a vocabulary the document defines:
+     a legend, a column in a table, a flag in a report. Removing them
+     would take the meaning with them. See docs/house-style.md. -->
 # Concepts: level vs category
 
 This document exists because "level" and "category" are easily confused in
