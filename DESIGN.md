@@ -1623,5 +1623,3 @@ for every deck on every route, because "prefetch everything" is easier to
 write than "fetch what this screen shows" — and the measurement is what
 proved it, since none of it was ever on the critical path. Nothing here
 moved LCP; it moved the bill.
-
-

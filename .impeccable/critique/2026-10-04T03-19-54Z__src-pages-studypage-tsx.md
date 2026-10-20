@@ -2,7 +2,7 @@
 target: окно повтора / study screen
 total_score: 26
 max_score: 40
-na_heuristics: 
+na_heuristics:
 p0_count: 2
 p1_count: 3
 target_identity: "file:/Users/justcomex/Documents/pet/anki-qazaq/src/pages/StudyPage.tsx"

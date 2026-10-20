@@ -37,5 +37,3 @@ export async function closeOnboardingIfOpen(page: Page): Promise<void> {
     await page.waitForTimeout(200);
   }
 }
-
-
