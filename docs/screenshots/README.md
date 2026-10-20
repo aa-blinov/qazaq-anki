@@ -13,11 +13,11 @@ These four cover most of what a README needs:
 | File | What it shows |
 | --- | --- |
 | `desktop/01-landing.png` | Anonymous landing page with hero, demo card, benefit blocks |
-| `desktop/07-study-front.png` | Study queue — Kazakh word with transliteration and rating hint |
+| `desktop/07-study-front.png` | Study queue: Kazakh word with transliteration and rating hint |
 | `desktop/08-study-back.png` | Same card flipped to reveal the Russian translation |
 | `desktop/10-stats-overview.png` | Stats page with level mastery rings, ease histogram, retention |
 
-## Light mode — desktop (1280×800)
+## Light mode, desktop (1280×800)
 
 | File | Route | Notes |
 | --- | --- | --- |
@@ -27,14 +27,14 @@ These four cover most of what a README needs:
 | `desktop/04-not-found.png` | `/this-does-not-exist` | 404 with three useful links (A1, all words, stats). |
 | `desktop/05-home-empty.png` | `/` | Brand-new account: greeting, due cards, level tiles, empty heatmap. |
 | `desktop/06-home-dashboard.png` | `/` | Seeded account: due counts, level progress bars, recent activity. |
-| `desktop/07-study-front.png` | `/study/level/a1` | Front of the card. Kazakh word, transliteration, "1–4 to remember". |
+| `desktop/07-study-front.png` | `/study/level/a1` | Front of the card. Kazakh word, transliteration, "1 to 4 to remember". |
 | `desktop/08-study-back.png` | `/study/level/a1` | Same card after Space-flip. Russian translation + grade buttons with interval hints. |
 | `desktop/09-browse.png` | `/browse` | Card library grouped by topic. |
 | `desktop/10-stats-overview.png` | `/stats` | Top KPIs + per-level rings + ease histogram + 30-day activity + 90-day heatmap. |
 | `desktop/11-stats-topics.png` | `/stats?tab=topics` | Per-topic breakdown (learned / total / due). |
 | `desktop/12-settings.png` | `/settings` | User preferences: daily cap, TTS speed, leech threshold, backup/restore. |
 
-## Light mode — mobile (390×844)
+## Light mode, mobile (390×844)
 
 | File | Route |
 | --- | --- |
@@ -44,7 +44,7 @@ These four cover most of what a README needs:
 | `mobile/04-browse.png` | `/browse` |
 | `mobile/05-settings.png` | `/settings` |
 
-## Dark mode — desktop (1280×800)
+## Dark mode, desktop (1280×800)
 
 | File | Route |
 | --- | --- |
@@ -56,28 +56,28 @@ These four cover most of what a README needs:
 ## Regenerating
 
 ```bash
-# Terminal 1 — server (override register rate-limit so the script
+# Terminal 1: server (override register rate-limit so the script
 # can register a few accounts in quick succession)
 RATE_LIMIT_REGISTER=1000 PORT=3099 DB_PATH=$(pwd)/data/capture.sqlite \
   node server.js
 
-# Terminal 2 — production build preview
+# Terminal 2: production build preview
 npx vite preview --port 4173 --host 127.0.0.1
 
-# Terminal 3 — capture
+# Terminal 3: capture
 node scripts/capture-ui.mjs
 ```
 
 The script writes into `docs/screenshots/{desktop,mobile,dark}/`. It
-deliberately does **not** touch the README — pick the hero set from
+deliberately does **not** touch the README. Pick the hero set from
 the table above when you wire screenshots in.
 
 ## What's intentionally not here
 
-- **Onboarding modals** — they're the same overlay shown on first visit
+- **Onboarding modals**: they're the same overlay shown on first visit
   to Study, Browse, and Stats. The capture script auto-dismisses
   them so the underlying UI is what the README shows.
-- **TTS playback state** — UI is the same; audio output isn't visible
+- **TTS playback state**: UI is the same; audio output isn't visible
   in a static screenshot.
-- **Empty/error states** — the empty-account screenshot doubles for
+- **Empty/error states**: the empty-account screenshot doubles for
   this; error states are tested via Playwright suites, not captured.
