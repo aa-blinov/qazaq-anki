@@ -34,7 +34,7 @@ ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build:quick
 
 # ---- Stage 2: nginx static + reverse proxy ----
-FROM nginx:1.27-alpine AS runtime
+FROM nginx:1.31-alpine AS runtime
 COPY --from=build /app/dist /usr/share/nginx/html
 # Copy the nginx config as a *.template file so the official
 # nginx entrypoint runs envsubst on it before starting nginx —
