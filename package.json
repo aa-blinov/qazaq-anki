@@ -1,6 +1,9 @@
 {
   "name": "anki-qazaq",
   "private": true,
+  "engines": {
+    "node": ">=22"
+  },
   "version": "0.1.0",
   "type": "module",
   "description": "Anki-style flashcards for learning Kazakh (Қазақ тілі) by CEFR level A1-C1. Spaced repetition, offline, runs on GitHub Pages.",
