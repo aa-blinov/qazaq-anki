@@ -1,5 +1,5 @@
 piper-tts>=1.8.0
 onnxruntime>=1.31.0
-fastapi>=0.143.3
+fastapi>=0.162.0
 uvicorn[standard]>=0.54.0
 pydantic>=2.14.1
